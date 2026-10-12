@@ -788,7 +788,7 @@ const ProfileMenu = (() => {
 })();
 
 /* ═══════════════════════════════════════════
-   5. MOBILE MENU
+   5. MOBILE MENU & NAVIGATION DRAWER
    ═══════════════════════════════════════════ */
 const MobileMenu = (() => {
   let overlay, drawer, isOpen = false;
@@ -799,10 +799,10 @@ const MobileMenu = (() => {
     overlay = document.createElement('div');
     overlay.id = 'ci-mobile-menu-overlay';
     Object.assign(overlay.style, {
-      position: 'fixed', inset: '0', background: 'rgba(0,0,0,.4)',
+      position: 'fixed', inset: '0', background: 'rgba(0,0,0,.5)',
       zIndex: '998', opacity: '0', visibility: 'hidden',
       transition: 'opacity .3s ease, visibility .3s ease',
-      backdropFilter: 'blur(4px)'
+      backdropFilter: 'blur(4px)', WebkitBackdropFilter: 'blur(4px)'
     });
     overlay.addEventListener('click', close);
 
@@ -811,13 +811,14 @@ const MobileMenu = (() => {
     const isDark = Theme.get() === 'dark';
     Object.assign(drawer.style, {
       position: 'fixed', top: '0', right: '0', bottom: '0',
-      width: '280px', maxWidth: '85vw',
+      width: '300px', maxWidth: '86vw',
       background: isDark ? '#151c2c' : '#ffffff',
+      color: isDark ? '#f1f5f9' : '#131b2e',
       zIndex: '999', transform: 'translateX(100%)',
-      transition: 'transform .3s ease',
-      boxShadow: '-4px 0 24px rgba(0,0,0,.12)',
+      transition: 'transform .3s cubic-bezier(0.16, 1, 0.3, 1)',
+      boxShadow: '-4px 0 24px rgba(0,0,0,.2)',
       display: 'flex', flexDirection: 'column',
-      overflowY: 'auto'
+      overflowY: 'auto', WebkitOverflowScrolling: 'touch'
     });
 
     const isAuth = Auth.isAuthenticated();
@@ -826,76 +827,114 @@ const MobileMenu = (() => {
     drawer.innerHTML = `
       <div style="padding:16px 20px;display:flex;align-items:center;justify-content:space-between;
         border-bottom:1px solid ${isDark ? '#283044' : '#e2e8f0'}">
-        <span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:1.1rem;
-          color:${isDark ? '#d3bbff' : '#5300b7'}">Campus Inn+</span>
-        <button id="ci-mobile-close" style="background:none;border:none;cursor:pointer;padding:4px;
-          color:${isDark ? '#ccc3d7' : '#4a4455'};display:flex">
+        <a href="index.html" style="text-decoration:none;display:flex;align-items:center;gap:8px">
+          <img src="assets/campus_inn_logo.svg" alt="Campus Inn+ Logo" style="height:28px;width:auto" onerror="this.style.display='none'">
+          <span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:1.15rem;
+            color:${isDark ? '#d3bbff' : '#5300b7'}">Campus Inn<span style="color:#6d28d9">+</span></span>
+        </a>
+        <button id="ci-mobile-close" aria-label="Close navigation" style="background:none;border:none;cursor:pointer;padding:8px;
+          color:${isDark ? '#ccc3d7' : '#4a4455'};display:flex;border-radius:8px">
           <span class="material-symbols-outlined" style="font-size:24px">close</span>
         </button>
       </div>
       ${isAuth && user ? `
-        <div style="padding:16px 20px;background:${isDark ? '#1e293b' : '#f5f3ff'};
+        <div style="padding:14px 20px;background:${isDark ? '#1e293b' : '#f5f3ff'};
           border-bottom:1px solid ${isDark ? '#283044' : '#e2e8f0'}">
-          <div style="font-weight:600;color:${isDark ? '#fff' : '#131b2e'};font-size:.9rem">
-            ${user.name || user.identifier}
+          <div style="font-weight:600;color:${isDark ? '#fff' : '#131b2e'};font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+            ${user.name || user.firstName || user.identifier}
           </div>
-          <div style="font-size:.75rem;color:${isDark ? '#d3bbff' : '#5300b7'};margin-top:2px">
-            ${user.roleLabel}
+          <div style="font-size:.75rem;color:${isDark ? '#d3bbff' : '#5300b7'};margin-top:2px;font-weight:600">
+            ${user.roleLabel || 'Campus Member'}
           </div>
         </div>
       ` : ''}
-      <nav style="padding:12px 16px;display:flex;flex-direction:column;gap:4px;flex:1">
-        <a href="index.html" style="padding:10px 12px;border-radius:8px;text-decoration:none;
-          font-size:.875rem;font-weight:500;color:${isDark ? '#eef0ff' : '#131b2e'};
-          display:flex;align-items:center;gap:10px">
-          <span class="material-symbols-outlined" style="font-size:20px">home</span> Home</a>
-        <a href="events.html" style="padding:10px 12px;border-radius:8px;text-decoration:none;
-          font-size:.875rem;font-weight:500;color:${isDark ? '#eef0ff' : '#131b2e'};
-          display:flex;align-items:center;gap:10px">
-          <span class="material-symbols-outlined" style="font-size:20px">celebration</span> Events</a>
-        <a href="index.html#placements" style="padding:10px 12px;border-radius:8px;text-decoration:none;
-          font-size:.875rem;font-weight:500;color:${isDark ? '#eef0ff' : '#131b2e'};
-          display:flex;align-items:center;gap:10px">
-          <span class="material-symbols-outlined" style="font-size:20px">work</span> Placements</a>
+      <nav style="padding:12px 14px;display:flex;flex-direction:column;gap:4px;flex:1">
+        <a href="index.html" class="ci-mob-link" style="padding:10px 14px;border-radius:10px;text-decoration:none;
+          font-size:.875rem;font-weight:600;color:${isDark ? '#eef0ff' : '#131b2e'};
+          display:flex;align-items:center;gap:12px;min-height:44px">
+          <span class="material-symbols-outlined" style="font-size:22px">home</span> Home</a>
+        <a href="events.html" class="ci-mob-link" style="padding:10px 14px;border-radius:10px;text-decoration:none;
+          font-size:.875rem;font-weight:600;color:${isDark ? '#eef0ff' : '#131b2e'};
+          display:flex;align-items:center;gap:12px;min-height:44px">
+          <span class="material-symbols-outlined" style="font-size:22px">celebration</span> Events & Freshers</a>
+        <a href="index.html#placements" class="ci-mob-link" style="padding:10px 14px;border-radius:10px;text-decoration:none;
+          font-size:.875rem;font-weight:600;color:${isDark ? '#eef0ff' : '#131b2e'};
+          display:flex;align-items:center;gap:12px;min-height:44px">
+          <span class="material-symbols-outlined" style="font-size:22px">work</span> Placements</a>
+        <a href="companies.html" class="ci-mob-link" style="padding:10px 14px;border-radius:10px;text-decoration:none;
+          font-size:.875rem;font-weight:600;color:${isDark ? '#eef0ff' : '#131b2e'};
+          display:flex;align-items:center;gap:12px;min-height:44px">
+          <span class="material-symbols-outlined" style="font-size:22px">business</span> Corporate Directory</a>
+        <a href="about.html" class="ci-mob-link" style="padding:10px 14px;border-radius:10px;text-decoration:none;
+          font-size:.875rem;font-weight:600;color:${isDark ? '#eef0ff' : '#131b2e'};
+          display:flex;align-items:center;gap:12px;min-height:44px">
+          <span class="material-symbols-outlined" style="font-size:22px">info</span> About Ecosystem</a>
         ${isAuth ? `
-          <a href="${Auth.getDashboardUrl()}" style="padding:10px 12px;border-radius:8px;text-decoration:none;
-            font-size:.875rem;font-weight:600;color:#5300b7;background:${isDark ? '#250059' : '#ede9fe'};
-            display:flex;align-items:center;gap:10px">
-            <span class="material-symbols-outlined" style="font-size:20px">dashboard</span> My Dashboard</a>
+          <a href="${Auth.getDashboardUrl()}" class="ci-mob-link" style="padding:10px 14px;border-radius:10px;text-decoration:none;
+            font-size:.875rem;font-weight:700;color:#5300b7;background:${isDark ? '#250059' : '#ede9fe'};
+            display:flex;align-items:center;gap:12px;min-height:44px">
+            <span class="material-symbols-outlined" style="font-size:22px">dashboard</span> My Dashboard</a>
         ` : ''}
         <div style="border-top:1px solid ${isDark ? '#283044' : '#e2e8f0'};margin:8px 0"></div>
-        <div style="font-size:.6875rem;text-transform:uppercase;letter-spacing:.06em;font-weight:700;
-          color:${isDark ? '#7b7486' : '#4a4455'};padding:4px 12px">Portals</div>
-        <a href="student.html" style="padding:10px 12px;border-radius:8px;text-decoration:none;
+        <div style="font-size:.6875rem;text-transform:uppercase;letter-spacing:.08em;font-weight:700;
+          color:${isDark ? '#94a3b8' : '#64748b'};padding:4px 14px">Institutional Portals</div>
+        <a href="student.html" class="ci-mob-link" style="padding:10px 14px;border-radius:10px;text-decoration:none;
           font-size:.875rem;font-weight:500;color:${isDark ? '#eef0ff' : '#131b2e'};
-          display:flex;align-items:center;gap:10px">
-          <span class="material-symbols-outlined" style="font-size:20px">school</span> Student Portal</a>
-        <a href="admin.html" style="padding:10px 12px;border-radius:8px;text-decoration:none;
+          display:flex;align-items:center;gap:12px;min-height:44px">
+          <span class="material-symbols-outlined" style="font-size:22px">school</span> Student Portal</a>
+        <a href="faculty.html" class="ci-mob-link" style="padding:10px 14px;border-radius:10px;text-decoration:none;
           font-size:.875rem;font-weight:500;color:${isDark ? '#eef0ff' : '#131b2e'};
-          display:flex;align-items:center;gap:10px">
-          <span class="material-symbols-outlined" style="font-size:20px">admin_panel_settings</span> Admin Console</a>
-        <a href="company.html" style="padding:10px 12px;border-radius:8px;text-decoration:none;
+          display:flex;align-items:center;gap:12px;min-height:44px">
+          <span class="material-symbols-outlined" style="font-size:22px">badge</span> Faculty Portal</a>
+        <a href="placement.html" class="ci-mob-link" style="padding:10px 14px;border-radius:10px;text-decoration:none;
           font-size:.875rem;font-weight:500;color:${isDark ? '#eef0ff' : '#131b2e'};
-          display:flex;align-items:center;gap:10px">
-          <span class="material-symbols-outlined" style="font-size:20px">apartment</span> Recruiter Hub</a>
+          display:flex;align-items:center;gap:12px;min-height:44px">
+          <span class="material-symbols-outlined" style="font-size:22px">work_history</span> Placement Officer</a>
+        <a href="coordinator.html" class="ci-mob-link" style="padding:10px 14px;border-radius:10px;text-decoration:none;
+          font-size:.875rem;font-weight:500;color:${isDark ? '#eef0ff' : '#131b2e'};
+          display:flex;align-items:center;gap:12px;min-height:44px">
+          <span class="material-symbols-outlined" style="font-size:22px">celebration</span> Coordinator Hub</a>
+        <a href="admin.html" class="ci-mob-link" style="padding:10px 14px;border-radius:10px;text-decoration:none;
+          font-size:.875rem;font-weight:500;color:${isDark ? '#eef0ff' : '#131b2e'};
+          display:flex;align-items:center;gap:12px;min-height:44px">
+          <span class="material-symbols-outlined" style="font-size:22px">admin_panel_settings</span> Admin Console</a>
+        <a href="company.html" class="ci-mob-link" style="padding:10px 14px;border-radius:10px;text-decoration:none;
+          font-size:.875rem;font-weight:500;color:${isDark ? '#eef0ff' : '#131b2e'};
+          display:flex;align-items:center;gap:12px;min-height:44px">
+          <span class="material-symbols-outlined" style="font-size:22px">apartment</span> Recruiter Hub</a>
       </nav>
       <div style="padding:16px 20px;border-top:1px solid ${isDark ? '#283044' : '#e2e8f0'}">
         ${isAuth ? `
-          <button onclick="Auth.logout()" style="width:100%;padding:10px;border-radius:8px;
+          <button onclick="Auth.logout()" style="width:100%;padding:12px;border-radius:10px;
             background:${isDark ? '#1e293b' : '#fef2f2'};border:none;cursor:pointer;
             font-size:.875rem;font-weight:600;color:#ba1a1a;display:flex;align-items:center;
-            justify-content:center;gap:8px">
-            <span class="material-symbols-outlined" style="font-size:18px">logout</span> Sign Out</button>
+            justify-content:center;gap:8px;min-height:44px">
+            <span class="material-symbols-outlined" style="font-size:20px">logout</span> Sign Out</button>
         ` : `
-          <a href="login.html" style="display:block;text-align:center;padding:10px;border-radius:8px;
-            background:#5300b7;color:#fff;text-decoration:none;font-weight:600;font-size:.875rem">
-            Sign In</a>
+          <a href="login.html" class="ci-mob-link" style="display:flex;align-items:center;justify-content:center;
+            padding:12px;border-radius:10px;background:#5300b7;color:#fff;text-decoration:none;font-weight:600;
+            font-size:.875rem;min-height:44px">
+            Sign In / Register</a>
         `}
       </div>`;
 
     document.body.appendChild(overlay);
     document.body.appendChild(drawer);
     drawer.querySelector('#ci-mobile-close')?.addEventListener('click', close);
+
+    // Auto-close drawer on link navigation
+    drawer.querySelectorAll('.ci-mob-link').forEach(link => {
+      link.addEventListener('click', () => {
+        close();
+      });
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && isOpen) {
+        close();
+      }
+    });
   }
 
   function open() {
@@ -910,30 +949,33 @@ const MobileMenu = (() => {
     if (!isOpen) return;
     isOpen = false;
     document.body.style.overflow = '';
-    overlay.style.opacity = '0'; overlay.style.visibility = 'hidden';
-    drawer.style.transform = 'translateX(100%)';
+    if (overlay) { overlay.style.opacity = '0'; overlay.style.visibility = 'hidden'; }
+    if (drawer) { drawer.style.transform = 'translateX(100%)'; }
   }
 
   function addHamburger() {
+    // If the page already has a portal sidebar, skip header hamburger for main site drawer
+    if (document.querySelector('aside')) return;
+
     const header = document.querySelector('header');
     if (!header) return;
-    // Check if hamburger already exists
     if (header.querySelector('#ci-hamburger')) return;
 
     const btn = document.createElement('button');
     btn.id = 'ci-hamburger';
-    btn.setAttribute('aria-label', 'Open menu');
+    btn.setAttribute('aria-label', 'Open navigation menu');
     btn.className = 'lg:hidden';
     Object.assign(btn.style, {
       background: 'none', border: 'none', cursor: 'pointer', padding: '8px',
       display: 'none', alignItems: 'center', justifyContent: 'center',
-      color: 'inherit', order: '99'
+      color: 'inherit', order: '99', minHeight: '40px', minWidth: '40px'
     });
     btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:24px">menu</span>';
     btn.addEventListener('click', open);
 
     // Insert into header actions area
-    const actionsDiv = header.querySelector('.flex.items-center.gap-space-sm.shrink-0');
+    const actionsDiv = header.querySelector('.flex.items-center.gap-space-sm.shrink-0') ||
+                       header.querySelector('.flex.items-center.gap-space-sm');
     if (actionsDiv) {
       actionsDiv.prepend(btn);
     }
@@ -952,6 +994,120 @@ const MobileMenu = (() => {
   }
 
   return { open, close, addHamburger };
+})();
+
+/* ═══════════════════════════════════════════
+   5B. PORTAL SIDEBAR MANAGER (Auto Off-Canvas)
+   ═══════════════════════════════════════════ */
+const SidebarManager = (() => {
+  let isSidebarOpen = false;
+  let overlay = null;
+
+  function getOverlay() {
+    if (!overlay) {
+      overlay = document.getElementById('ci-sidebar-backdrop');
+      if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'ci-sidebar-backdrop';
+        overlay.addEventListener('click', close);
+        document.body.appendChild(overlay);
+      }
+    }
+    return overlay;
+  }
+
+  function open() {
+    const aside = document.querySelector('aside');
+    if (!aside) return;
+    isSidebarOpen = true;
+    aside.classList.add('ci-sidebar-open');
+    getOverlay().classList.add('active');
+    document.body.style.overflow = 'hidden';
+    const toggleBtn = document.getElementById('ci-sidebar-toggle');
+    if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'true');
+  }
+
+  function close() {
+    const aside = document.querySelector('aside');
+    if (!aside) return;
+    isSidebarOpen = false;
+    aside.classList.remove('ci-sidebar-open');
+    if (overlay) overlay.classList.remove('active');
+    document.body.style.overflow = '';
+    const toggleBtn = document.getElementById('ci-sidebar-toggle');
+    if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'false');
+  }
+
+  function toggle() {
+    if (isSidebarOpen) close();
+    else open();
+  }
+
+  function init() {
+    const aside = document.querySelector('aside');
+    if (!aside) return;
+
+    // Ensure portal sidebar class is set
+    aside.classList.add('ci-portal-sidebar');
+
+    // Create / find sidebar toggle button in header
+    const header = document.querySelector('header');
+    if (header && !document.getElementById('ci-sidebar-toggle')) {
+      const toggleBtn = document.createElement('button');
+      toggleBtn.id = 'ci-sidebar-toggle';
+      toggleBtn.type = 'button';
+      toggleBtn.className = 'lg:hidden p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors flex items-center justify-center cursor-pointer mr-2 shrink-0';
+      toggleBtn.setAttribute('aria-label', 'Open navigation menu');
+      toggleBtn.setAttribute('aria-expanded', 'false');
+      toggleBtn.innerHTML = '<span class="material-symbols-outlined text-[24px]">menu</span>';
+      toggleBtn.addEventListener('click', toggle);
+
+      // Place at start of header
+      const leftCluster = header.querySelector('.flex.items-center.gap-space-md') ||
+                          header.querySelector('.flex.items-center.gap-space-sm') ||
+                          header.firstElementChild;
+      if (leftCluster) {
+        leftCluster.prepend(toggleBtn);
+      }
+    }
+
+    // Add close button to sidebar for mobile users
+    const sidebarHeader = aside.querySelector('.h-16') || aside.firstElementChild;
+    if (sidebarHeader && !sidebarHeader.querySelector('.ci-sidebar-close-btn')) {
+      const closeBtn = document.createElement('button');
+      closeBtn.type = 'button';
+      closeBtn.className = 'ci-sidebar-close-btn lg:hidden ml-auto p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors flex items-center justify-center cursor-pointer';
+      closeBtn.setAttribute('aria-label', 'Close sidebar');
+      closeBtn.innerHTML = '<span class="material-symbols-outlined text-[20px]">close</span>';
+      closeBtn.addEventListener('click', close);
+      sidebarHeader.appendChild(closeBtn);
+    }
+
+    // Close drawer when clicking any link inside sidebar on mobile
+    aside.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth < 1024) {
+          close();
+        }
+      });
+    });
+
+    // Escape key to close
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && isSidebarOpen) {
+        close();
+      }
+    });
+
+    // Auto close on window resize past 1024px
+    window.addEventListener('resize', () => {
+      if (window.innerWidth >= 1024 && isSidebarOpen) {
+        close();
+      }
+    });
+  }
+
+  return { init, open, close, toggle };
 })();
 
 /* ═══════════════════════════════════════════
@@ -1646,6 +1802,8 @@ document.addEventListener('DOMContentLoaded', () => {
   GlobalSearch.init();
   // Add mobile hamburger
   MobileMenu.addHamburger();
+  // Wire portal sidebar manager
+  SidebarManager.init();
   // Add skip-to-content link
   if (!document.querySelector('.ci-skip-link')) {
     const skip = document.createElement('a');
@@ -1682,6 +1840,7 @@ window.CampusInn = {
   HomepageApply,
   Toast,
   MobileMenu,
+  SidebarManager,
   FormUtils,
   get API() { return window.CampusInnAPI; },
   get DevMock() { return window.CampusInnDevMock; }

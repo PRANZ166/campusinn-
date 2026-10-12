@@ -8,8 +8,9 @@
     "start": "node serve.js",
     "dev": "node serve.js",
     "serve": "node serve.js",
-    "test": "node verify.js",
-    "verify": "node verify.js"
+    "test": "node verify.js && node verify-responsive.js",
+    "test:responsive": "node verify-responsive.js",
+    "verify": "node verify.js && node verify-responsive.js"
   },
   "keywords": [
     "campus",

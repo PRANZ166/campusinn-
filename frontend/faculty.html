@@ -2,7 +2,7 @@
 <script src="js/api.js"></script>
 <script src="js/shared.js"></script></head>
 <body class="bg-surface font-body-md text-body-md text-on-surface antialiased">
-<aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-low shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-50 flex flex-col justify-between">
+<aside class="ci-portal-sidebar fixed left-0 top-0 h-full w-72 bg-surface-container-low shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-50 flex flex-col justify-between -translate-x-full lg:translate-x-0 transition-transform duration-300">
   <div class="flex flex-col">
     <div class="h-16 px-space-md flex items-center gap-space-sm bg-surface-container">
       <div class="w-9 h-9 rounded-lg bg-primary flex items-center justify-center text-on-primary font-headline-sm text-headline-sm font-bold">C</div>
@@ -60,8 +60,8 @@
     </div>
   </div>
 </aside>
-<div class="pl-72">
-  <header class="fixed top-0 left-72 right-0 h-16 bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 px-space-lg flex items-center justify-between">
+<div class="pl-0 lg:pl-72 ci-portal-content min-h-screen">
+  <header class="fixed top-0 left-0 lg:left-72 right-0 h-16 bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 px-4 sm:px-space-lg flex items-center justify-between ci-portal-header">
     <div class="flex items-center gap-space-md">
       <a class="flex items-center gap-space-xs text-on-surface hover:text-primary transition-colors" href="index.html">
         <span class="font-headline-sm text-headline-sm font-bold tracking-tight">Campus Inn+</span>
