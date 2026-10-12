@@ -69,8 +69,41 @@ async function testConnection() {
     console.log('[DB] Connected to PostgreSQL at', res.rows[0].server_time);
     return true;
   } catch (err) {
-    console.error('[DB] Connection failed:', err.message);
+    const reason = err.code || err.message || (err.errors && err.errors[0] && err.errors[0].message) || 'Service offline';
+    console.error(`[DB] Connection failed (${reason})`);
     return false;
+  }
+}
+
+/**
+ * Verify presence of required database tables
+ */
+async function verifyRequiredTables() {
+  const REQUIRED_TABLES = [
+    'users',
+    'student_profiles',
+    'companies',
+    'job_postings',
+    'applications',
+    'events',
+    'notifications',
+    '_migrations',
+  ];
+  try {
+    const res = await pool.query(
+      `SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'`
+    );
+    const existingTables = new Set(res.rows.map(r => r.table_name));
+    const missing = REQUIRED_TABLES.filter(t => !existingTables.has(t));
+    return {
+      allPresent: missing.length === 0,
+      existingCount: existingTables.size,
+      missing,
+      tables: Array.from(existingTables),
+    };
+  } catch (err) {
+    console.error('[DB] Table verification query failed:', err.message);
+    return { allPresent: false, error: err.message, missing: REQUIRED_TABLES };
   }
 }
 
@@ -78,4 +111,4 @@ async function closePool() {
   await pool.end();
 }
 
-module.exports = { pool, query, getClient, transaction, testConnection, closePool };
+module.exports = { pool, query, getClient, transaction, testConnection, verifyRequiredTables, closePool };

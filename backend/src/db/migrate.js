@@ -7,6 +7,8 @@
  * SAFETY: Uses IF NOT EXISTS — safe to re-run.
  * NEVER drops or truncates existing tables.
  */
+const fs = require('fs');
+const path = require('path');
 const { pool } = require('./pool');
 
 const MIGRATION_SQL = `
@@ -545,11 +547,11 @@ async function runMigration() {
   const client = await pool.connect();
   try {
     // Check if this migration has already been applied
-    await client.query(\`CREATE TABLE IF NOT EXISTS _migrations (
+    await client.query(`CREATE TABLE IF NOT EXISTS _migrations (
       id SERIAL PRIMARY KEY,
       name VARCHAR(255) NOT NULL UNIQUE,
       applied_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-    )\`);
+    )`);
 
     const migrationName = '001_initial_schema';
     const existing = await client.query(
@@ -558,13 +560,29 @@ async function runMigration() {
     );
 
     if (existing.rows.length > 0) {
-      console.log(\`[Migration] \${migrationName} already applied — skipping.\`);
+      console.log(`[Migration] ${migrationName} already applied — skipping.`);
       return;
     }
 
+    function getMigrationSql() {
+      const sqlFilePath = path.resolve(__dirname, '../../migrations/001_initial_schema.sql');
+      if (fs.existsSync(sqlFilePath)) {
+        try {
+          const fileContent = fs.readFileSync(sqlFilePath, 'utf8');
+          if (fileContent && fileContent.trim().length > 0) {
+            return fileContent;
+          }
+        } catch (readErr) {
+          console.warn('[Migration] Could not read SQL file from disk, using embedded schema:', readErr.message);
+        }
+      }
+      return MIGRATION_SQL;
+    }
+
     console.log('[Migration] Applying 001_initial_schema...');
+    const migrationSql = getMigrationSql();
     await client.query('BEGIN');
-    await client.query(MIGRATION_SQL);
+    await client.query(migrationSql);
     await client.query(
       'INSERT INTO _migrations (name) VALUES ($1)',
       [migrationName]
@@ -583,12 +601,14 @@ async function runMigration() {
 // Run directly if invoked as script
 if (require.main === module) {
   runMigration()
-    .then(() => {
+    .then(async () => {
       console.log('[Migration] Complete.');
+      await pool.end().catch(() => {});
       process.exit(0);
     })
-    .catch((err) => {
-      console.error('[Migration] Fatal error:', err);
+    .catch(async (err) => {
+      console.error('[Migration] Fatal error:', err.message || err);
+      await pool.end().catch(() => {});
       process.exit(1);
     });
 }

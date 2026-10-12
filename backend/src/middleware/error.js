@@ -18,10 +18,16 @@ function errorHandler(err, req, res, next) {
   }
 
   // Handle Database connection offline / refused
-  if (err.code === 'ECONNREFUSED' || (err.message && err.message.includes('ECONNREFUSED'))) {
+  const isDbOffline =
+    err.code === 'ECONNREFUSED' ||
+    err.code === 'ENOTFOUND' ||
+    err.code === 'ETIMEDOUT' ||
+    (err.message && (err.message.includes('ECONNREFUSED') || err.message.includes('Connection terminated')));
+
+  if (isDbOffline) {
     return res.status(503).json({
       success: false,
-      message: 'PostgreSQL database service is offline or unreachable at the configured DATABASE_URL (localhost:5432). Start the PostgreSQL service or update credentials in .env to restore database features.',
+      message: 'PostgreSQL database service is offline or unreachable at configured DATABASE_URL. Ensure database service is running and credentials are valid.',
       code: 'DATABASE_OFFLINE',
     });
   }

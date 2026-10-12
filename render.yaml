@@ -4,7 +4,7 @@ services:
     env: node
     plan: free
     buildCommand: cd backend && npm install
-    startCommand: cd backend && npm run start
+    startCommand: cd backend && npm run migrate && npm run start
     healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
@@ -19,6 +19,8 @@ services:
         generateValue: true
       - key: JWT_EXPIRES_IN
         value: 24h
+      - key: COOKIE_SECRET
+        generateValue: true
 
 databases:
   - name: campus-inn-db
