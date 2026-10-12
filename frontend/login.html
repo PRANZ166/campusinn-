@@ -89,7 +89,7 @@
     </button>
     <button type="button" id="tabModeRegister" role="tab" aria-selected="false" class="px-5 py-2.5 rounded-lg font-semibold text-body-md transition-all text-secondary hover:text-on-surface flex items-center gap-2">
       <span class="material-symbols-outlined text-[18px]">person_add</span>
-      <span>Create Student Account</span>
+      <span>Create Account</span>
     </button>
   </div>
   <a href="index.html" class="inline-flex items-center gap-1.5 text-body-sm font-semibold text-secondary hover:text-primary transition-colors">
@@ -207,9 +207,9 @@
 
     <!-- Switch to Registration Link -->
     <div class="text-center pt-2">
-      <span class="text-body-sm text-secondary">New student? </span>
+      <span class="text-body-sm text-secondary">New to Campus Inn+? </span>
       <button type="button" id="btnSwitchToReg" class="text-body-sm font-semibold text-primary hover:underline cursor-pointer">
-        Create Student Account
+        Create Account
       </button>
     </div>
   </form>
@@ -234,166 +234,462 @@
   </button>
 </div>
 
-<!-- SECTION 2: STUDENT SIGN-UP FORM VIEW -->
+<!-- SECTION 2: MULTI-ROLE REGISTRATION VIEW -->
 <div id="registerView" class="hidden pt-6">
   <div class="flex items-center justify-between pb-2">
     <div class="flex flex-col">
-      <h1 class="font-headline-lg text-headline-xl font-bold text-on-surface tracking-tight">Student Registration</h1>
-      <p class="font-body-md text-body-md text-secondary mt-1">
-        Enroll in MET Bhujbal Knowledge City central placement and academic ecosystem.
+      <h1 class="font-headline-lg text-headline-xl font-bold text-on-surface tracking-tight" id="regMainTitle">Create Campus Inn+ Account</h1>
+      <p class="font-body-md text-body-md text-secondary mt-1" id="regMainSubtitle">
+        Select your intended account type to register for the unified institutional ecosystem.
       </p>
     </div>
   </div>
 
-  <form class="mt-6 flex flex-col gap-6" id="studentRegisterForm" novalidate>
-    <!-- Group A: Personal Information -->
-    <div class="flex flex-col gap-3 p-4 bg-surface-container-low rounded-xl border border-outline-variant/30">
-      <div class="flex items-center gap-2">
-        <span class="material-symbols-outlined text-primary text-[20px]">person</span>
-        <span class="font-label-md text-label-md uppercase font-bold text-primary tracking-wider">1. Personal Information</span>
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-        <div class="flex flex-col gap-1">
-          <label class="font-label-md text-label-md text-on-surface" for="regFirstName">First Name *</label>
-          <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regFirstName" placeholder="e.g. Priya" required type="text">
-        </div>
-        <div class="flex flex-col gap-1">
-          <label class="font-label-md text-label-md text-on-surface" for="regLastName">Last Name *</label>
-          <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regLastName" placeholder="e.g. Sharma" required type="text">
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-        <div class="flex flex-col gap-1">
-          <label class="font-label-md text-label-md text-on-surface" for="regEmail">Email Address *</label>
-          <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regEmail" placeholder="student@met.edu" required type="email">
-        </div>
-        <div class="flex flex-col gap-1">
-          <label class="font-label-md text-label-md text-on-surface" for="regPhone">Phone Number *</label>
-          <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regPhone" placeholder="10-digit mobile (e.g. 9820123456)" required type="tel">
-        </div>
-      </div>
-    </div>
-
-    <!-- Group B: Academic Information -->
-    <div class="flex flex-col gap-3 p-4 bg-surface-container-low rounded-xl border border-outline-variant/30">
-      <div class="flex items-center gap-2">
-        <span class="material-symbols-outlined text-primary text-[20px]">school</span>
-        <span class="font-label-md text-label-md uppercase font-bold text-primary tracking-wider">2. Academic Information</span>
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-        <div class="flex flex-col gap-1">
-          <label class="font-label-md text-label-md text-on-surface" for="regCollege">College / Institute *</label>
-          <select class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regCollege" required>
-            <option value="MET Institute of Engineering, Nashik" selected>MET Institute of Engineering, Nashik</option>
-            <option value="MET Institute of Technology (Polytechnic), Nashik">MET Institute of Technology (Polytechnic), Nashik</option>
-            <option value="MET Institute of Management, Nashik">MET Institute of Management, Nashik</option>
-            <option value="MET Institute of Pharmacy, Nashik">MET Institute of Pharmacy, Nashik</option>
-          </select>
-        </div>
-        <div class="flex flex-col gap-1">
-          <label class="font-label-md text-label-md text-on-surface" for="regRollNumber">Roll Number / PRN *</label>
-          <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm uppercase" id="regRollNumber" placeholder="e.g. 2022CS8901" required type="text">
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-        <div class="flex flex-col gap-1">
-          <label class="font-label-md text-label-md text-on-surface" for="regDepartment">Department *</label>
-          <select class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regDepartment" required>
-            <option value="Computer Engineering" selected>Computer Engineering</option>
-            <option value="Information Technology">Information Technology</option>
-            <option value="Artificial Intelligence &amp; Data Science">Artificial Intelligence &amp; Data Science</option>
-            <option value="Electronics &amp; Telecommunication">Electronics &amp; Telecommunication</option>
-            <option value="Mechanical Engineering">Mechanical Engineering</option>
-            <option value="Civil Engineering">Civil Engineering</option>
-            <option value="Master of Computer Applications">Master of Computer Applications (MCA)</option>
-            <option value="Master of Business Administration">Master of Business Administration (MBA)</option>
-          </select>
-        </div>
-        <div class="flex flex-col gap-1">
-          <label class="font-label-md text-label-md text-on-surface" for="regProgram">Course / Program *</label>
-          <select class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regProgram" required>
-            <option value="B.Tech CSE" selected>B.Tech / B.E.</option>
-            <option value="MCA">MCA</option>
-            <option value="BCA">BCA</option>
-            <option value="M.Tech">M.Tech</option>
-            <option value="MBA">MBA</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-        <div class="flex flex-col gap-1">
-          <label class="font-label-md text-label-md text-on-surface" for="regYear">Academic Year *</label>
-          <select class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regYear" required>
-            <option value="1st Year (2025-2026)">1st Year (2025-2026)</option>
-            <option value="2nd Year (2024-2025)">2nd Year (2024-2025)</option>
-            <option value="3rd Year (2023-2024)">3rd Year (2023-2024)</option>
-            <option value="Final Year (2022-2026)" selected>Final Year (2022-2026)</option>
-          </select>
-        </div>
-        <div class="flex flex-col gap-1">
-          <label class="font-label-md text-label-md text-on-surface" for="regSemester">Semester *</label>
-          <select class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regSemester" required>
-            <option value="Semester 1">Semester 1</option>
-            <option value="Semester 2">Semester 2</option>
-            <option value="Semester 3">Semester 3</option>
-            <option value="Semester 4">Semester 4</option>
-            <option value="Semester 5">Semester 5</option>
-            <option value="Semester 6">Semester 6</option>
-            <option value="Semester 7" selected>Semester 7</option>
-            <option value="Semester 8">Semester 8</option>
-          </select>
-        </div>
-      </div>
-    </div>
-
-    <!-- Group C: Account Security -->
-    <div class="flex flex-col gap-3 p-4 bg-surface-container-low rounded-xl border border-outline-variant/30">
-      <div class="flex items-center gap-2">
-        <span class="material-symbols-outlined text-primary text-[20px]">lock</span>
-        <span class="font-label-md text-label-md uppercase font-bold text-primary tracking-wider">3. Account Security</span>
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-        <div class="flex flex-col gap-1">
-          <label class="font-label-md text-label-md text-on-surface" for="regPassword">Password *</label>
-          <div class="relative flex items-center">
-            <input class="w-full px-3.5 pr-10 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regPassword" placeholder="Min. 8 characters" required type="password">
-            <button aria-label="Toggle password" class="absolute right-2.5 text-secondary hover:text-on-surface p-1 rounded" id="toggleRegPasswordBtn" type="button">
-              <span class="material-symbols-outlined text-[18px]">visibility</span>
-            </button>
-          </div>
-          <span class="text-[11px] text-secondary">Must contain both letters and numbers.</span>
-        </div>
-        <div class="flex flex-col gap-1">
-          <label class="font-label-md text-label-md text-on-surface" for="regConfirmPassword">Confirm Password *</label>
-          <div class="relative flex items-center">
-            <input class="w-full px-3.5 pr-10 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regConfirmPassword" placeholder="Re-type password" required type="password">
-            <button aria-label="Toggle confirm password" class="absolute right-2.5 text-secondary hover:text-on-surface p-1 rounded" id="toggleRegConfirmBtn" type="button">
-              <span class="material-symbols-outlined text-[18px]">visibility</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Registration Submit CTA -->
-    <button class="w-full py-4 px-6 rounded-xl bg-primary text-white font-semibold text-body-md shadow-md hover:bg-primary-container transition-all duration-200 flex items-center justify-center gap-2 group active:scale-[0.99]" id="regSubmitBtn" type="submit">
-      <span class="font-semibold">Complete Student Registration</span>
-      <span class="material-symbols-outlined text-[20px] transition-transform group-hover:translate-x-1">check</span>
-    </button>
-
-    <div class="text-center">
-      <span class="text-body-sm text-secondary">Already have an account? </span>
-      <button type="button" id="btnSwitchToLogin" class="text-body-sm font-semibold text-primary hover:underline cursor-pointer">
-        Sign In here
+  <!-- Role Selector for Registration -->
+  <div class="mt-4 flex flex-col gap-2">
+    <span class="font-label-caps text-label-caps uppercase text-secondary tracking-wider">
+      Select Account Type to Register
+    </span>
+    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="regRoleTabGroup">
+      <button class="reg-role-tab flex items-center justify-center sm:justify-start gap-2.5 px-3.5 py-2.5 rounded-xl text-left transition-all font-semibold bg-primary text-white shadow-sm ring-2 ring-primary ring-offset-2" data-reg-role="student" type="button">
+        <span class="material-symbols-outlined text-[20px]">school</span>
+        <span class="font-label-md text-label-md truncate">Student</span>
+      </button>
+      <button class="reg-role-tab flex items-center justify-center sm:justify-start gap-2.5 px-3.5 py-2.5 rounded-xl text-left transition-all font-semibold bg-surface-container text-on-surface hover:bg-surface-variant" data-reg-role="faculty" type="button">
+        <span class="material-symbols-outlined text-[20px]">badge</span>
+        <span class="font-label-md text-label-md truncate">Faculty</span>
+      </button>
+      <button class="reg-role-tab flex items-center justify-center sm:justify-start gap-2.5 px-3.5 py-2.5 rounded-xl text-left transition-all font-semibold bg-surface-container text-on-surface hover:bg-surface-variant" data-reg-role="coordinator" type="button">
+        <span class="material-symbols-outlined text-[20px]">celebration</span>
+        <span class="font-label-md text-label-md truncate">Clubs &amp; Events</span>
+      </button>
+      <button class="reg-role-tab flex items-center justify-center sm:justify-start gap-2.5 px-3.5 py-2.5 rounded-xl text-left transition-all font-semibold bg-surface-container text-on-surface hover:bg-surface-variant" data-reg-role="recruiter" type="button">
+        <span class="material-symbols-outlined text-[20px]">apartment</span>
+        <span class="font-label-md text-label-md truncate">Recruiter / HR</span>
+      </button>
+      <button class="reg-role-tab flex items-center justify-center sm:justify-start gap-2.5 px-3.5 py-2.5 rounded-xl text-left transition-all font-semibold bg-surface-container text-on-surface hover:bg-surface-variant" data-reg-role="admin" type="button">
+        <span class="material-symbols-outlined text-[20px]">admin_panel_settings</span>
+        <span class="font-label-md text-label-md truncate">College Admin</span>
+      </button>
+      <button class="reg-role-tab flex items-center justify-center sm:justify-start gap-2.5 px-3.5 py-2.5 rounded-xl text-left transition-all font-semibold bg-surface-container text-on-surface hover:bg-surface-variant" data-reg-role="tpo" type="button">
+        <span class="material-symbols-outlined text-[20px]">work</span>
+        <span class="font-label-md text-label-md truncate">Placement</span>
       </button>
     </div>
-  </form>
+  </div>
+
+  <!-- PANEL 1: STUDENT REGISTRATION FORM -->
+  <div id="panelRegStudent" class="mt-6">
+    <form class="flex flex-col gap-6" id="studentRegisterForm" novalidate>
+      <!-- Group A: Personal Information -->
+      <div class="flex flex-col gap-3 p-4 bg-surface-container-low rounded-xl border border-outline-variant/30">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary text-[20px]">person</span>
+          <span class="font-label-md text-label-md uppercase font-bold text-primary tracking-wider">1. Personal Information</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div class="flex flex-col gap-1">
+            <label class="font-label-md text-label-md text-on-surface" for="regFirstName">First Name *</label>
+            <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regFirstName" placeholder="e.g. Priya" required type="text">
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="font-label-md text-label-md text-on-surface" for="regLastName">Last Name *</label>
+            <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regLastName" placeholder="e.g. Sharma" required type="text">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div class="flex flex-col gap-1">
+            <label class="font-label-md text-label-md text-on-surface" for="regEmail">Institutional Email Address *</label>
+            <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regEmail" placeholder="student@met.edu" required type="email">
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="font-label-md text-label-md text-on-surface" for="regPhone">Phone Number *</label>
+            <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regPhone" placeholder="10-digit mobile (e.g. 9820123456)" required type="tel">
+          </div>
+        </div>
+      </div>
+
+      <!-- Group B: Academic Information -->
+      <div class="flex flex-col gap-3 p-4 bg-surface-container-low rounded-xl border border-outline-variant/30">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary text-[20px]">school</span>
+          <span class="font-label-md text-label-md uppercase font-bold text-primary tracking-wider">2. Academic Information</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div class="flex flex-col gap-1">
+            <label class="font-label-md text-label-md text-on-surface" for="regCollege">College / Institute *</label>
+            <select class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regCollege" required>
+              <option value="MET Institute of Engineering, Nashik" selected>MET Institute of Engineering, Nashik</option>
+              <option value="MET Institute of Technology (Polytechnic), Nashik">MET Institute of Technology (Polytechnic), Nashik</option>
+              <option value="MET Institute of Management, Nashik">MET Institute of Management, Nashik</option>
+              <option value="MET Institute of Pharmacy, Nashik">MET Institute of Pharmacy, Nashik</option>
+            </select>
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="font-label-md text-label-md text-on-surface" for="regRollNumber">Roll Number / PRN *</label>
+            <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm uppercase" id="regRollNumber" placeholder="e.g. 2022CS8901" required type="text">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div class="flex flex-col gap-1">
+            <label class="font-label-md text-label-md text-on-surface" for="regDepartment">Department *</label>
+            <select class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regDepartment" required>
+              <option value="Computer Engineering" selected>Computer Engineering</option>
+              <option value="Information Technology">Information Technology</option>
+              <option value="Artificial Intelligence &amp; Data Science">Artificial Intelligence &amp; Data Science</option>
+              <option value="Electronics &amp; Telecommunication">Electronics &amp; Telecommunication</option>
+              <option value="Mechanical Engineering">Mechanical Engineering</option>
+              <option value="Civil Engineering">Civil Engineering</option>
+              <option value="Master of Computer Applications">Master of Computer Applications (MCA)</option>
+              <option value="Master of Business Administration">Master of Business Administration (MBA)</option>
+            </select>
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="font-label-md text-label-md text-on-surface" for="regProgram">Course / Program *</label>
+            <select class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regProgram" required>
+              <option value="B.Tech CSE" selected>B.Tech / B.E.</option>
+              <option value="MCA">MCA</option>
+              <option value="BCA">BCA</option>
+              <option value="M.Tech">M.Tech</option>
+              <option value="MBA">MBA</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div class="flex flex-col gap-1">
+            <label class="font-label-md text-label-md text-on-surface" for="regYear">Academic Year *</label>
+            <select class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regYear" required>
+              <option value="1st Year (2025-2026)">1st Year (2025-2026)</option>
+              <option value="2nd Year (2024-2025)">2nd Year (2024-2025)</option>
+              <option value="3rd Year (2023-2024)">3rd Year (2023-2024)</option>
+              <option value="Final Year (2022-2026)" selected>Final Year (2022-2026)</option>
+            </select>
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="font-label-md text-label-md text-on-surface" for="regSemester">Semester *</label>
+            <select class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regSemester" required>
+              <option value="Semester 1">Semester 1</option>
+              <option value="Semester 2">Semester 2</option>
+              <option value="Semester 3">Semester 3</option>
+              <option value="Semester 4">Semester 4</option>
+              <option value="Semester 5">Semester 5</option>
+              <option value="Semester 6">Semester 6</option>
+              <option value="Semester 7" selected>Semester 7</option>
+              <option value="Semester 8">Semester 8</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Group C: Account Security -->
+      <div class="flex flex-col gap-3 p-4 bg-surface-container-low rounded-xl border border-outline-variant/30">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary text-[20px]">lock</span>
+          <span class="font-label-md text-label-md uppercase font-bold text-primary tracking-wider">3. Account Security</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div class="flex flex-col gap-1">
+            <label class="font-label-md text-label-md text-on-surface" for="regPassword">Password *</label>
+            <div class="relative flex items-center">
+              <input class="w-full px-3.5 pr-10 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regPassword" placeholder="Min. 8 characters" required type="password">
+              <button aria-label="Toggle password" class="absolute right-2.5 text-secondary hover:text-on-surface p-1 rounded" id="toggleRegPasswordBtn" type="button">
+                <span class="material-symbols-outlined text-[18px]">visibility</span>
+              </button>
+            </div>
+            <span class="text-[11px] text-secondary">Must contain both letters and numbers.</span>
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="font-label-md text-label-md text-on-surface" for="regConfirmPassword">Confirm Password *</label>
+            <div class="relative flex items-center">
+              <input class="w-full px-3.5 pr-10 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regConfirmPassword" placeholder="Re-type password" required type="password">
+              <button aria-label="Toggle confirm password" class="absolute right-2.5 text-secondary hover:text-on-surface p-1 rounded" id="toggleRegConfirmBtn" type="button">
+                <span class="material-symbols-outlined text-[18px]">visibility</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Registration Submit CTA -->
+      <button class="w-full py-4 px-6 rounded-xl bg-primary text-white font-semibold text-body-md shadow-md hover:bg-primary-container transition-all duration-200 flex items-center justify-center gap-2 group active:scale-[0.99]" id="regSubmitBtn" type="submit">
+        <span class="font-semibold">Complete Student Registration</span>
+        <span class="material-symbols-outlined text-[20px] transition-transform group-hover:translate-x-1">check</span>
+      </button>
+    </form>
+  </div>
+
+  <!-- PANEL 2: FACULTY REGISTRATION FORM -->
+  <div id="panelRegFaculty" class="mt-6 hidden">
+    <!-- Notice Banner -->
+    <div class="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 mb-6 flex items-start gap-3">
+      <span class="material-symbols-outlined text-amber-600 text-[22px] shrink-0">verified_user</span>
+      <div class="text-body-sm leading-relaxed">
+        <strong class="font-semibold text-amber-950 block">Institutional Verification Required</strong>
+        Multiple faculty members can register individual accounts with their own institutional email addresses and employee IDs. Each registration is created with status <em>Pending</em> and requires administrator approval before portal access is activated.
+      </div>
+    </div>
+
+    <form class="flex flex-col gap-6" id="facultyRegisterForm" novalidate>
+      <div class="flex flex-col gap-3 p-4 bg-surface-container-low rounded-xl border border-outline-variant/30">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary text-[20px]">badge</span>
+          <span class="font-label-md text-label-md uppercase font-bold text-primary tracking-wider">1. Faculty Profile</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div class="flex flex-col gap-1">
+            <label class="font-label-md text-label-md text-on-surface" for="regFacFullName">Full Name *</label>
+            <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regFacFullName" placeholder="e.g. Dr. Rajesh Deshmukh" required type="text">
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="font-label-md text-label-md text-on-surface" for="regFacEmployeeId">Employee ID *</label>
+            <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm uppercase" id="regFacEmployeeId" placeholder="e.g. FAC042" required type="text">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div class="flex flex-col gap-1">
+            <label class="font-label-md text-label-md text-on-surface" for="regFacEmail">Institutional Email (@met.edu) *</label>
+            <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regFacEmail" placeholder="dr.deshmukh@met.edu" required type="email">
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="font-label-md text-label-md text-on-surface" for="regFacPhone">Mobile / Contact Phone</label>
+            <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regFacPhone" placeholder="10-digit mobile number" type="tel">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div class="flex flex-col gap-1">
+            <label class="font-label-md text-label-md text-on-surface" for="regFacDepartment">Academic Department *</label>
+            <select class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regFacDepartment" required>
+              <option value="Computer Engineering &amp; IT" selected>Computer Engineering &amp; IT</option>
+              <option value="Information Technology">Information Technology</option>
+              <option value="Mechanical Engineering">Mechanical Engineering</option>
+              <option value="Civil Engineering">Civil Engineering</option>
+              <option value="Electronics &amp; Telecommunication">Electronics &amp; Telecommunication</option>
+              <option value="Master of Computer Applications">MCA Department</option>
+              <option value="Management Studies">Management Studies</option>
+            </select>
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="font-label-md text-label-md text-on-surface" for="regFacDesignation">Designation *</label>
+            <select class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regFacDesignation" required>
+              <option value="Associate Professor &amp; Mentorship Lead" selected>Associate Professor &amp; Mentorship Lead</option>
+              <option value="Professor &amp; Head of Department">Professor &amp; Head of Department (HOD)</option>
+              <option value="Professor">Professor</option>
+              <option value="Assistant Professor">Assistant Professor</option>
+              <option value="Dean of Academics">Dean of Academics</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Account Security -->
+      <div class="flex flex-col gap-3 p-4 bg-surface-container-low rounded-xl border border-outline-variant/30">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary text-[20px]">lock</span>
+          <span class="font-label-md text-label-md uppercase font-bold text-primary tracking-wider">2. Account Password</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div class="flex flex-col gap-1">
+            <label class="font-label-md text-label-md text-on-surface" for="regFacPassword">Create Password *</label>
+            <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regFacPassword" placeholder="Min. 8 characters with numbers" required type="password">
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="font-label-md text-label-md text-on-surface" for="regFacConfirmPassword">Confirm Password *</label>
+            <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regFacConfirmPassword" placeholder="Re-type password" required type="password">
+          </div>
+        </div>
+      </div>
+
+      <button class="w-full py-4 px-6 rounded-xl bg-primary text-white font-semibold text-body-md shadow-md hover:bg-primary-container transition-all duration-200 flex items-center justify-center gap-2 group active:scale-[0.99]" id="regFacSubmitBtn" type="submit">
+        <span class="font-semibold">Submit Faculty Registration</span>
+        <span class="material-symbols-outlined text-[20px] transition-transform group-hover:translate-x-1">badge</span>
+      </button>
+    </form>
+  </div>
+
+  <!-- PANEL 3: COORDINATOR REGISTRATION FORM -->
+  <div id="panelRegCoordinator" class="mt-6 hidden">
+    <!-- Notice Banner -->
+    <div class="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 mb-6 flex items-start gap-3">
+      <span class="material-symbols-outlined text-amber-600 text-[22px] shrink-0">celebration</span>
+      <div class="text-body-sm leading-relaxed">
+        <strong class="font-semibold text-amber-950 block">Administrator Authorization Required</strong>
+        Event &amp; Club Coordinator access grants authorization to orchestrate campus hackathons, manage e-passes, and lead clubs. Registrations require approval by the College Administration before activation.
+      </div>
+    </div>
+
+    <form class="flex flex-col gap-6" id="coordinatorRegisterForm" novalidate>
+      <div class="flex flex-col gap-3 p-4 bg-surface-container-low rounded-xl border border-outline-variant/30">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary text-[20px]">group</span>
+          <span class="font-label-md text-label-md uppercase font-bold text-primary tracking-wider">1. Coordinator Details</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div class="flex flex-col gap-1">
+            <label class="font-label-md text-label-md text-on-surface" for="regCoordFullName">Full Name *</label>
+            <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regCoordFullName" placeholder="e.g. Prof. Anand Patil" required type="text">
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="font-label-md text-label-md text-on-surface" for="regCoordEmail">Institutional Email (@met.edu) *</label>
+            <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regCoordEmail" placeholder="coordinator@met.edu" required type="email">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div class="flex flex-col gap-1">
+            <label class="font-label-md text-label-md text-on-surface" for="regCoordDepartment">Academic Department *</label>
+            <select class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regCoordDepartment" required>
+              <option value="Central Student Activities Council" selected>Central Student Activities Council</option>
+              <option value="Computer Engineering">Computer Engineering</option>
+              <option value="Information Technology">Information Technology</option>
+              <option value="Mechanical Engineering">Mechanical Engineering</option>
+              <option value="Robotics &amp; Innovation Guild">Robotics &amp; Innovation Guild</option>
+            </select>
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="font-label-md text-label-md text-on-surface" for="regCoordClubName">Club / Society / Guild Name *</label>
+            <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regCoordClubName" placeholder="e.g. HackMET Innovation Guild, Cultural Club" required type="text">
+          </div>
+        </div>
+      </div>
+
+      <!-- Account Security -->
+      <div class="flex flex-col gap-3 p-4 bg-surface-container-low rounded-xl border border-outline-variant/30">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary text-[20px]">lock</span>
+          <span class="font-label-md text-label-md uppercase font-bold text-primary tracking-wider">2. Account Password</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div class="flex flex-col gap-1">
+            <label class="font-label-md text-label-md text-on-surface" for="regCoordPassword">Create Password *</label>
+            <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regCoordPassword" placeholder="Min. 8 characters with numbers" required type="password">
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="font-label-md text-label-md text-on-surface" for="regCoordConfirmPassword">Confirm Password *</label>
+            <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regCoordConfirmPassword" placeholder="Re-type password" required type="password">
+          </div>
+        </div>
+      </div>
+
+      <button class="w-full py-4 px-6 rounded-xl bg-primary text-white font-semibold text-body-md shadow-md hover:bg-primary-container transition-all duration-200 flex items-center justify-center gap-2 group active:scale-[0.99]" id="regCoordSubmitBtn" type="submit">
+        <span class="font-semibold">Submit Coordinator Registration</span>
+        <span class="material-symbols-outlined text-[20px] transition-transform group-hover:translate-x-1">celebration</span>
+      </button>
+    </form>
+  </div>
+
+  <!-- PANEL 4: RECRUITER REGISTRATION FORM -->
+  <div id="panelRegRecruiter" class="mt-6 hidden">
+    <!-- Notice Banner -->
+    <div class="p-4 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-900 mb-6 flex items-start gap-3">
+      <span class="material-symbols-outlined text-indigo-600 text-[22px] shrink-0">apartment</span>
+      <div class="text-body-sm leading-relaxed">
+        <strong class="font-semibold text-indigo-950 block">Corporate Partner Onboarding</strong>
+        Corporate recruiter registrations are vetted by the Central TPO Cell before candidate ATS access or job postings are activated. Looking for comprehensive drive scheduling? Visit the <a href="hr-register.html" class="underline font-semibold hover:text-primary">Corporate Registration Wizard</a>.
+      </div>
+    </div>
+
+    <form class="flex flex-col gap-6" id="recruiterRegisterForm" novalidate>
+      <div class="flex flex-col gap-3 p-4 bg-surface-container-low rounded-xl border border-outline-variant/30">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary text-[20px]">person_pin</span>
+          <span class="font-label-md text-label-md uppercase font-bold text-primary tracking-wider">1. Recruiter Information</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div class="flex flex-col gap-1">
+            <label class="font-label-md text-label-md text-on-surface" for="regRecFullName">Recruiter Full Name *</label>
+            <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regRecFullName" placeholder="e.g. Vikram Malhotra" required type="text">
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="font-label-md text-label-md text-on-surface" for="regRecEmail">Corporate Work Email *</label>
+            <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regRecEmail" placeholder="v.malhotra@company.com" required type="email">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div class="flex flex-col gap-1">
+            <label class="font-label-md text-label-md text-on-surface" for="regRecCompanyName">Company / Organization *</label>
+            <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regRecCompanyName" placeholder="e.g. Tata Consultancy Services" required type="text">
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="font-label-md text-label-md text-on-surface" for="regRecDesignation">Designation / Role *</label>
+            <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regRecDesignation" placeholder="e.g. Lead Talent Acquisition Partner" required type="text">
+          </div>
+        </div>
+      </div>
+
+      <!-- Account Security -->
+      <div class="flex flex-col gap-3 p-4 bg-surface-container-low rounded-xl border border-outline-variant/30">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary text-[20px]">lock</span>
+          <span class="font-label-md text-label-md uppercase font-bold text-primary tracking-wider">2. Account Password</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div class="flex flex-col gap-1">
+            <label class="font-label-md text-label-md text-on-surface" for="regRecPassword">Create Password *</label>
+            <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regRecPassword" placeholder="Min. 8 characters with numbers" required type="password">
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="font-label-md text-label-md text-on-surface" for="regRecConfirmPassword">Confirm Password *</label>
+            <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regRecConfirmPassword" placeholder="Re-type password" required type="password">
+          </div>
+        </div>
+      </div>
+
+      <button class="w-full py-4 px-6 rounded-xl bg-primary text-white font-semibold text-body-md shadow-md hover:bg-primary-container transition-all duration-200 flex items-center justify-center gap-2 group active:scale-[0.99]" id="regRecSubmitBtn" type="submit">
+        <span class="font-semibold">Submit Recruiter Registration</span>
+        <span class="material-symbols-outlined text-[20px] transition-transform group-hover:translate-x-1">apartment</span>
+      </button>
+    </form>
+  </div>
+
+  <!-- PANEL 5: PRIVILEGED ROLE RESTRICTION NOTICE (ADMIN & TPO) -->
+  <div id="panelRegPrivileged" class="mt-6 hidden">
+    <div class="p-6 rounded-2xl bg-surface-container-low border border-outline-variant/40 flex flex-col items-center text-center gap-4">
+      <div class="w-14 h-14 rounded-2xl bg-rose-100 text-rose-800 flex items-center justify-center shadow-sm">
+        <span class="material-symbols-outlined text-[32px]" id="privRoleIcon">admin_panel_settings</span>
+      </div>
+      <div>
+        <h3 class="font-headline-sm text-headline-sm font-bold text-on-surface" id="privRoleTitle">Privileged Institutional Access</h3>
+        <p class="font-body-md text-body-md text-secondary mt-1 max-w-lg leading-relaxed" id="privRoleMsg">
+          College Admin and Placement Officer roles carry enterprise administrative authority across the entire campus. To uphold institutional security and FERPA/DPDP regulatory compliance, these accounts cannot be self-registered by arbitrary users.
+        </p>
+      </div>
+      <div class="p-3.5 rounded-xl bg-surface-container text-body-sm text-on-surface-variant max-w-md border border-outline-variant/30 text-left flex items-start gap-2.5">
+        <span class="material-symbols-outlined text-primary text-[20px] shrink-0">info</span>
+        <span>Existing authorized officials should sign in directly. For new provisioning or credential recovery, contact the Dean of Academics or the Central IT Directorate.</span>
+      </div>
+      <div class="flex flex-col sm:flex-row items-center gap-3 w-full max-w-sm pt-2">
+        <button type="button" id="btnPrivilegedSwitchToLogin" class="w-full py-3 px-5 rounded-xl bg-primary text-white font-semibold text-body-md shadow-sm hover:bg-primary-container transition-all text-center cursor-pointer">
+          Sign In to Portal
+        </button>
+        <a href="index.html#faq" class="w-full py-3 px-5 rounded-xl bg-surface-container text-on-surface font-semibold text-body-md hover:bg-surface-variant transition-all text-center">
+          Contact IT Support
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Switch Back to Login Link -->
+  <div class="text-center pt-6">
+    <span class="text-body-sm text-secondary">Already have an account? </span>
+    <button type="button" id="btnSwitchToLogin" class="text-body-sm font-semibold text-primary hover:underline cursor-pointer">
+      Sign In here
+    </button>
+  </div>
 </div>
 
 </div>
@@ -518,8 +814,121 @@ document.addEventListener('DOMContentLoaded', () => {
   const registerView = document.getElementById('registerView');
   const btnSwitchToReg = document.getElementById('btnSwitchToReg');
   const btnSwitchToLogin = document.getElementById('btnSwitchToLogin');
+  const btnPrivilegedSwitchToLogin = document.getElementById('btnPrivilegedSwitchToLogin');
 
-  function showMode(mode) {
+  // Role Tab Switching (Login)
+  const loginTabs = document.querySelectorAll('.role-tab');
+  const regTabs = document.querySelectorAll('.reg-role-tab');
+  const inputLabel = document.getElementById('inputLabel');
+  const identifierInput = document.getElementById('identifierInput');
+  const ctaText = document.getElementById('ctaText');
+  let selectedRole = 'student';
+
+  const ROLE_CONFIGS = {
+    student: {
+      label: 'Student Roll No. or Institutional Email',
+      placeholder: 'rollno@campus.edu.in or 2022CS8901',
+      cta: 'Sign In to Student Portal',
+    },
+    faculty: {
+      label: 'Faculty Employee ID or Institutional Email',
+      placeholder: 'FAC042 or dr.sharma@campus.edu.in',
+      cta: 'Sign In to Faculty Portal',
+    },
+    admin: {
+      label: 'Authorized College Admin Email',
+      placeholder: 'admin@campus.edu.in',
+      cta: 'Sign In to Admin Console',
+    },
+    tpo: {
+      label: 'Placement Officer Institutional Email',
+      placeholder: 'tpo@campus.edu.in',
+      cta: 'Sign In to Placement Office',
+    },
+    coordinator: {
+      label: 'Coordinator Institutional Email',
+      placeholder: 'coordinator@campus.edu.in',
+      cta: 'Sign In to Guild Hub',
+    },
+    recruiter: {
+      label: 'Corporate Recruiter Email',
+      placeholder: 'hr@company.com',
+      cta: 'Sign In to Recruiter ATS',
+    },
+  };
+
+  function activateLoginRole(role) {
+    selectedRole = role || 'student';
+    loginTabs.forEach(t => {
+      const isMatch = t.getAttribute('data-role') === selectedRole;
+      if (isMatch) {
+        t.classList.remove('bg-surface-container', 'text-on-surface');
+        t.classList.add('bg-primary', 'text-white', 'shadow-sm', 'ring-2', 'ring-primary', 'ring-offset-2');
+      } else {
+        t.classList.remove('bg-primary', 'text-white', 'shadow-sm', 'ring-2', 'ring-primary', 'ring-offset-2');
+        t.classList.add('bg-surface-container', 'text-on-surface');
+      }
+    });
+
+    const cfg = ROLE_CONFIGS[selectedRole] || ROLE_CONFIGS.student;
+    if (inputLabel) inputLabel.textContent = cfg.label;
+    if (identifierInput) identifierInput.placeholder = cfg.placeholder;
+    if (ctaText) ctaText.textContent = cfg.cta;
+  }
+
+  function activateRegisterRole(role) {
+    selectedRole = role || 'student';
+    regTabs.forEach(t => {
+      const isMatch = t.getAttribute('data-reg-role') === selectedRole;
+      if (isMatch) {
+        t.classList.remove('bg-surface-container', 'text-on-surface');
+        t.classList.add('bg-primary', 'text-white', 'shadow-sm', 'ring-2', 'ring-primary', 'ring-offset-2');
+      } else {
+        t.classList.remove('bg-primary', 'text-white', 'shadow-sm', 'ring-2', 'ring-primary', 'ring-offset-2');
+        t.classList.add('bg-surface-container', 'text-on-surface');
+      }
+    });
+
+    // Toggle panels
+    const panelStudent = document.getElementById('panelRegStudent');
+    const panelFaculty = document.getElementById('panelRegFaculty');
+    const panelCoord = document.getElementById('panelRegCoordinator');
+    const panelRec = document.getElementById('panelRegRecruiter');
+    const panelPriv = document.getElementById('panelRegPrivileged');
+
+    panelStudent?.classList.add('hidden');
+    panelFaculty?.classList.add('hidden');
+    panelCoord?.classList.add('hidden');
+    panelRec?.classList.add('hidden');
+    panelPriv?.classList.add('hidden');
+
+    if (selectedRole === 'student') {
+      panelStudent?.classList.remove('hidden');
+    } else if (selectedRole === 'faculty') {
+      panelFaculty?.classList.remove('hidden');
+    } else if (selectedRole === 'coordinator') {
+      panelCoord?.classList.remove('hidden');
+    } else if (selectedRole === 'recruiter') {
+      panelRec?.classList.remove('hidden');
+    } else if (selectedRole === 'admin' || selectedRole === 'tpo') {
+      panelPriv?.classList.remove('hidden');
+      const privTitle = document.getElementById('privRoleTitle');
+      const privBtn = document.getElementById('btnPrivilegedSwitchToLogin');
+      const privIcon = document.getElementById('privRoleIcon');
+      if (selectedRole === 'admin') {
+        if (privTitle) privTitle.textContent = 'College Admin Account Provisioning';
+        if (privBtn) privBtn.textContent = 'Sign In to Admin Console';
+        if (privIcon) privIcon.textContent = 'admin_panel_settings';
+      } else {
+        if (privTitle) privTitle.textContent = 'Placement Officer (TPO) Access';
+        if (privBtn) privBtn.textContent = 'Sign In to Placement Office';
+        if (privIcon) privIcon.textContent = 'work';
+      }
+    }
+  }
+
+  function showMode(mode, targetRole = null) {
+    const roleToUse = targetRole || selectedRole;
     if (mode === 'register') {
       tabModeRegister.classList.add('bg-primary', 'text-white', 'shadow-sm');
       tabModeRegister.classList.remove('text-secondary');
@@ -529,6 +938,7 @@ document.addEventListener('DOMContentLoaded', () => {
       tabModeRegister.setAttribute('aria-selected', 'true');
       loginView.classList.add('hidden');
       registerView.classList.remove('hidden');
+      activateRegisterRole(roleToUse);
     } else {
       tabModeLogin.classList.add('bg-primary', 'text-white', 'shadow-sm');
       tabModeLogin.classList.remove('text-secondary');
@@ -538,6 +948,7 @@ document.addEventListener('DOMContentLoaded', () => {
       tabModeRegister.setAttribute('aria-selected', 'false');
       registerView.classList.add('hidden');
       loginView.classList.remove('hidden');
+      activateLoginRole(roleToUse);
     }
   }
 
@@ -545,6 +956,33 @@ document.addEventListener('DOMContentLoaded', () => {
   tabModeRegister?.addEventListener('click', () => showMode('register'));
   btnSwitchToReg?.addEventListener('click', () => showMode('register'));
   btnSwitchToLogin?.addEventListener('click', () => showMode('login'));
+  btnPrivilegedSwitchToLogin?.addEventListener('click', () => showMode('login'));
+
+  loginTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const r = tab.getAttribute('data-role') || 'student';
+      activateLoginRole(r);
+    });
+  });
+
+  regTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const r = tab.getAttribute('data-reg-role') || 'student';
+      activateRegisterRole(r);
+    });
+  });
+
+  // URL query role activation
+  const urlRole = new URLSearchParams(window.location.search).get('role');
+  const urlMode = new URLSearchParams(window.location.search).get('mode');
+  if (urlRole) {
+    selectedRole = urlRole.toLowerCase();
+  }
+  if (urlMode === 'register') {
+    showMode('register', selectedRole);
+  } else {
+    activateLoginRole(selectedRole);
+  }
 
   // Password Reveal Toggle (Login)
   const togglePasswordBtn = document.getElementById('togglePasswordBtn');
@@ -579,37 +1017,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Role Tab Switching (Login)
-  const tabs = document.querySelectorAll('.role-tab');
-  const inputLabel = document.getElementById('inputLabel');
-  const identifierInput = document.getElementById('identifierInput');
-  const ctaText = document.getElementById('ctaText');
-  let selectedRole = 'student';
-
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      tabs.forEach(t => {
-        t.classList.remove('bg-primary', 'text-white', 'shadow-sm', 'ring-2', 'ring-primary', 'ring-offset-2');
-        t.classList.add('bg-surface-container', 'text-on-surface');
-      });
-      tab.classList.remove('bg-surface-container', 'text-on-surface');
-      tab.classList.add('bg-primary', 'text-white', 'shadow-sm', 'ring-2', 'ring-primary', 'ring-offset-2');
-
-      const roleLabel = tab.getAttribute('data-role-label') || 'User';
-      const placeholder = tab.getAttribute('data-placeholder') || 'id@campus.edu.in';
-      const cta = tab.getAttribute('data-cta') || 'Sign In';
-      selectedRole = tab.getAttribute('data-role') || 'student';
-
-      if (inputLabel) inputLabel.textContent = `${roleLabel} ID / Email`;
-      if (identifierInput) identifierInput.placeholder = placeholder;
-      if (ctaText) ctaText.textContent = cta;
-    });
-  });
-
-  const urlRole = new URLSearchParams(window.location.search).get('role');
-  if (urlRole) {
-    const tabToActivate = Array.from(tabs).find(t => t.getAttribute('data-role') === urlRole.toLowerCase());
-    if (tabToActivate) tabToActivate.click();
+  // Helper for displaying banner on login view
+  function displayLoginBanner(title, msg, isSuccess = true) {
+    const regSuccessBanner = document.getElementById('regSuccessBanner');
+    const regSuccessTitle = document.getElementById('regSuccessTitle');
+    const regSuccessMsg = document.getElementById('regSuccessMsg');
+    if (regSuccessBanner) {
+      regSuccessBanner.classList.remove('hidden');
+      if (regSuccessTitle) regSuccessTitle.textContent = title;
+      if (regSuccessMsg) regSuccessMsg.textContent = msg;
+    }
   }
 
   // 1. SUBMIT LOGIN FORM
@@ -654,13 +1071,13 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // 2. SUBMIT STUDENT REGISTRATION FORM
-  const registerForm = document.getElementById('studentRegisterForm');
+  const studentForm = document.getElementById('studentRegisterForm');
   const regSubmitBtn = document.getElementById('regSubmitBtn');
 
-  if (registerForm) {
-    registerForm.addEventListener('submit', async (e) => {
+  if (studentForm) {
+    studentForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      CampusInn.FormUtils.clearAllErrors(registerForm);
+      CampusInn.FormUtils.clearAllErrors(studentForm);
 
       const firstName = document.getElementById('regFirstName')?.value.trim();
       const lastName = document.getElementById('regLastName')?.value.trim();
@@ -675,9 +1092,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const password = document.getElementById('regPassword')?.value;
       const confirmPassword = document.getElementById('regConfirmPassword')?.value;
 
-      // Validation
       let hasError = false;
-
       if (!firstName) {
         CampusInn.FormUtils.showFieldError(document.getElementById('regFirstName'), 'First name is required.');
         hasError = true;
@@ -709,52 +1124,21 @@ document.addEventListener('DOMContentLoaded', () => {
         CampusInn.FormUtils.showFieldError(document.getElementById('regConfirmPassword'), 'Passwords do not match.');
         hasError = true;
       }
-
       if (hasError) return;
 
       CampusInn.FormUtils.setButtonLoading(regSubmitBtn, true);
-
       try {
         const payload = {
-          firstName,
-          lastName,
-          email,
-          phone,
-          college,
-          rollNumber,
-          department,
-          program,
-          academicYear,
-          semester,
-          password
+          firstName, lastName, email, phone, college,
+          rollNumber, department, program, academicYear, semester, password
         };
-
-        const result = await CampusInn.Auth.registerStudent(payload);
+        await CampusInn.Auth.registerStudent(payload);
         CampusInn.Toast.success('Student account created successfully!');
-
-        // Display green success alert on login view and prefill email
-        const regSuccessBanner = document.getElementById('regSuccessBanner');
-        const regSuccessMsg = document.getElementById('regSuccessMsg');
-        if (regSuccessBanner) {
-          regSuccessBanner.classList.remove('hidden');
-          if (regSuccessMsg) {
-            regSuccessMsg.textContent = `Welcome ${firstName} ${lastName}! Your student account (${rollNumber}) has been registered. Please sign in with your password.`;
-          }
-        }
-
-        if (identifierInput) {
-          identifierInput.value = email;
-        }
-        if (passwordInput) {
-          passwordInput.value = '';
-          passwordInput.focus();
-        }
-
-        // Reset register form & switch to login view
-        registerForm.reset();
-        showMode('login');
-        CampusInn.FormUtils.setButtonLoading(regSubmitBtn, false);
-
+        displayLoginBanner('Account Created Successfully', `Welcome ${firstName} ${lastName}! Your student account (${rollNumber}) has been registered. Please enter your password to sign in.`);
+        if (identifierInput) identifierInput.value = email;
+        if (passwordInput) { passwordInput.value = ''; passwordInput.focus(); }
+        studentForm.reset();
+        showMode('login', 'student');
       } catch (err) {
         CampusInn.Toast.error(err.message || 'Registration failed.');
         if (err.message && err.message.toLowerCase().includes('email')) {
@@ -762,7 +1146,208 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (err.message && err.message.toLowerCase().includes('roll')) {
           CampusInn.FormUtils.showFieldError(document.getElementById('regRollNumber'), err.message);
         }
+      } finally {
         CampusInn.FormUtils.setButtonLoading(regSubmitBtn, false);
+      }
+    });
+  }
+
+  // 3. SUBMIT FACULTY REGISTRATION FORM
+  const facultyForm = document.getElementById('facultyRegisterForm');
+  const regFacSubmitBtn = document.getElementById('regFacSubmitBtn');
+
+  if (facultyForm) {
+    facultyForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      CampusInn.FormUtils.clearAllErrors(facultyForm);
+
+      const fullName = document.getElementById('regFacFullName')?.value.trim();
+      const employeeId = document.getElementById('regFacEmployeeId')?.value.trim();
+      const email = document.getElementById('regFacEmail')?.value.trim();
+      const phone = document.getElementById('regFacPhone')?.value.trim();
+      const department = document.getElementById('regFacDepartment')?.value;
+      const designation = document.getElementById('regFacDesignation')?.value;
+      const password = document.getElementById('regFacPassword')?.value;
+      const confirmPassword = document.getElementById('regFacConfirmPassword')?.value;
+
+      let hasError = false;
+      if (!fullName) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('regFacFullName'), 'Full name is required.');
+        hasError = true;
+      }
+      if (!employeeId) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('regFacEmployeeId'), 'Institutional Employee ID is required.');
+        hasError = true;
+      }
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('regFacEmail'), 'Institutional email address is required.');
+        hasError = true;
+      } else if (!/@(?:[a-zA-Z0-9-]+\.)*(?:met\.edu|campus\.edu\.in|edu\.in|ac\.in|edu)$/i.test(email)) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('regFacEmail'), 'Please provide an accredited institutional email (e.g., @met.edu, @campus.edu.in).');
+        hasError = true;
+      }
+      if (!password || password.length < 8 || !/(?=.*[a-zA-Z])(?=.*[0-9])/.test(password)) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('regFacPassword'), 'Password must be at least 8 characters with letters and numbers.');
+        hasError = true;
+      }
+      if (password !== confirmPassword) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('regFacConfirmPassword'), 'Passwords do not match.');
+        hasError = true;
+      }
+      if (hasError) return;
+
+      CampusInn.FormUtils.setButtonLoading(regFacSubmitBtn, true);
+      try {
+        const payload = {
+          fullName, employeeId, email, phone, department, designation, password
+        };
+        const res = await CampusInn.Auth.registerFaculty(payload);
+        CampusInn.Toast.success('Faculty registration submitted!');
+        displayLoginBanner(
+          'Faculty Registration Submitted (Status: PENDING)',
+          `Welcome ${fullName}! Your faculty profile (${employeeId}) has been registered and is awaiting administrator verification. You may log in once approved.`
+        );
+        if (identifierInput) identifierInput.value = email;
+        if (passwordInput) { passwordInput.value = ''; }
+        facultyForm.reset();
+        showMode('login', 'faculty');
+      } catch (err) {
+        CampusInn.Toast.error(err.message || 'Faculty registration failed.');
+        if (err.message && err.message.toLowerCase().includes('email')) {
+          CampusInn.FormUtils.showFieldError(document.getElementById('regFacEmail'), err.message);
+        } else if (err.message && err.message.toLowerCase().includes('employee')) {
+          CampusInn.FormUtils.showFieldError(document.getElementById('regFacEmployeeId'), err.message);
+        }
+      } finally {
+        CampusInn.FormUtils.setButtonLoading(regFacSubmitBtn, false);
+      }
+    });
+  }
+
+  // 4. SUBMIT COORDINATOR REGISTRATION FORM
+  const coordForm = document.getElementById('coordinatorRegisterForm');
+  const regCoordSubmitBtn = document.getElementById('regCoordSubmitBtn');
+
+  if (coordForm) {
+    coordForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      CampusInn.FormUtils.clearAllErrors(coordForm);
+
+      const fullName = document.getElementById('regCoordFullName')?.value.trim();
+      const email = document.getElementById('regCoordEmail')?.value.trim();
+      const department = document.getElementById('regCoordDepartment')?.value;
+      const clubName = document.getElementById('regCoordClubName')?.value.trim();
+      const password = document.getElementById('regCoordPassword')?.value;
+      const confirmPassword = document.getElementById('regCoordConfirmPassword')?.value;
+
+      let hasError = false;
+      if (!fullName) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('regCoordFullName'), 'Full name is required.');
+        hasError = true;
+      }
+      if (!email || !/@(?:[a-zA-Z0-9-]+\.)*(?:met\.edu|campus\.edu\.in|edu\.in|ac\.in|edu)$/i.test(email)) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('regCoordEmail'), 'Institutional email address is required (e.g. @met.edu).');
+        hasError = true;
+      }
+      if (!clubName) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('regCoordClubName'), 'Club or Guild affiliation name is required.');
+        hasError = true;
+      }
+      if (!password || password.length < 8 || !/(?=.*[a-zA-Z])(?=.*[0-9])/.test(password)) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('regCoordPassword'), 'Password must be at least 8 characters with letters and numbers.');
+        hasError = true;
+      }
+      if (password !== confirmPassword) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('regCoordConfirmPassword'), 'Passwords do not match.');
+        hasError = true;
+      }
+      if (hasError) return;
+
+      CampusInn.FormUtils.setButtonLoading(regCoordSubmitBtn, true);
+      try {
+        const payload = { fullName, email, department, clubName, password };
+        await CampusInn.Auth.registerCoordinator(payload);
+        CampusInn.Toast.success('Coordinator registration submitted!');
+        displayLoginBanner(
+          'Coordinator Registration Submitted (Status: PENDING)',
+          `Welcome ${fullName}! Your registration for '${clubName}' is pending administrator authorization.`
+        );
+        if (identifierInput) identifierInput.value = email;
+        coordForm.reset();
+        showMode('login', 'coordinator');
+      } catch (err) {
+        CampusInn.Toast.error(err.message || 'Coordinator registration failed.');
+        if (err.message && err.message.toLowerCase().includes('email')) {
+          CampusInn.FormUtils.showFieldError(document.getElementById('regCoordEmail'), err.message);
+        }
+      } finally {
+        CampusInn.FormUtils.setButtonLoading(regCoordSubmitBtn, false);
+      }
+    });
+  }
+
+  // 5. SUBMIT RECRUITER REGISTRATION FORM
+  const recForm = document.getElementById('recruiterRegisterForm');
+  const regRecSubmitBtn = document.getElementById('regRecSubmitBtn');
+
+  if (recForm) {
+    recForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      CampusInn.FormUtils.clearAllErrors(recForm);
+
+      const fullName = document.getElementById('regRecFullName')?.value.trim();
+      const email = document.getElementById('regRecEmail')?.value.trim();
+      const companyName = document.getElementById('regRecCompanyName')?.value.trim();
+      const designation = document.getElementById('regRecDesignation')?.value.trim();
+      const password = document.getElementById('regRecPassword')?.value;
+      const confirmPassword = document.getElementById('regRecConfirmPassword')?.value;
+
+      let hasError = false;
+      if (!fullName) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('regRecFullName'), 'Recruiter name is required.');
+        hasError = true;
+      }
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('regRecEmail'), 'Corporate work email is required.');
+        hasError = true;
+      }
+      if (!companyName) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('regRecCompanyName'), 'Company name is required.');
+        hasError = true;
+      }
+      if (!designation) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('regRecDesignation'), 'Designation or job title is required.');
+        hasError = true;
+      }
+      if (!password || password.length < 8 || !/(?=.*[a-zA-Z])(?=.*[0-9])/.test(password)) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('regRecPassword'), 'Password must be at least 8 characters with letters and numbers.');
+        hasError = true;
+      }
+      if (password !== confirmPassword) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('regRecConfirmPassword'), 'Passwords do not match.');
+        hasError = true;
+      }
+      if (hasError) return;
+
+      CampusInn.FormUtils.setButtonLoading(regRecSubmitBtn, true);
+      try {
+        const payload = { fullName, email, companyName, designation, password };
+        await CampusInn.Auth.registerRecruiter(payload);
+        CampusInn.Toast.success('Recruiter registration submitted!');
+        displayLoginBanner(
+          'Corporate Recruiter Registration Submitted (Status: PENDING)',
+          `Welcome ${fullName}! Your registration for ${companyName} has been submitted for TPO Cell vetting and MOU signoff.`
+        );
+        if (identifierInput) identifierInput.value = email;
+        recForm.reset();
+        showMode('login', 'recruiter');
+      } catch (err) {
+        CampusInn.Toast.error(err.message || 'Recruiter registration failed.');
+        if (err.message && err.message.toLowerCase().includes('email')) {
+          CampusInn.FormUtils.showFieldError(document.getElementById('regRecEmail'), err.message);
+        }
+      } finally {
+        CampusInn.FormUtils.setButtonLoading(regRecSubmitBtn, false);
       }
     });
   }

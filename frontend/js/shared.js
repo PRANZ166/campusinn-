@@ -155,6 +155,32 @@ const Auth = (() => {
     throw new Error('Registration service unavailable.');
   }
 
+  async function registerCoordinator(payload) {
+    if (typeof window.CampusInnAPI !== 'undefined') {
+      const result = await window.CampusInnAPI.auth.registerCoordinator(payload);
+      if (result.data) {
+        return result.data;
+      }
+      if (result.error) {
+        throw new Error(result.error);
+      }
+    }
+    throw new Error('Registration service unavailable.');
+  }
+
+  async function registerRecruiter(payload) {
+    if (typeof window.CampusInnAPI !== 'undefined') {
+      const result = await window.CampusInnAPI.auth.registerRecruiter(payload);
+      if (result.data) {
+        return result.data;
+      }
+      if (result.error) {
+        throw new Error(result.error);
+      }
+    }
+    throw new Error('Registration service unavailable.');
+  }
+
   async function logout() {
     try {
       if (typeof window.CampusInnAPI !== 'undefined' && window.CampusInnAPI.auth) {
@@ -231,7 +257,7 @@ const Auth = (() => {
   }
 
   return { getSession, isAuthenticated, getRole, getUser, getRoleConfig,
-           getDashboardUrl, login, registerStudent, registerFaculty, logout, requireAuth, sanitizeRedirect, ROLES };
+           getDashboardUrl, login, registerStudent, registerFaculty, registerCoordinator, registerRecruiter, logout, requireAuth, sanitizeRedirect, ROLES };
 })();
 
 /* ═══════════════════════════════════════════

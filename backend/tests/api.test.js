@@ -1556,4 +1556,286 @@ describe('Campus Inn+ Backend API Suite', () => {
       expect(res.body.user.role).toEqual('student');
     });
   });
+
+  describe('Multi-Role Registration & Onboarding Suite', () => {
+    let multiRoleSpy;
+    let registeredCoordinator = false;
+    let registeredRecruiter = false;
+    let coordPassHash;
+    let recPassHash;
+
+    beforeAll(async () => {
+      coordPassHash = await bcrypt.hash('Coordinator@123', 10);
+      recPassHash = await bcrypt.hash('Recruiter@123', 10);
+
+      multiRoleSpy = jest.spyOn(require('../src/db/pool').pool, 'query').mockImplementation((sql, params) => {
+        const sqlStr = typeof sql === 'string' ? sql : (sql && sql.text ? sql.text : '');
+        const p0 = (params && params[0] !== undefined ? String(params[0]).trim().toLowerCase() : '');
+
+        // 1. Check existing emails
+        if (sqlStr.includes('FROM users WHERE LOWER(email) = $1')) {
+          if (registeredCoordinator && p0 === 'vikram.coordinator@met.edu') {
+            return Promise.resolve({ rows: [{ id: 'coord-dup-id' }] });
+          }
+          if (registeredRecruiter && p0 === 'ananya@techcorp-solutions.io') {
+            return Promise.resolve({ rows: [{ id: 'rec-dup-id' }] });
+          }
+          return Promise.resolve({ rows: [] });
+        }
+
+        // 2. Insert into users
+        if (sqlStr.includes('INSERT INTO users')) {
+          const role = sqlStr.includes("'coordinator'") ? 'coordinator' : (sqlStr.includes("'recruiter'") ? 'recruiter' : 'user');
+          const newUser = {
+            id: role === 'coordinator' ? 'usr-coord-1' : 'usr-rec-1',
+            email: params[0],
+            password_hash: role === 'coordinator' ? coordPassHash : recPassHash,
+            role,
+            status: 'pending',
+            first_name: params[2],
+            last_name: params[3],
+            phone: params[4],
+            created_at: new Date().toISOString(),
+          };
+          if (role === 'coordinator') registeredCoordinator = true;
+          if (role === 'recruiter') registeredRecruiter = true;
+          return Promise.resolve({ rows: [newUser] });
+        }
+
+        // 3. Coordinator profiles insert
+        if (sqlStr.includes('INSERT INTO coordinator_profiles')) {
+          return Promise.resolve({
+            rows: [{
+              user_id: params[0],
+              department: params[1],
+              club_name: params[2],
+            }],
+          });
+        }
+
+        // 4. Company lookup and insert
+        if (sqlStr.includes('FROM companies WHERE LOWER(name) = LOWER($1)')) {
+          return Promise.resolve({ rows: [] });
+        }
+        if (sqlStr.includes('INSERT INTO companies')) {
+          return Promise.resolve({ rows: [{ id: 'comp-101' }] });
+        }
+
+        // 5. Recruiter profile insert
+        if (sqlStr.includes('INSERT INTO recruiter_profiles')) {
+          return Promise.resolve({
+            rows: [{
+              user_id: params[0],
+              company_id: params[1],
+              company_name: params[2],
+              designation: params[3],
+            }],
+          });
+        }
+
+        // 6. Company users insert
+        if (sqlStr.includes('INSERT INTO company_users')) {
+          return Promise.resolve({ rowCount: 1 });
+        }
+
+        // 7. User settings insert
+        if (sqlStr.includes('INSERT INTO user_settings')) {
+          return Promise.resolve({ rowCount: 1 });
+        }
+
+        // 8. User query for login
+        if (sqlStr.includes('FROM users u') && sqlStr.includes('WHERE LOWER(u.email) = $1')) {
+          if (p0 === 'vikram.coordinator@met.edu') {
+            return Promise.resolve({
+              rows: [{
+                id: 'usr-coord-1',
+                email: 'vikram.coordinator@met.edu',
+                password_hash: coordPassHash,
+                role: 'coordinator',
+                status: 'pending',
+                first_name: 'Vikram',
+                last_name: 'Sarabhai',
+              }],
+            });
+          }
+          if (p0 === 'ananya@techcorp-solutions.io') {
+            return Promise.resolve({
+              rows: [{
+                id: 'usr-rec-1',
+                email: 'ananya@techcorp-solutions.io',
+                password_hash: recPassHash,
+                role: 'recruiter',
+                status: 'pending',
+                first_name: 'Ananya',
+                last_name: 'Birla',
+              }],
+            });
+          }
+          return Promise.resolve({ rows: [] });
+        }
+
+        // Profile lookups
+        if (sqlStr.includes('FROM coordinator_profiles WHERE user_id = $1')) {
+          return Promise.resolve({ rows: [{ department: 'Robotics', club_name: 'AeroClub' }] });
+        }
+        if (sqlStr.includes('FROM recruiter_profiles WHERE user_id = $1')) {
+          return Promise.resolve({ rows: [{ company_name: 'TechCorp Solutions Inc.', designation: 'Recruiter' }] });
+        }
+
+        return Promise.resolve({ rows: [] });
+      });
+    });
+
+    afterAll(() => {
+      if (multiRoleSpy) multiRoleSpy.mockRestore();
+    });
+
+    it('1. Coordinator self-registration creates pending account awaiting administrator approval', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/register/coordinator')
+        .send({
+          fullName: 'Vikram Sarabhai',
+          email: 'vikram.coordinator@met.edu',
+          password: 'Coordinator@123',
+          department: 'Robotics & Automation',
+          clubName: 'AeroClub & Robotics Guild',
+        });
+
+      expect(res.statusCode).toEqual(201);
+      expect(res.body.success).toBe(true);
+      expect(res.body.status).toEqual('pending');
+      expect(res.body.requiresApproval).toBe(true);
+      expect(res.body.user.role).toEqual('coordinator');
+      expect(res.body.user.email).toEqual('vikram.coordinator@met.edu');
+    });
+
+    it('2. Coordinator self-registration rejects non-institutional email addresses', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/register/coordinator')
+        .send({
+          fullName: 'External Person',
+          email: 'vikram@gmail.com',
+          password: 'Password123',
+          department: 'Cultural',
+        });
+
+      expect(res.statusCode).toEqual(400);
+      expect(res.body.code).toEqual('INVALID_INSTITUTIONAL_EMAIL');
+    });
+
+    it('3. Coordinator self-registration rejects duplicate institutional email', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/register/coordinator')
+        .send({
+          fullName: 'Duplicate Person',
+          email: 'vikram.coordinator@met.edu',
+          password: 'Password123',
+          department: 'Robotics',
+        });
+
+      expect(res.statusCode).toEqual(409);
+      expect(res.body.code).toEqual('EMAIL_ALREADY_EXISTS');
+    });
+
+    it('4. Unapproved pending coordinator cannot log into the coordinator portal', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/login')
+        .send({
+          identifier: 'vikram.coordinator@met.edu',
+          password: 'Coordinator@123',
+          role: 'coordinator',
+        });
+
+      expect(res.statusCode).toEqual(403);
+      expect(res.body.code).toEqual('ACCOUNT_PENDING');
+      expect(res.body.message).toContain('pending institutional verification or administrator approval');
+    });
+
+    it('5. Recruiter self-registration creates pending account and associates company', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/register/recruiter')
+        .send({
+          fullName: 'Ananya Birla',
+          email: 'ananya@techcorp-solutions.io',
+          password: 'Recruiter@123',
+          companyName: 'TechCorp Solutions Inc.',
+          designation: 'Lead University Talent Partner',
+          website: 'https://techcorp-solutions.io',
+        });
+
+      expect(res.statusCode).toEqual(201);
+      expect(res.body.success).toBe(true);
+      expect(res.body.status).toEqual('pending');
+      expect(res.body.requiresApproval).toBe(true);
+      expect(res.body.user.role).toEqual('recruiter');
+      expect(res.body.user.companyName).toEqual('TechCorp Solutions Inc.');
+    });
+
+    it('6. Recruiter registration validates required company name and job title', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/register/recruiter')
+        .send({
+          fullName: 'Ananya Birla',
+          email: 'invalid.recruiter@company.com',
+          password: 'Password123',
+          // missing companyName and designation
+        });
+
+      expect(res.statusCode).toEqual(400);
+      expect(res.body.code).toEqual('VALIDATION_FAILED');
+    });
+
+    it('7. Recruiter self-registration rejects duplicate email', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/register/recruiter')
+        .send({
+          fullName: 'Ananya Duplicate',
+          email: 'ananya@techcorp-solutions.io',
+          password: 'Password123',
+          companyName: 'TechCorp Solutions Inc.',
+          designation: 'Recruiter',
+        });
+
+      expect(res.statusCode).toEqual(409);
+      expect(res.body.code).toEqual('EMAIL_ALREADY_EXISTS');
+    });
+
+    it('8. Unapproved pending recruiter cannot log in', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/login')
+        .send({
+          identifier: 'ananya@techcorp-solutions.io',
+          password: 'Recruiter@123',
+          role: 'recruiter',
+        });
+
+      expect(res.statusCode).toEqual(403);
+      expect(res.body.code).toEqual('ACCOUNT_PENDING');
+    });
+
+    it('9. College Admin cannot be self-registered by arbitrary visitors (403)', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/register/admin')
+        .send({
+          email: 'attacker@evil.com',
+          password: 'Password123',
+        });
+
+      expect(res.statusCode).toEqual(403);
+      expect(res.body.code).toEqual('PRIVILEGED_ROLE_NOT_SELF_REGISTRABLE');
+    });
+
+    it('10. Placement Officer (TPO) cannot be self-registered by arbitrary visitors (403)', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/register/tpo')
+        .send({
+          email: 'fake.tpo@domain.com',
+          password: 'Password123',
+        });
+
+      expect(res.statusCode).toEqual(403);
+      expect(res.body.code).toEqual('PRIVILEGED_ROLE_NOT_SELF_REGISTRABLE');
+    });
+  });
 });
+

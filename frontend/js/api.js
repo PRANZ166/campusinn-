@@ -163,6 +163,42 @@ const API = (() => {
       };
     },
 
+    async registerCoordinator(payload) {
+      const res = await request('/auth/register/coordinator', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+
+      if (res.data && res.data.success) {
+        return { data: res.data, error: null, isMock: false };
+      }
+
+      return {
+        data: null,
+        error: res.error || 'Coordinator registration failed. Please check the provided information.',
+        isMock: false,
+        status: res.status
+      };
+    },
+
+    async registerRecruiter(payload) {
+      const res = await request('/auth/register/recruiter', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+
+      if (res.data && res.data.success) {
+        return { data: res.data, error: null, isMock: false };
+      }
+
+      return {
+        data: null,
+        error: res.error || 'Recruiter registration failed. Please check the provided information.',
+        isMock: false,
+        status: res.status
+      };
+    },
+
     async me() {
       const res = await request('/auth/me', { method: 'GET' });
       if (res.data && res.data.user) {

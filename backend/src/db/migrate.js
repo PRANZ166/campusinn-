@@ -577,6 +577,41 @@ CREATE INDEX IF NOT EXISTS idx_users_role_status ON users (role, status);
 CREATE INDEX IF NOT EXISTS idx_users_lower_email ON users (LOWER(email));
 `;
 
+const MIGRATION_005_SQL = `
+DO $$ BEGIN
+  ALTER TYPE account_status ADD VALUE IF NOT EXISTS 'pending';
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
+CREATE TABLE IF NOT EXISTS coordinator_profiles (
+  id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id         UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  department      VARCHAR(150),
+  club_name       VARCHAR(150),
+  role_label      VARCHAR(150),
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  UNIQUE(user_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_coordinator_profiles_user ON coordinator_profiles (user_id);
+
+CREATE TABLE IF NOT EXISTS recruiter_profiles (
+  id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id         UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  company_id      UUID REFERENCES companies(id) ON DELETE SET NULL,
+  company_name    VARCHAR(255),
+  designation     VARCHAR(150),
+  role_label      VARCHAR(150),
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  UNIQUE(user_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_recruiter_profiles_user ON recruiter_profiles (user_id);
+CREATE INDEX IF NOT EXISTS idx_recruiter_profiles_company ON recruiter_profiles (company_id);
+`;
+
 const MIGRATIONS = [
   {
     name: '001_initial_schema',
@@ -597,6 +632,11 @@ const MIGRATIONS = [
     name: '004_scalable_faculty_directory',
     sqlFile: '004_scalable_faculty_directory.sql',
     fallbackSql: MIGRATION_004_SQL,
+  },
+  {
+    name: '005_multi_role_onboarding_and_profiles',
+    sqlFile: '005_multi_role_onboarding_and_profiles.sql',
+    fallbackSql: MIGRATION_005_SQL,
   },
 ];
 

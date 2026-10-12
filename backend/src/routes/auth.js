@@ -12,6 +12,8 @@ const {
   validateLogin,
   validateStudentRegister,
   validateFacultyRegister,
+  validateCoordinatorRegister,
+  validateRecruiterRegister,
   validateForgotPassword,
   validateResetPassword,
 } = require('../middleware/validate');
@@ -247,6 +249,222 @@ router.post('/register/faculty', validateFacultyRegister, async (req, res, next)
 });
 
 /**
+ * POST /api/v1/auth/register/coordinator
+ * Self-registration for event/club coordinators (creates pending account awaiting admin authorization)
+ */
+router.post('/register/coordinator', validateCoordinatorRegister, async (req, res, next) => {
+  try {
+    const {
+      fullName,
+      email,
+      password,
+      phone,
+      department,
+      clubName,
+    } = req.body;
+
+    const cleanEmail = email.trim().toLowerCase();
+
+    // 1. Check if email is already registered
+    const existingEmail = await query('SELECT id FROM users WHERE LOWER(email) = $1', [cleanEmail]);
+    if (existingEmail.rows.length > 0) {
+      return res.status(409).json({
+        success: false,
+        message: 'An account with this email address already exists.',
+        code: 'EMAIL_ALREADY_EXISTS',
+      });
+    }
+
+    // 2. Split name
+    const parts = (fullName || '').trim().split(/\s+/);
+    const firstName = parts[0] || 'Coordinator';
+    const lastName = parts.slice(1).join(' ') || '';
+
+    // 3. Hash password securely
+    const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
+
+    // 4. Insert user with 'pending' status awaiting administrative approval
+    const userRes = await query(
+      `INSERT INTO users (email, password_hash, role, status, first_name, last_name, phone, created_at, updated_at)
+       VALUES ($1, $2, 'coordinator', 'pending', $3, $4, $5, NOW(), NOW())
+       RETURNING id, email, role, status, first_name, last_name, phone, created_at`,
+      [cleanEmail, passwordHash, firstName, lastName, phone ? phone.trim() : null]
+    );
+    const newUser = userRes.rows[0];
+
+    // 5. Insert coordinator profile
+    await query(
+      `INSERT INTO coordinator_profiles (
+         user_id, department, club_name, role_label, created_at, updated_at
+       ) VALUES ($1, $2, $3, $4, NOW(), NOW())
+       ON CONFLICT (user_id) DO NOTHING`,
+      [
+        newUser.id,
+        department || 'Central Campus Guild',
+        clubName || 'Student Activities & Clubs',
+        'Event & Club Coordinator',
+      ]
+    ).catch((err) => {
+      console.warn('[Coordinator Register] Profile insert warning:', err.message);
+    });
+
+    await query('INSERT INTO user_settings (user_id) VALUES ($1) ON CONFLICT DO NOTHING', [newUser.id]).catch(() => {});
+
+    return res.status(201).json({
+      success: true,
+      message: 'Coordinator registration submitted successfully. Your account requires administrator approval before portal access is activated.',
+      status: 'pending',
+      requiresApproval: true,
+      user: {
+        id: newUser.id,
+        email: newUser.email,
+        role: newUser.role,
+        status: newUser.status,
+        firstName: newUser.first_name,
+        lastName: newUser.last_name,
+        department,
+        clubName: clubName || 'Student Activities & Clubs',
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
+ * POST /api/v1/auth/register/recruiter
+ * Corporate Partner / Recruiter self-registration (creates pending account awaiting TPO verification)
+ */
+router.post('/register/recruiter', validateRecruiterRegister, async (req, res, next) => {
+  try {
+    const {
+      fullName,
+      recruiterName,
+      email,
+      password,
+      phone,
+      companyName,
+      designation,
+      website,
+    } = req.body;
+
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanCompany = (companyName || '').trim();
+
+    // 1. Check if email is already registered
+    const existingEmail = await query('SELECT id FROM users WHERE LOWER(email) = $1', [cleanEmail]);
+    if (existingEmail.rows.length > 0) {
+      return res.status(409).json({
+        success: false,
+        message: 'An account with this corporate work email already exists.',
+        code: 'EMAIL_ALREADY_EXISTS',
+      });
+    }
+
+    // 2. Split name
+    const rawName = (fullName || recruiterName || '').trim();
+    const parts = rawName.split(/\s+/);
+    const firstName = parts[0] || 'Corporate';
+    const lastName = parts.slice(1).join(' ') || 'Recruiter';
+
+    // 3. Hash password securely
+    const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
+
+    // 4. Insert user with 'pending' status awaiting TPO / admin approval
+    const userRes = await query(
+      `INSERT INTO users (email, password_hash, role, status, first_name, last_name, phone, created_at, updated_at)
+       VALUES ($1, $2, 'recruiter', 'pending', $3, $4, $5, NOW(), NOW())
+       RETURNING id, email, role, status, first_name, last_name, phone, created_at`,
+      [cleanEmail, passwordHash, firstName, lastName, phone ? phone.trim() : null]
+    );
+    const newUser = userRes.rows[0];
+
+    // 5. Check or create company
+    let companyId = null;
+    try {
+      const compCheck = await query('SELECT id FROM companies WHERE LOWER(name) = LOWER($1)', [cleanCompany]);
+      if (compCheck.rows.length > 0) {
+        companyId = compCheck.rows[0].id;
+      } else {
+        const compInsert = await query(
+          `INSERT INTO companies (name, website, verification_status, created_by, created_at, updated_at)
+           VALUES ($1, $2, 'pending', $3, NOW(), NOW())
+           RETURNING id`,
+          [cleanCompany, website || null, newUser.id]
+        );
+        companyId = compInsert.rows[0].id;
+      }
+    } catch (e) {
+      console.warn('[Recruiter Register] Company lookup/creation warning:', e.message);
+    }
+
+    // 6. Insert recruiter profile
+    await query(
+      `INSERT INTO recruiter_profiles (
+         user_id, company_id, company_name, designation, role_label, created_at, updated_at
+       ) VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
+       ON CONFLICT (user_id) DO NOTHING`,
+      [
+        newUser.id,
+        companyId,
+        cleanCompany,
+        designation || 'Campus Talent Acquisition',
+        'Corporate Recruiter',
+      ]
+    ).catch((err) => {
+      console.warn('[Recruiter Register] Profile insert warning:', err.message);
+    });
+
+    if (companyId) {
+      await query(
+        `INSERT INTO company_users (company_id, user_id, is_primary) VALUES ($1, $2, true) ON CONFLICT DO NOTHING`,
+        [companyId, newUser.id]
+      ).catch(() => {});
+    }
+
+    await query('INSERT INTO user_settings (user_id) VALUES ($1) ON CONFLICT DO NOTHING', [newUser.id]).catch(() => {});
+
+    return res.status(201).json({
+      success: true,
+      message: 'Corporate recruiter registration submitted successfully. Your account requires company verification and TPO approval before candidate access is activated.',
+      status: 'pending',
+      requiresApproval: true,
+      user: {
+        id: newUser.id,
+        email: newUser.email,
+        role: newUser.role,
+        status: newUser.status,
+        firstName: newUser.first_name,
+        lastName: newUser.last_name,
+        companyName: cleanCompany,
+        designation: designation || 'Campus Talent Acquisition',
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
+ * Privileged Role Safeguards: Reject arbitrary self-registration
+ */
+router.post('/register/admin', (req, res) => {
+  return res.status(403).json({
+    success: false,
+    message: 'College Admin accounts possess central authority and cannot be self-registered. They must be provisioned by authorized administrators.',
+    code: 'PRIVILEGED_ROLE_NOT_SELF_REGISTRABLE',
+  });
+});
+
+router.post('/register/tpo', (req, res) => {
+  return res.status(403).json({
+    success: false,
+    message: 'Placement Officer accounts possess institutional authority and cannot be self-registered. They must be provisioned by authorized administrators.',
+    code: 'PRIVILEGED_ROLE_NOT_SELF_REGISTRABLE',
+  });
+});
+
+/**
  * POST /api/v1/auth/login
  */
 router.post('/login', validateLogin, async (req, res, next) => {
@@ -302,7 +520,7 @@ router.post('/login', validateLogin, async (req, res, next) => {
       if (user.status === 'pending') {
         return res.status(403).json({
           success: false,
-          message: 'Your faculty account registration is pending institutional verification or administrator approval. Please contact the College Administration.',
+          message: 'Your account registration is pending institutional verification or administrator approval. Please contact the College Administration.',
           code: 'ACCOUNT_PENDING',
         });
       }

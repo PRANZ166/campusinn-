@@ -239,14 +239,129 @@ function validateAdminFacultyRegister(req, res, next) {
   next();
 }
 
+/**
+ * Validate Event/Club Coordinator Registration Payload
+ */
+function validateCoordinatorRegister(req, res, next) {
+  const {
+    fullName,
+    email,
+    password,
+    department,
+    clubName,
+  } = req.body || {};
+
+  const errors = [];
+
+  if (!fullName || typeof fullName !== 'string' || fullName.trim().length < 2) {
+    errors.push('Full name must be at least 2 characters.');
+  }
+
+  if (!email || !validateEmail(email)) {
+    errors.push('A valid institutional email address is required.');
+  } else {
+    const cleanEmail = email.trim().toLowerCase();
+    const isInstitutional = /@(?:[a-zA-Z0-9-]+\.)*(?:met\.edu|campus\.edu\.in|edu\.in|ac\.in|edu)$/i.test(cleanEmail);
+    if (!isInstitutional) {
+      return res.status(400).json({
+        success: false,
+        message: 'Coordinator registration requires an accredited institutional email address (e.g., @met.edu, @campus.edu.in).',
+        code: 'INVALID_INSTITUTIONAL_EMAIL',
+      });
+    }
+  }
+
+  if (!password || typeof password !== 'string' || password.length < 8) {
+    errors.push('Password must be at least 8 characters long.');
+  } else {
+    const hasLetter = /[a-zA-Z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    if (!hasLetter || !hasNumber) {
+      errors.push('Password must contain at least one letter and one number.');
+    }
+  }
+
+  if (!department || typeof department !== 'string' || department.trim().length < 2) {
+    errors.push('Academic Department is required.');
+  }
+
+  if (errors.length > 0) {
+    return res.status(400).json({
+      success: false,
+      message: errors.join(' '),
+      code: 'VALIDATION_FAILED',
+      errors,
+    });
+  }
+
+  next();
+}
+
+/**
+ * Validate Company/HR Recruiter Registration Payload
+ */
+function validateRecruiterRegister(req, res, next) {
+  const {
+    fullName,
+    recruiterName,
+    email,
+    password,
+    companyName,
+    designation,
+  } = req.body || {};
+
+  const errors = [];
+  const name = (fullName || recruiterName || '').trim();
+
+  if (!name || name.length < 2) {
+    errors.push('Recruiter name must be at least 2 characters.');
+  }
+
+  if (!email || !validateEmail(email)) {
+    errors.push('A valid corporate work email address is required.');
+  }
+
+  if (!password || typeof password !== 'string' || password.length < 8) {
+    errors.push('Password must be at least 8 characters long.');
+  } else {
+    const hasLetter = /[a-zA-Z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    if (!hasLetter || !hasNumber) {
+      errors.push('Password must contain at least one letter and one number.');
+    }
+  }
+
+  if (!companyName || typeof companyName !== 'string' || companyName.trim().length < 2) {
+    errors.push('Company name is required.');
+  }
+
+  if (!designation || typeof designation !== 'string' || designation.trim().length < 2) {
+    errors.push('Designation / Job title is required.');
+  }
+
+  if (errors.length > 0) {
+    return res.status(400).json({
+      success: false,
+      message: errors.join(' '),
+      code: 'VALIDATION_FAILED',
+      errors,
+    });
+  }
+
+  next();
+}
+
 module.exports = {
   validateEmail,
   sanitizeString,
   validateStudentRegister,
   validateFacultyRegister,
   validateAdminFacultyRegister,
+  validateCoordinatorRegister,
+  validateRecruiterRegister,
   validateLogin,
   validateForgotPassword,
   validateResetPassword,
 };
+
 
