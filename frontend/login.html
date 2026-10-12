@@ -753,6 +753,15 @@
         <span class="text-xs text-secondary mt-0.5">A 15-minute single-use reset link will be dispatched to this address.</span>
       </div>
 
+      <div class="flex flex-col gap-1.5">
+        <label for="forgotIdInput" class="font-label-md text-label-md text-on-surface">Roll Number / Employee ID (Optional)</label>
+        <div class="relative flex items-center">
+          <span class="material-symbols-outlined absolute left-3.5 text-secondary text-[20px] pointer-events-none">badge</span>
+          <input type="text" id="forgotIdInput" placeholder="e.g. CI-101, EMP-042 (if email is shared)" class="w-full pl-11 pr-4 py-3.5 bg-surface-container-lowest rounded-xl border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm">
+        </div>
+        <span class="text-xs text-secondary mt-0.5">Required if multiple accounts share this email address.</span>
+      </div>
+
       <div class="flex flex-col gap-2 pt-2">
         <button type="submit" id="btnSubmitForgot" class="w-full py-3.5 px-5 rounded-xl bg-primary text-white font-semibold text-body-md shadow-md hover:bg-primary-container transition-all flex items-center justify-center gap-2 group cursor-pointer active:scale-[0.99]">
           <span class="material-symbols-outlined text-[20px]" id="forgotSubmitIcon">send</span>
@@ -1516,7 +1525,8 @@ document.addEventListener('DOMContentLoaded', () => {
     forgotStatusBanner?.classList.add('hidden');
 
     try {
-      const res = await window.CampusInnAPI.auth.forgotPassword(email);
+      const identifier = document.getElementById('forgotIdInput')?.value.trim() || null;
+      const res = await window.CampusInnAPI.auth.forgotPassword(email, identifier);
 
       if (res.data && res.data.success) {
         if (forgotStatusBanner && forgotStatusMsg && forgotStatusIcon) {

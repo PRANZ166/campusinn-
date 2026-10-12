@@ -237,6 +237,11 @@ const Auth = (() => {
       window.location.replace(redirectUrl);
       return false;
     }
+    if (session.status && session.status !== 'active') {
+      clearSession();
+      window.location.replace('login.html?status=' + encodeURIComponent(session.status));
+      return false;
+    }
     if (allowedRoles && allowedRoles.length > 0) {
       if (!allowedRoles.includes(session.role)) {
         window.location.replace(getDashboardUrl());

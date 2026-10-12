@@ -22,7 +22,7 @@ const config = {
   },
 
   frontendUrl: process.env.FRONTEND_URL || (process.env.NODE_ENV === 'production'
-    ? 'https://campusinn-frontend-9nxrritaj-pranz.vercel.app'
+    ? 'https://campusinn-frontend-tau.vercel.app'
     : 'http://localhost:5500'),
 
   email: {
@@ -44,6 +44,7 @@ const config = {
   cors: {
     // Explicit trusted origins from config or environment
     origins: [
+      'https://campusinn-frontend-tau.vercel.app',
       'https://campusinn-frontend-9nxrritaj-pranz.vercel.app',
       'https://campus-inn-backend.onrender.com',
       ...(process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : []),

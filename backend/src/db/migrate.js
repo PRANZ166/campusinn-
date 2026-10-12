@@ -94,7 +94,7 @@ CREATE TABLE IF NOT EXISTS users (
   updated_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email ON users (LOWER(email));
+CREATE INDEX IF NOT EXISTS idx_users_email ON users (LOWER(email));
 CREATE INDEX IF NOT EXISTS idx_users_role ON users (role);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_users_google_id ON users (google_id) WHERE google_id IS NOT NULL;
 
@@ -712,6 +712,23 @@ CREATE TABLE IF NOT EXISTS event_photos (
 );
 `;
 
+const MIGRATION_007_SQL = `
+DROP INDEX IF EXISTS idx_users_email;
+CREATE INDEX IF NOT EXISTS idx_users_email ON users (LOWER(email));
+ALTER TABLE users ADD COLUMN IF NOT EXISTS username VARCHAR(100);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_users_username ON users (LOWER(username)) WHERE username IS NOT NULL;
+UPDATE users u
+SET username = sp.roll_number
+FROM student_profiles sp
+WHERE sp.user_id = u.id AND u.username IS NULL AND sp.roll_number IS NOT NULL;
+UPDATE users u
+SET username = fp.employee_id
+FROM faculty_profiles fp
+WHERE fp.user_id = u.id AND u.username IS NULL AND fp.employee_id IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_student_profiles_roll ON student_profiles (UPPER(roll_number));
+CREATE UNIQUE INDEX IF NOT EXISTS idx_faculty_profiles_emp_id ON faculty_profiles (LOWER(employee_id)) WHERE employee_id IS NOT NULL;
+`;
+
 const MIGRATIONS = [
   {
     name: '001_initial_schema',
@@ -742,6 +759,11 @@ const MIGRATIONS = [
     name: '006_events_freshers_attendance_and_gallery',
     sqlFile: '006_events_freshers_attendance_and_gallery.sql',
     fallbackSql: MIGRATION_006_SQL,
+  },
+  {
+    name: '007_allow_shared_emails_and_account_identifiers',
+    sqlFile: '007_allow_shared_emails_and_account_identifiers.sql',
+    fallbackSql: MIGRATION_007_SQL,
   },
 ];
 

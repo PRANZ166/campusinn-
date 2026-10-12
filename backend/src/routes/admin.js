@@ -61,16 +61,6 @@ router.post('/faculty', authenticate, authorize('admin'), validateAdminFacultyRe
     const cleanEmail = email.trim().toLowerCase();
     const cleanEmpId = employeeId ? employeeId.trim() : null;
 
-    // Check email uniqueness
-    const existingEmail = await query('SELECT id FROM users WHERE LOWER(email) = $1', [cleanEmail]);
-    if (existingEmail.rows.length > 0) {
-      return res.status(409).json({
-        success: false,
-        message: 'An account with this email address already exists.',
-        code: 'EMAIL_ALREADY_EXISTS',
-      });
-    }
-
     // Check employeeId uniqueness if provided
     if (cleanEmpId) {
       const existingEmp = await query('SELECT id FROM faculty_profiles WHERE LOWER(employee_id) = LOWER($1)', [cleanEmpId]);
@@ -95,12 +85,13 @@ router.post('/faculty', authenticate, authorize('admin'), validateAdminFacultyRe
     if (!lastName) lastName = 'Member';
 
     const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
+    const cleanUsername = cleanEmpId ? cleanEmpId.toLowerCase() : null;
 
     const userRes = await query(
-      `INSERT INTO users (email, password_hash, role, status, first_name, last_name, phone, created_at, updated_at)
-       VALUES ($1, $2, 'faculty', $3, $4, $5, $6, NOW(), NOW())
-       RETURNING id, email, role, status, first_name, last_name, phone, created_at`,
-      [cleanEmail, passwordHash, status, firstName, lastName, phone ? phone.trim() : null]
+      `INSERT INTO users (email, password_hash, role, status, first_name, last_name, phone, username, created_at, updated_at)
+       VALUES ($1, $2, 'faculty', $3, $4, $5, $6, $7, NOW(), NOW())
+       RETURNING id, email, role, status, first_name, last_name, phone, username, created_at`,
+      [cleanEmail, passwordHash, status, firstName, lastName, phone ? phone.trim() : null, cleanUsername]
     );
     const newUser = userRes.rows[0];
 

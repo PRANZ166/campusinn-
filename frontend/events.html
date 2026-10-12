@@ -1794,7 +1794,14 @@ document.addEventListener('DOMContentLoaded', async () => {
           if (realUtsav) {
             openUnifiedRegisterModal(realUtsav);
           } else {
-            openModal('metUtsavModal');
+            openUnifiedRegisterModal({
+              id: 'evt-utsav-2026',
+              title: 'MET UTSAV 2026: Annual Cultural & Arts Extravaganza',
+              category: 'Flagship Cultural',
+              venue: 'Main Amphitheatre, MET BKC Campus',
+              date: '24 - 26 Feb 2026',
+              max_participants: 1200
+            });
           }
         };
       }

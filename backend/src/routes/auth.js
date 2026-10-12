@@ -73,12 +73,32 @@ router.post('/register/student', validateStudentRegister, async (req, res, next)
 
     const normalizedEmail = email.trim().toLowerCase();
 
-    // Check if email already registered
-    const existing = await query('SELECT id FROM users WHERE LOWER(email) = $1', [normalizedEmail]);
-    if (existing.rows.length > 0) {
+    // Auto-generate unique student roll number if not explicitly provided
+    const cleanRoll = rollNumber && rollNumber.trim().length > 0
+      ? rollNumber.trim().toUpperCase()
+      : `CI-${Date.now().toString().slice(-6)}-${Math.floor(100 + Math.random() * 900)}`;
+
+    // 1. Roll numbers must be strictly unique per student account
+    const existingRoll = await query(
+      'SELECT id FROM student_profiles WHERE UPPER(roll_number) = UPPER($1)',
+      [cleanRoll]
+    );
+    if (existingRoll.rows.length > 0) {
       return res.status(409).json({
         success: false,
-        message: 'An account with this email address already exists.',
+        message: `A student account with roll number "${cleanRoll}" already exists.`,
+        code: 'DUPLICATE_ROLL_NUMBER',
+      });
+    }
+
+    // 2. Assign unique username (derived from roll number or explicit username)
+    const cleanUsername = (req.body.username || cleanRoll).trim().toLowerCase();
+    const existingUser = await query('SELECT id FROM users WHERE LOWER(username) = $1', [cleanUsername]);
+    if (existingUser.rows.length > 0) {
+      return res.status(409).json({
+        success: false,
+        message: `An account with username "${cleanUsername}" already exists.`,
+        code: 'DUPLICATE_USERNAME',
       });
     }
 
@@ -98,19 +118,14 @@ router.post('/register/student', validateStudentRegister, async (req, res, next)
     // Hash password
     const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
 
-    // Insert user
+    // Insert user (email is normalized; shared email across separate accounts permitted)
     const userRes = await query(
-      `INSERT INTO users (email, password_hash, role, first_name, last_name, phone)
-       VALUES ($1, $2, 'student', $3, $4, $5)
-       RETURNING id, email, role, first_name, last_name, phone`,
-      [normalizedEmail, passwordHash, firstName, lastName, phone || null]
+      `INSERT INTO users (email, password_hash, role, first_name, last_name, phone, username)
+       VALUES ($1, $2, 'student', $3, $4, $5, $6)
+       RETURNING id, email, role, first_name, last_name, phone, username`,
+      [normalizedEmail, passwordHash, firstName, lastName, phone || null, cleanUsername]
     );
     const newUser = userRes.rows[0];
-
-    // Auto-generate unique student roll number if not explicitly provided
-    const cleanRoll = rollNumber && rollNumber.trim().length > 0
-      ? rollNumber.trim().toUpperCase()
-      : `CI-${Date.now().toString().slice(-6)}-${Math.floor(100 + Math.random() * 900)}`;
 
     // Insert student profile
     const profileRes = await query(
@@ -130,16 +145,17 @@ router.post('/register/student', validateStudentRegister, async (req, res, next)
       ]
     );
 
+    const sp = profileRes.rows[0] || {};
     const { token, user } = generateTokenAndPayload(newUser, {
-      rollNumber: profileRes.rows[0].roll_number,
-      college: profileRes.rows[0].college,
-      department: profileRes.rows[0].department,
-      program: profileRes.rows[0].program,
-      academicYear: profileRes.rows[0].academic_year,
-      semester: profileRes.rows[0].semester,
-      roleLabel: profileRes.rows[0].role_label,
-      cgpa: profileRes.rows[0].cgpa,
-      backlogs: profileRes.rows[0].backlogs,
+      rollNumber: sp.roll_number,
+      college: sp.college,
+      department: sp.department,
+      program: sp.program,
+      academicYear: sp.academic_year,
+      semester: sp.semester,
+      roleLabel: sp.role_label,
+      cgpa: sp.cgpa,
+      backlogs: sp.backlogs,
     });
 
     res.cookie('ci_session', token, {
@@ -183,23 +199,24 @@ router.post('/register/faculty', validateFacultyRegister, async (req, res, next)
     const cleanEmail = email.trim().toLowerCase();
     const cleanEmpId = employeeId.trim();
 
-    // 1. Check if email is already registered
-    const existingEmail = await query('SELECT id FROM users WHERE LOWER(email) = $1', [cleanEmail]);
-    if (existingEmail.rows.length > 0) {
-      return res.status(409).json({
-        success: false,
-        message: 'An account with this email address already exists.',
-        code: 'EMAIL_ALREADY_EXISTS',
-      });
-    }
-
-    // 2. Check if employeeId is already registered
+    // 1. Check if employeeId is already registered (must be strictly unique per faculty member)
     const existingEmpId = await query('SELECT id FROM faculty_profiles WHERE LOWER(employee_id) = LOWER($1)', [cleanEmpId]);
     if (existingEmpId.rows.length > 0) {
       return res.status(409).json({
         success: false,
         message: 'A faculty member with this employee ID is already registered.',
         code: 'EMPLOYEE_ID_ALREADY_EXISTS',
+      });
+    }
+
+    // 2. Check if username already exists
+    const cleanUsername = cleanEmpId.toLowerCase();
+    const existingUsername = await query('SELECT id FROM users WHERE LOWER(username) = $1', [cleanUsername]);
+    if (existingUsername.rows.length > 0) {
+      return res.status(409).json({
+        success: false,
+        message: 'An account with this employee ID username already exists.',
+        code: 'DUPLICATE_USERNAME',
       });
     }
 
@@ -212,12 +229,12 @@ router.post('/register/faculty', validateFacultyRegister, async (req, res, next)
     // 4. Hash password securely
     const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
 
-    // 5. Insert user with 'pending' status awaiting institutional/admin approval
+    // 5. Insert user with 'pending' status awaiting institutional/admin approval (email can be shared)
     const userRes = await query(
-      `INSERT INTO users (email, password_hash, role, status, first_name, last_name, phone, created_at, updated_at)
-       VALUES ($1, $2, 'faculty', 'pending', $3, $4, $5, NOW(), NOW())
-       RETURNING id, email, role, status, first_name, last_name, phone, created_at`,
-      [cleanEmail, passwordHash, firstName, lastName, phone ? phone.trim() : null]
+      `INSERT INTO users (email, password_hash, role, status, first_name, last_name, phone, username, created_at, updated_at)
+       VALUES ($1, $2, 'faculty', 'pending', $3, $4, $5, $6, NOW(), NOW())
+       RETURNING id, email, role, status, first_name, last_name, phone, username, created_at`,
+      [cleanEmail, passwordHash, firstName, lastName, phone ? phone.trim() : null, cleanUsername]
     );
     const newUser = userRes.rows[0];
 
@@ -282,32 +299,34 @@ router.post('/register/coordinator', validateCoordinatorRegister, async (req, re
     } = req.body;
 
     const cleanEmail = email.trim().toLowerCase();
+    const cleanUsername = req.body.username ? req.body.username.trim().toLowerCase() : null;
 
-    // 1. Check if email is already registered
-    const existingEmail = await query('SELECT id FROM users WHERE LOWER(email) = $1', [cleanEmail]);
-    if (existingEmail.rows.length > 0) {
-      return res.status(409).json({
-        success: false,
-        message: 'An account with this email address already exists.',
-        code: 'EMAIL_ALREADY_EXISTS',
-      });
+    if (cleanUsername) {
+      const existingUsername = await query('SELECT id FROM users WHERE LOWER(username) = $1', [cleanUsername]);
+      if (existingUsername.rows.length > 0) {
+        return res.status(409).json({
+          success: false,
+          message: `An account with username "${cleanUsername}" already exists.`,
+          code: 'DUPLICATE_USERNAME',
+        });
+      }
     }
 
-    // 2. Name mapping: use validated names without hardcoded fallbacks
+    // 1. Name mapping: use validated names without hardcoded fallbacks
     const resolvedName = (fullName || '').trim();
     const parts = resolvedName.split(/\s+/);
     const firstName = req.body.firstName || parts[0];
     const lastName = req.body.lastName !== undefined ? req.body.lastName : (parts.slice(1).join(' ') || '');
 
-    // 3. Hash password securely
+    // 2. Hash password securely
     const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
 
-    // 4. Insert user with 'pending' status awaiting administrative approval
+    // 3. Insert user with 'pending' status awaiting administrative approval (email can be shared)
     const userRes = await query(
-      `INSERT INTO users (email, password_hash, role, status, first_name, last_name, phone, created_at, updated_at)
-       VALUES ($1, $2, 'coordinator', 'pending', $3, $4, $5, NOW(), NOW())
-       RETURNING id, email, role, status, first_name, last_name, phone, created_at`,
-      [cleanEmail, passwordHash, firstName, lastName, phone ? phone.trim() : null]
+      `INSERT INTO users (email, password_hash, role, status, first_name, last_name, phone, username, created_at, updated_at)
+       VALUES ($1, $2, 'coordinator', 'pending', $3, $4, $5, $6, NOW(), NOW())
+       RETURNING id, email, role, status, first_name, last_name, phone, username, created_at`,
+      [cleanEmail, passwordHash, firstName, lastName, phone ? phone.trim() : null, cleanUsername]
     );
     const newUser = userRes.rows[0];
 
@@ -371,32 +390,34 @@ router.post('/register/recruiter', validateRecruiterRegister, async (req, res, n
 
     const cleanEmail = email.trim().toLowerCase();
     const cleanCompany = (companyName || '').trim();
+    const cleanUsername = req.body.username ? req.body.username.trim().toLowerCase() : null;
 
-    // 1. Check if email is already registered
-    const existingEmail = await query('SELECT id FROM users WHERE LOWER(email) = $1', [cleanEmail]);
-    if (existingEmail.rows.length > 0) {
-      return res.status(409).json({
-        success: false,
-        message: 'An account with this corporate work email already exists.',
-        code: 'EMAIL_ALREADY_EXISTS',
-      });
+    if (cleanUsername) {
+      const existingUsername = await query('SELECT id FROM users WHERE LOWER(username) = $1', [cleanUsername]);
+      if (existingUsername.rows.length > 0) {
+        return res.status(409).json({
+          success: false,
+          message: `An account with username "${cleanUsername}" already exists.`,
+          code: 'DUPLICATE_USERNAME',
+        });
+      }
     }
 
-    // 2. Name mapping: use validated names without hardcoded fallbacks
+    // 1. Name mapping: use validated names without hardcoded fallbacks
     const rawName = (fullName || recruiterName || '').trim();
     const parts = rawName.split(/\s+/);
     const firstName = req.body.firstName || parts[0];
     const lastName = req.body.lastName !== undefined ? req.body.lastName : (parts.slice(1).join(' ') || '');
 
-    // 3. Hash password securely
+    // 2. Hash password securely
     const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
 
-    // 4. Insert user with 'pending' status awaiting TPO / admin approval
+    // 3. Insert user with 'pending' status awaiting TPO / admin approval (corporate emails can be shared across HR team)
     const userRes = await query(
-      `INSERT INTO users (email, password_hash, role, status, first_name, last_name, phone, created_at, updated_at)
-       VALUES ($1, $2, 'recruiter', 'pending', $3, $4, $5, NOW(), NOW())
-       RETURNING id, email, role, status, first_name, last_name, phone, created_at`,
-      [cleanEmail, passwordHash, firstName, lastName, phone ? phone.trim() : null]
+      `INSERT INTO users (email, password_hash, role, status, first_name, last_name, phone, username, created_at, updated_at)
+       VALUES ($1, $2, 'recruiter', 'pending', $3, $4, $5, $6, NOW(), NOW())
+       RETURNING id, email, role, status, first_name, last_name, phone, username, created_at`,
+      [cleanEmail, passwordHash, firstName, lastName, phone ? phone.trim() : null, cleanUsername]
     );
     const newUser = userRes.rows[0];
 
@@ -493,37 +514,84 @@ router.post('/register/tpo', (req, res) => {
 router.post('/login', validateLogin, async (req, res, next) => {
   try {
     const { identifier, password, role } = req.body;
-    const cleanId = (identifier || '').trim().toLowerCase();
+    const cleanId = (identifier || '').trim();
+    const lowerId = cleanId.toLowerCase();
     const requestedRole = (role || '').trim().toLowerCase();
 
-    // 1. Find user by email
+    // Unambiguous Account Identification Strategy:
+    // 1. Check student_profiles roll_number (strictly unique per student)
     let userResult = await query(
-      `SELECT u.id, u.email, u.password_hash, u.role, u.status, u.first_name, u.last_name, u.phone, u.avatar_url
+      `SELECT u.id, u.email, u.password_hash, u.role, u.status, u.first_name, u.last_name, u.phone, u.avatar_url, u.username
        FROM users u
-       WHERE LOWER(u.email) = $1`,
-      [cleanId]
-    );
+       JOIN student_profiles sp ON sp.user_id = u.id
+       WHERE LOWER(sp.roll_number) = $1`,
+      [lowerId]
+    ).catch(() => ({ rows: [] }));
 
-    // 2. If not found, check student_profiles roll_number
+    // 2. Check faculty_profiles employee_id (strictly unique per faculty member)
     if (userResult.rows.length === 0) {
       userResult = await query(
-        `SELECT u.id, u.email, u.password_hash, u.role, u.status, u.first_name, u.last_name, u.phone, u.avatar_url
-         FROM users u
-         JOIN student_profiles sp ON sp.user_id = u.id
-         WHERE LOWER(sp.roll_number) = $1`,
-        [cleanId]
-      ).catch(() => ({ rows: [] }));
-    }
-
-    // 3. If not found, check faculty_profiles employee_id
-    if (userResult.rows.length === 0) {
-      userResult = await query(
-        `SELECT u.id, u.email, u.password_hash, u.role, u.status, u.first_name, u.last_name, u.phone, u.avatar_url
+        `SELECT u.id, u.email, u.password_hash, u.role, u.status, u.first_name, u.last_name, u.phone, u.avatar_url, u.username
          FROM users u
          JOIN faculty_profiles fp ON fp.user_id = u.id
          WHERE LOWER(fp.employee_id) = $1`,
-        [cleanId]
+        [lowerId]
       ).catch(() => ({ rows: [] }));
+    }
+
+    // 3. Check unique username in users table
+    if (userResult.rows.length === 0) {
+      userResult = await query(
+        `SELECT u.id, u.email, u.password_hash, u.role, u.status, u.first_name, u.last_name, u.phone, u.avatar_url, u.username
+         FROM users u
+         WHERE LOWER(u.username) = $1`,
+        [lowerId]
+      ).catch(() => ({ rows: [] }));
+    }
+
+    // 4. Check email address across accounts
+    if (userResult.rows.length === 0) {
+      const emailMatches = await query(
+        `SELECT u.id, u.email, u.password_hash, u.role, u.status, u.first_name, u.last_name, u.phone, u.avatar_url, u.username
+         FROM users u
+         WHERE LOWER(u.email) = $1`,
+        [lowerId]
+      ).catch(() => ({ rows: [] }));
+
+      if (emailMatches.rows.length === 1) {
+        // Exactly one account with this email: completely unambiguous
+        userResult = emailMatches;
+      } else if (emailMatches.rows.length > 1) {
+        // Multiple accounts share this email address: disambiguate safely
+        if (requestedRole) {
+          const roleMatches = emailMatches.rows.filter(r => r.role === requestedRole);
+          if (roleMatches.length === 1) {
+            userResult = { rows: roleMatches };
+          } else if (roleMatches.length > 1) {
+            // Multiple accounts with this email share the same role
+            return res.status(409).json({
+              success: false,
+              message: 'Multiple accounts share this email address. Please sign in using your Roll Number or Employee ID.',
+              code: 'AMBIGUOUS_EMAIL_LOGIN',
+              requiresIdentifier: true,
+            });
+          } else {
+            // Email exists, but not for the selected role tab
+            return res.status(401).json({
+              success: false,
+              message: `No ${requestedRole} account found for this email address. Please verify your role or credentials.`,
+              code: 'ROLE_MISMATCH',
+            });
+          }
+        } else {
+          return res.status(409).json({
+            success: false,
+            message: 'Multiple accounts share this email address. Please select your role or sign in using your Roll Number or Employee ID.',
+            code: 'AMBIGUOUS_EMAIL_LOGIN',
+            requiresIdentifier: true,
+          });
+        }
+      }
     }
 
     if (userResult.rows.length === 0) {
@@ -532,7 +600,7 @@ router.post('/login', validateLogin, async (req, res, next) => {
         success: false,
         message: isFacultyReq
           ? 'Invalid credentials. Please verify your faculty email or ID.'
-          : 'Invalid credentials. Please verify your email or roll number.',
+          : 'Invalid credentials. Please verify your roll number, username, or college email.',
         code: 'INVALID_CREDENTIALS',
       });
     }
@@ -937,7 +1005,7 @@ async function findOrCreateGoogleUser(googlePayload) {
       [normalizedEmail]
     ).catch(() => ({ rows: [] }));
 
-    if (emailRes.rows.length > 0) {
+    if (emailRes.rows.length === 1) {
       user = emailRes.rows[0];
       // Securely link existing account with Google ID if not linked yet
       if (!user.google_id) {
@@ -947,6 +1015,9 @@ async function findOrCreateGoogleUser(googlePayload) {
           user.id,
         ]).catch(() => {});
       }
+    } else if (emailRes.rows.length > 1) {
+      // Multiple accounts share this email: do not guess
+      throw new Error('Multiple accounts share this email address. Please sign in using your Roll Number or Employee ID and password to link your Google account.');
     }
   }
 
@@ -1220,8 +1291,9 @@ router.post('/google-sso', async (req, res, next) => {
  */
 router.post('/forgot-password', validateForgotPassword, async (req, res, next) => {
   try {
-    const { email } = req.body;
+    const { email, identifier } = req.body;
     const normalizedEmail = email.trim().toLowerCase();
+    const cleanId = (identifier || req.body.rollNumber || req.body.employeeId || '').trim().toLowerCase();
 
     // Verify SMTP service configuration
     if (!emailService.isConfigured()) {
@@ -1239,11 +1311,16 @@ router.post('/forgot-password', validateForgotPassword, async (req, res, next) =
       message: 'If an account exists with this email address, password reset instructions have been sent.',
     };
 
-    // Lookup user by normalized email
+    // Lookup users by normalized email, including profile roll numbers and employee IDs
     let userRes;
     try {
       userRes = await query(
-        'SELECT id, email, first_name, status FROM users WHERE LOWER(email) = $1',
+        `SELECT u.id, u.email, u.first_name, u.status, u.role, u.username,
+                sp.roll_number, fp.employee_id
+         FROM users u
+         LEFT JOIN student_profiles sp ON sp.user_id = u.id
+         LEFT JOIN faculty_profiles fp ON fp.user_id = u.id
+         WHERE LOWER(u.email) = $1`,
         [normalizedEmail]
       );
     } catch (dbErr) {
@@ -1255,12 +1332,42 @@ router.post('/forgot-password', validateForgotPassword, async (req, res, next) =
       });
     }
 
-    // If user does not exist or account is inactive, return generic response without revealing existence
-    if (userRes.rows.length === 0 || userRes.rows[0].status !== 'active') {
+    if (userRes.rows.length === 0) {
       return res.status(200).json(genericResponse);
     }
 
-    const user = userRes.rows[0];
+    let user = null;
+    if (userRes.rows.length === 1) {
+      user = userRes.rows[0];
+    } else {
+      // Multiple accounts share this email address: require unique identifier
+      if (!cleanId) {
+        return res.status(400).json({
+          success: false,
+          message: 'Multiple accounts share this email address. Please specify your Roll Number or Employee ID to identify which account to reset.',
+          code: 'AMBIGUOUS_EMAIL_RECOVERY',
+          requiresIdentifier: true,
+        });
+      }
+      const matched = userRes.rows.find(u =>
+        (u.roll_number && u.roll_number.toLowerCase() === cleanId) ||
+        (u.employee_id && u.employee_id.toLowerCase() === cleanId) ||
+        (u.username && u.username.toLowerCase() === cleanId)
+      );
+      if (!matched) {
+        return res.status(400).json({
+          success: false,
+          message: 'The provided Roll Number or Employee ID does not match any account associated with this email address.',
+          code: 'IDENTIFIER_MISMATCH',
+        });
+      }
+      user = matched;
+    }
+
+    // Inactive account check
+    if (user.status !== 'active') {
+      return res.status(200).json(genericResponse);
+    }
 
     // Anti-flooding: check if an unexpired token was created in the last 60 seconds
     const recentToken = await query(

@@ -557,7 +557,7 @@ describe('Campus Inn+ Backend API Suite', () => {
       const sendEmailSpy = jest.spyOn(emailService, 'sendPasswordResetEmail').mockResolvedValue({ success: true, messageId: 'test-msg-1' });
 
       const querySpy = jest.spyOn(require('../src/db/pool').pool, 'query').mockImplementation((sql) => {
-        if (typeof sql === 'string' && sql.includes('FROM users WHERE LOWER(email) = $1')) {
+        if (typeof sql === 'string' && sql.includes('FROM users') && (sql.includes('email') || sql.includes('LOWER(u.email)'))) {
           return Promise.resolve({
             rows: [{ id: 'user_priya_1', email: 'priya.sharma@met.edu', first_name: 'Priya', status: 'active' }]
           });
@@ -591,7 +591,7 @@ describe('Campus Inn+ Backend API Suite', () => {
       const sendEmailSpy = jest.spyOn(emailService, 'sendPasswordResetEmail').mockResolvedValue({ success: true });
 
       const querySpy = jest.spyOn(require('../src/db/pool').pool, 'query').mockImplementation((sql) => {
-        if (typeof sql === 'string' && sql.includes('FROM users WHERE LOWER(email) = $1')) {
+        if (typeof sql === 'string' && sql.includes('FROM users') && (sql.includes('email') || sql.includes('LOWER(u.email)'))) {
           return Promise.resolve({
             rows: [{ id: 'user_priya_1', email: 'priya.sharma@met.edu', first_name: 'Priya', status: 'active' }]
           });
@@ -620,7 +620,7 @@ describe('Campus Inn+ Backend API Suite', () => {
       const sendEmailSpy = jest.spyOn(emailService, 'sendPasswordResetEmail').mockRejectedValue(new Error('SMTP connection timeout'));
 
       const querySpy = jest.spyOn(require('../src/db/pool').pool, 'query').mockImplementation((sql) => {
-        if (typeof sql === 'string' && sql.includes('FROM users WHERE LOWER(email) = $1')) {
+        if (typeof sql === 'string' && sql.includes('FROM users') && (sql.includes('email') || sql.includes('LOWER(u.email)'))) {
           return Promise.resolve({
             rows: [{ id: 'user_priya_1', email: 'priya.sharma@met.edu', first_name: 'Priya', status: 'active' }]
           });
@@ -1231,7 +1231,7 @@ describe('Campus Inn+ Backend API Suite', () => {
           return Promise.resolve({
             rows: [{
               user_id: params[0],
-              employee_id: params[1] || params[5],
+              employee_id: params[5] || params[1],
               department: params[3] || 'Computer Engineering & IT',
               designation: params[4] || 'Assistant Professor',
               college: params[2] || 'MET Institute of Engineering, Nashik',
@@ -1431,7 +1431,7 @@ describe('Campus Inn+ Backend API Suite', () => {
       expect(res.body.faculty.status).toEqual('active');
     });
 
-    it('11. Provisioning rejects duplicate institutional email addresses', async () => {
+    it('11. Provisioning allows shared institutional email for distinct faculty with different employee IDs', async () => {
       const res = await request(app)
         .post('/api/v1/admin/faculty')
         .set('Authorization', `Bearer ${adminToken}`)
@@ -1443,8 +1443,10 @@ describe('Campus Inn+ Backend API Suite', () => {
           employeeId: 'EMP999',
         });
 
-      expect(res.statusCode).toEqual(409);
-      expect(res.body.code).toEqual('EMAIL_ALREADY_EXISTS');
+      expect(res.statusCode).toEqual(201);
+      expect(res.body.success).toBe(true);
+      expect(res.body.faculty.email).toEqual('dr.rajesh@met.edu');
+      expect(res.body.faculty.employeeId).toEqual('EMP999');
     });
 
     it('12. Provisioning rejects duplicate employee IDs', async () => {
@@ -1723,18 +1725,20 @@ describe('Campus Inn+ Backend API Suite', () => {
       expect(res.body.code).toEqual('INVALID_INSTITUTIONAL_EMAIL');
     });
 
-    it('3. Coordinator self-registration rejects duplicate institutional email', async () => {
+    it('3. Coordinator self-registration allows shared institutional email and creates pending account', async () => {
       const res = await request(app)
         .post('/api/v1/auth/register/coordinator')
         .send({
-          fullName: 'Duplicate Person',
+          fullName: 'Second Coordinator',
           email: 'vikram.coordinator@met.edu',
           password: 'Password123',
           department: 'Robotics',
         });
 
-      expect(res.statusCode).toEqual(409);
-      expect(res.body.code).toEqual('EMAIL_ALREADY_EXISTS');
+      expect(res.statusCode).toEqual(201);
+      expect(res.body.success).toBe(true);
+      expect(res.body.user.role).toEqual('coordinator');
+      expect(res.body.user.status).toEqual('pending');
     });
 
     it('4. Unapproved pending coordinator cannot log into the coordinator portal', async () => {
@@ -1785,19 +1789,21 @@ describe('Campus Inn+ Backend API Suite', () => {
       expect(res.body.code).toEqual('VALIDATION_FAILED');
     });
 
-    it('7. Recruiter self-registration rejects duplicate email', async () => {
+    it('7. Recruiter self-registration allows shared email and creates pending recruiter account', async () => {
       const res = await request(app)
         .post('/api/v1/auth/register/recruiter')
         .send({
-          fullName: 'Ananya Duplicate',
+          fullName: 'Ananya Second',
           email: 'ananya@techcorp-solutions.io',
           password: 'Password123',
           companyName: 'TechCorp Solutions Inc.',
           designation: 'Recruiter',
         });
 
-      expect(res.statusCode).toEqual(409);
-      expect(res.body.code).toEqual('EMAIL_ALREADY_EXISTS');
+      expect(res.statusCode).toEqual(201);
+      expect(res.body.success).toBe(true);
+      expect(res.body.user.role).toEqual('recruiter');
+      expect(res.body.user.status).toEqual('pending');
     });
 
     it('8. Unapproved pending recruiter cannot log in', async () => {
@@ -1845,6 +1851,7 @@ describe('Campus Inn+ Backend API Suite', () => {
   describe('Universal Full Name & Registration Validation Suite', () => {
     let regSpy;
     const registeredEmails = new Set();
+    const registeredRolls = new Set();
 
     beforeAll(() => {
       regSpy = jest.spyOn(require('../src/db/pool').pool, 'query').mockImplementation((sql, params) => {
@@ -1854,6 +1861,14 @@ describe('Campus Inn+ Backend API Suite', () => {
         if (sqlStr.includes('FROM users WHERE LOWER(email) = $1')) {
           if (registeredEmails.has(p0)) {
             return Promise.resolve({ rows: [{ id: 'existing-user-id' }] });
+          }
+          return Promise.resolve({ rows: [] });
+        }
+
+        if (sqlStr.includes('SELECT') && sqlStr.includes('student_profiles') && sqlStr.includes('roll_number')) {
+          const roll = (params && params[0] !== undefined ? String(params[0]).trim().toUpperCase() : '');
+          if (registeredRolls.has(roll)) {
+            return Promise.resolve({ rows: [{ id: 'existing-student-profile-id' }] });
           }
           return Promise.resolve({ rows: [] });
         }
@@ -1873,6 +1888,8 @@ describe('Campus Inn+ Backend API Suite', () => {
         }
 
         if (sqlStr.includes('INSERT INTO student_profiles')) {
+          const roll = (params && params[1] !== undefined ? String(params[1]).trim().toUpperCase() : '');
+          registeredRolls.add(roll);
           return Promise.resolve({
             rows: [{
               id: 'new-student-profile-id',
@@ -2072,20 +2089,38 @@ describe('Campus Inn+ Backend API Suite', () => {
       expect(res.body.user.fullName).toEqual('Pranav Zalte');
     });
 
-    it('11. Duplicate registration attempt with same email returns 409', async () => {
+    it('11. Duplicate registration attempt with duplicate roll number returns 409 DUPLICATE_ROLL_NUMBER', async () => {
       const res = await request(app)
         .post('/api/v1/auth/register/student')
         .send({
-          fullName: 'Pranav Zalte',
-          email: 'pranav.zalte@met.edu',
+          fullName: 'Pranav Another',
+          email: 'another.student@met.edu',
           password: 'Password@123',
           phone: '9820123466',
-          rollNumber: '2022CS9011',
+          rollNumber: '2022CS9001', // Already registered in test 1
           department: 'Computer Engineering',
         });
 
       expect(res.statusCode).toEqual(409);
       expect(res.body.success).toBe(false);
+      expect(res.body.code).toEqual('DUPLICATE_ROLL_NUMBER');
+    });
+
+    it('12. Registration with shared email but unique roll number succeeds (201)', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/register/student')
+        .send({
+          fullName: 'Pranav Sibling',
+          email: 'pranav.zalte@met.edu', // Same email as test 1
+          password: 'Password@123',
+          phone: '9820123467',
+          rollNumber: '2022CS9011', // Unique roll number
+          department: 'Computer Engineering',
+        });
+
+      expect(res.statusCode).toEqual(201);
+      expect(res.body.success).toBe(true);
+      expect(res.body.user.email).toEqual('pranav.zalte@met.edu');
     });
   });
 
@@ -2664,6 +2699,282 @@ describe('Campus Inn+ Backend API Suite', () => {
       expect(res.body.studentDepartment).toEqual('Computer Engineering');
       expect(Array.isArray(res.body.registeredEvents)).toBe(true);
       expect(Array.isArray(res.body.recordedAttendance)).toBe(true);
+    });
+  });
+
+  describe('Shared Email Accounts, Disambiguation & Identity Invariants Suite', () => {
+    let sharedSpy;
+    const passwordHash = bcrypt.hashSync('SharedSecret@123', 6);
+
+    const studentUser = {
+      id: 'usr-student-shared',
+      email: 'shared.family@met.edu',
+      password_hash: passwordHash,
+      role: 'student',
+      status: 'active',
+      first_name: 'Aarav',
+      last_name: 'Patil',
+      username: '2022CS5555',
+    };
+
+    const facultyUser = {
+      id: 'usr-faculty-shared',
+      email: 'shared.family@met.edu',
+      password_hash: passwordHash,
+      role: 'faculty',
+      status: 'active',
+      first_name: 'Dr. Sunita',
+      last_name: 'Patil',
+      username: 'EMP555',
+    };
+
+    beforeAll(() => {
+      sharedSpy = jest.spyOn(require('../src/db/pool').pool, 'query').mockImplementation((sql, params) => {
+        const sqlStr = typeof sql === 'string' ? sql : (sql && sql.text ? sql.text : '');
+        const p0 = (params && params[0] !== undefined ? String(params[0]).trim() : '');
+
+        // 1. forgot password lookup (joins student_profiles and faculty_profiles)
+        if (sqlStr.includes('student_profiles') && sqlStr.includes('faculty_profiles')) {
+          if (p0.toLowerCase() === 'shared.family@met.edu') {
+            return Promise.resolve({
+              rows: [
+                { ...studentUser, roll_number: '2022CS5555', employee_id: null },
+                { ...facultyUser, roll_number: null, employee_id: 'EMP555' },
+              ],
+            });
+          }
+          return Promise.resolve({ rows: [] });
+        }
+
+        // 2. student roll number lookup
+        if (sqlStr.includes('student_profiles') && sqlStr.includes('roll_number')) {
+          if (p0.toLowerCase() === '2022cs5555') {
+            return Promise.resolve({ rows: [studentUser] });
+          }
+          return Promise.resolve({ rows: [] });
+        }
+
+        // 3. faculty employee ID lookup
+        if (sqlStr.includes('faculty_profiles') && sqlStr.includes('employee_id')) {
+          if (p0.toLowerCase() === 'emp555') {
+            return Promise.resolve({ rows: [facultyUser] });
+          }
+          return Promise.resolve({ rows: [] });
+        }
+
+        // 4. username lookup
+        if (sqlStr.includes('LOWER(u.username)')) {
+          if (p0.toLowerCase() === '2022cs5555') return Promise.resolve({ rows: [studentUser] });
+          if (p0.toLowerCase() === 'emp555') return Promise.resolve({ rows: [facultyUser] });
+          return Promise.resolve({ rows: [] });
+        }
+
+        // 5. email lookup with both accounts sharing email
+        if (sqlStr.includes('LOWER(u.email)')) {
+          if (p0.toLowerCase() === 'shared.family@met.edu') {
+            return Promise.resolve({ rows: [studentUser, facultyUser] });
+          }
+          return Promise.resolve({ rows: [] });
+        }
+
+        if (sqlStr.includes('INSERT INTO password_reset_tokens')) {
+          return Promise.resolve({ rows: [{ id: 'token-reset-shared' }] });
+        }
+
+        if (sqlStr.includes('SELECT * FROM student_profiles WHERE user_id = $1')) {
+          return Promise.resolve({
+            rows: [{
+              roll_number: '2022CS5555',
+              college: 'MET Institute of Engineering',
+              department: 'Computer Engineering',
+              program: 'B.Tech CSE',
+              academic_year: 'Final Year',
+              semester: 'Semester 8',
+              role_label: 'Final Year B.Tech CSE',
+              cgpa: '8.85',
+              backlogs: 0,
+            }],
+          });
+        }
+
+        if (sqlStr.includes('SELECT * FROM faculty_profiles WHERE user_id = $1')) {
+          return Promise.resolve({
+            rows: [{
+              department: 'Mechanical Engineering',
+              designation: 'Associate Professor',
+              college: 'MET Institute of Engineering',
+              role_label: 'Associate Professor',
+              employee_id: 'EMP555',
+            }],
+          });
+        }
+
+        if (sqlStr.includes('UPDATE users SET last_login')) {
+          return Promise.resolve({ rowCount: 1 });
+        }
+
+        return Promise.resolve({ rows: [] });
+      });
+    });
+
+    afterAll(() => {
+      if (sharedSpy) sharedSpy.mockRestore();
+    });
+
+    it('1. Login with shared email without role returns 409 AMBIGUOUS_EMAIL_LOGIN (never selects first result)', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/login')
+        .send({
+          identifier: 'shared.family@met.edu',
+          password: 'SharedSecret@123',
+        });
+
+      expect(res.statusCode).toEqual(409);
+      expect(res.body.success).toBe(false);
+      expect(res.body.code).toEqual('AMBIGUOUS_EMAIL_LOGIN');
+      expect(res.body.requiresIdentifier).toBe(true);
+    });
+
+    it('2. Login with shared email and role=faculty unambiguously authenticates faculty member', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/login')
+        .send({
+          identifier: 'shared.family@met.edu',
+          password: 'SharedSecret@123',
+          role: 'faculty',
+        });
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.user.id).toEqual('usr-faculty-shared');
+      expect(res.body.user.role).toEqual('faculty');
+      expect(res.body.user.firstName).toEqual('Dr. Sunita');
+    });
+
+    it('3. Login with shared email and role=student unambiguously authenticates student', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/login')
+        .send({
+          identifier: 'shared.family@met.edu',
+          password: 'SharedSecret@123',
+          role: 'student',
+        });
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.user.id).toEqual('usr-student-shared');
+      expect(res.body.user.role).toEqual('student');
+      expect(res.body.user.firstName).toEqual('Aarav');
+    });
+
+    it('4. Login directly with unique student roll number succeeds without ambiguity', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/login')
+        .send({
+          identifier: '2022CS5555',
+          password: 'SharedSecret@123',
+        });
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.user.id).toEqual('usr-student-shared');
+      expect(res.body.user.role).toEqual('student');
+    });
+
+    it('5. Login directly with unique faculty employee ID succeeds without ambiguity', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/login')
+        .send({
+          identifier: 'EMP555',
+          password: 'SharedSecret@123',
+        });
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.user.id).toEqual('usr-faculty-shared');
+      expect(res.body.user.role).toEqual('faculty');
+    });
+
+    it('6. Password recovery for shared email without unique identifier returns 400 AMBIGUOUS_EMAIL_RECOVERY', async () => {
+      const isConfiguredSpy = jest.spyOn(emailService, 'isConfigured').mockReturnValue(true);
+      try {
+        const res = await request(app)
+          .post('/api/v1/auth/forgot-password')
+          .send({
+            email: 'shared.family@met.edu',
+          });
+
+        expect(res.statusCode).toEqual(400);
+        expect(res.body.success).toBe(false);
+        expect(res.body.code).toEqual('AMBIGUOUS_EMAIL_RECOVERY');
+        expect(res.body.requiresIdentifier).toBe(true);
+      } finally {
+        isConfiguredSpy.mockRestore();
+      }
+    });
+
+    it('7. Password recovery for shared email with matching roll number succeeds and dispatches reset email', async () => {
+      const isConfiguredSpy = jest.spyOn(emailService, 'isConfigured').mockReturnValue(true);
+      const sendEmailSpy = jest.spyOn(emailService, 'sendPasswordResetEmail');
+      sendEmailSpy.mockClear();
+      sendEmailSpy.mockResolvedValue({ success: true, messageId: 'shared-reset-1' });
+      try {
+        const res = await request(app)
+          .post('/api/v1/auth/forgot-password')
+          .send({
+            email: 'shared.family@met.edu',
+            identifier: '2022CS5555',
+          });
+
+        expect(res.statusCode).toEqual(200);
+        expect(res.body.success).toBe(true);
+        expect(sendEmailSpy).toHaveBeenCalledTimes(1);
+        expect(sendEmailSpy.mock.calls[0][0].firstName).toEqual('Aarav');
+      } finally {
+        isConfiguredSpy.mockRestore();
+        sendEmailSpy.mockRestore();
+      }
+    });
+
+    it('8. Password recovery for shared email with matching employee ID succeeds and dispatches reset email to faculty', async () => {
+      const isConfiguredSpy = jest.spyOn(emailService, 'isConfigured').mockReturnValue(true);
+      const sendEmailSpy = jest.spyOn(emailService, 'sendPasswordResetEmail');
+      sendEmailSpy.mockClear();
+      sendEmailSpy.mockResolvedValue({ success: true, messageId: 'shared-reset-2' });
+      try {
+        const res = await request(app)
+          .post('/api/v1/auth/forgot-password')
+          .send({
+            email: 'shared.family@met.edu',
+            identifier: 'EMP555',
+          });
+
+        expect(res.statusCode).toEqual(200);
+        expect(res.body.success).toBe(true);
+        expect(sendEmailSpy).toHaveBeenCalledTimes(1);
+        expect(sendEmailSpy.mock.calls[0][0].firstName).toEqual('Dr. Sunita');
+      } finally {
+        isConfiguredSpy.mockRestore();
+        sendEmailSpy.mockRestore();
+      }
+    });
+
+    it('9. Password recovery for shared email with mismatched identifier returns 400 IDENTIFIER_MISMATCH', async () => {
+      const isConfiguredSpy = jest.spyOn(emailService, 'isConfigured').mockReturnValue(true);
+      try {
+        const res = await request(app)
+          .post('/api/v1/auth/forgot-password')
+          .send({
+            email: 'shared.family@met.edu',
+            identifier: 'NONEXISTENT999',
+          });
+
+        expect(res.statusCode).toEqual(400);
+        expect(res.body.success).toBe(false);
+        expect(res.body.code).toEqual('IDENTIFIER_MISMATCH');
+      } finally {
+        isConfiguredSpy.mockRestore();
+      }
     });
   });
 });

@@ -255,10 +255,12 @@ const API = (() => {
       return { success: true };
     },
 
-    async forgotPassword(email) {
+    async forgotPassword(email, identifier = null) {
+      const payload = { email };
+      if (identifier) payload.identifier = identifier;
       const res = await request('/auth/forgot-password', {
         method: 'POST',
-        body: JSON.stringify({ email })
+        body: JSON.stringify(payload)
       });
       return res;
     },
