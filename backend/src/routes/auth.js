@@ -354,6 +354,36 @@ function getGoogleOAuthClient() {
 }
 
 /**
+ * Helper: Determine frontend base URL for OAuth redirects.
+ * Resolves to production Vercel frontend, or local development origin if initiated locally.
+ */
+function getFrontendRedirectBase(req) {
+  // 1. Check if an explicit frontend origin was tracked in cookie during login initiation
+  const trackedOrigin = req && req.cookies && req.cookies.ci_oauth_frontend;
+  if (trackedOrigin) {
+    try {
+      const parsed = new URL(trackedOrigin);
+      if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+        // In production, prevent accidental localhost redirects
+        if (config.isProduction() && (parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1')) {
+          // Ignore localhost cookie in production and use config.frontendUrl
+        } else {
+          return trackedOrigin.replace(/\/+$/, '');
+        }
+      }
+    } catch (e) {}
+  }
+
+  // 2. Use configured frontendUrl
+  if (config.frontendUrl) {
+    return config.frontendUrl.replace(/\/+$/, '');
+  }
+
+  // 3. Fallback to empty string for relative paths
+  return '';
+}
+
+/**
  * GET /api/v1/auth/google
  * Initiates the genuine Google OAuth 2.0 flow with cryptographically random state & PKCE/nonce
  */
@@ -364,6 +394,23 @@ router.get('/google', (req, res) => {
       success: false,
       message: 'Google OAuth is not configured on the server. Missing GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET.',
       code: 'GOOGLE_OAUTH_NOT_CONFIGURED',
+    });
+  }
+
+  // Track initiating frontend origin (from query or referer)
+  let initiatorOrigin = req.query.frontend_url;
+  if (!initiatorOrigin && req.headers.referer) {
+    try {
+      initiatorOrigin = new URL(req.headers.referer).origin;
+    } catch (e) {}
+  }
+  if (initiatorOrigin) {
+    res.cookie('ci_oauth_frontend', initiatorOrigin, {
+      httpOnly: true,
+      secure: config.isProduction(),
+      sameSite: 'lax',
+      maxAge: 10 * 60 * 1000,
+      path: '/',
     });
   }
 
@@ -506,10 +553,13 @@ async function findOrCreateGoogleUser(googlePayload) {
 router.get('/google/callback', async (req, res) => {
   const { code, state, error } = req.query;
 
+  const frontendBase = getFrontendRedirectBase(req);
+
   // Handle user cancellation on Google consent screen
   if (error) {
     res.clearCookie('ci_oauth_state', { path: '/' });
-    return res.redirect(`/login.html?error=${encodeURIComponent('Google authentication was cancelled: ' + error)}`);
+    res.clearCookie('ci_oauth_frontend', { path: '/' });
+    return res.redirect(`${frontendBase}/login.html?error=${encodeURIComponent('Google authentication was cancelled: ' + error)}`);
   }
 
   // Validate state parameter to prevent CSRF
@@ -517,18 +567,21 @@ router.get('/google/callback', async (req, res) => {
   res.clearCookie('ci_oauth_state', { path: '/' });
 
   if (!state || !storedState || state !== storedState) {
+    res.clearCookie('ci_oauth_frontend', { path: '/' });
     return res.redirect(
-      `/login.html?error=${encodeURIComponent('Invalid or expired OAuth state parameter. Please try signing in again.')}`
+      `${frontendBase}/login.html?error=${encodeURIComponent('Invalid or expired OAuth state parameter. Please try signing in again.')}`
     );
   }
 
   if (!code) {
-    return res.redirect(`/login.html?error=${encodeURIComponent('No authorization code provided by Google.')}`);
+    res.clearCookie('ci_oauth_frontend', { path: '/' });
+    return res.redirect(`${frontendBase}/login.html?error=${encodeURIComponent('No authorization code provided by Google.')}`);
   }
 
   const oauth2Client = getGoogleOAuthClient();
   if (!oauth2Client) {
-    return res.redirect(`/login.html?error=${encodeURIComponent('Google OAuth is not configured on the server.')}`);
+    res.clearCookie('ci_oauth_frontend', { path: '/' });
+    return res.redirect(`${frontendBase}/login.html?error=${encodeURIComponent('Google OAuth is not configured on the server.')}`);
   }
 
   try {
@@ -579,12 +632,27 @@ router.get('/google/callback', async (req, res) => {
 
     // Also pass token via URL fragment or param for frontend localStorage synchronization
     const redirectData = encodeURIComponent(JSON.stringify({ token, user: userPayload }));
-    const returnTo = req.cookies.ci_oauth_redirect;
+    let returnTo = req.cookies.ci_oauth_redirect;
     res.clearCookie('ci_oauth_redirect', { path: '/' });
+    res.clearCookie('ci_oauth_frontend', { path: '/' });
+
+    // Sanitize returnTo: in production, never allow localhost redirects
+    if (returnTo) {
+      if (config.isProduction() && (returnTo.includes('localhost') || returnTo.includes('127.0.0.1'))) {
+        try {
+          const u = new URL(returnTo, frontendBase || 'http://localhost');
+          returnTo = u.pathname + u.search + u.hash;
+        } catch (e) {
+          returnTo = 'index.html';
+        }
+      }
+    }
+
     const redirectParam = returnTo ? `&redirect=${encodeURIComponent(returnTo)}` : '';
-    return res.redirect(`/login.html?google_auth_success=1&auth_payload=${redirectData}${redirectParam}`);
+    return res.redirect(`${frontendBase}/login.html?google_auth_success=1&auth_payload=${redirectData}${redirectParam}`);
   } catch (err) {
-    return res.redirect(`/login.html?error=${encodeURIComponent(err.message || 'Google authentication failed.')}`);
+    res.clearCookie('ci_oauth_frontend', { path: '/' });
+    return res.redirect(`${frontendBase}/login.html?error=${encodeURIComponent(err.message || 'Google authentication failed.')}`);
   }
 });
 

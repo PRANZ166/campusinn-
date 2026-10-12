@@ -21,14 +21,22 @@ const config = {
     expiresIn: process.env.JWT_EXPIRES_IN || '24h',
   },
 
+  frontendUrl: process.env.FRONTEND_URL || (process.env.NODE_ENV === 'production'
+    ? 'https://campusinn-frontend-9nxrritaj-pranz.vercel.app'
+    : 'http://localhost:5500'),
+
   google: {
     clientId: process.env.GOOGLE_CLIENT_ID || '',
     clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
-    callbackUrl: process.env.GOOGLE_CALLBACK_URL || 'http://localhost:3000/api/v1/auth/google/callback',
+    callbackUrl: process.env.GOOGLE_CALLBACK_URL || (process.env.NODE_ENV === 'production'
+      ? 'https://campus-inn-backend.onrender.com/api/v1/auth/google/callback'
+      : 'http://localhost:3000/api/v1/auth/google/callback'),
   },
 
   cors: {
-    origins: (process.env.CORS_ORIGIN || 'http://localhost:3000')
+    origins: (process.env.CORS_ORIGIN || (process.env.NODE_ENV === 'production'
+      ? 'https://campusinn-frontend-9nxrritaj-pranz.vercel.app,https://campus-inn-backend.onrender.com'
+      : 'http://localhost:3000,http://localhost:5500'))
       .split(',')
       .map(s => s.trim()),
   },

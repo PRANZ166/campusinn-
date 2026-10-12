@@ -26,8 +26,9 @@ const API = (() => {
     }
     // When served separately (e.g. frontend dev server on port 5500, 5173, etc. or file:)
     if (typeof window !== 'undefined' && window.location) {
-      const { protocol, port } = window.location;
-      if (protocol === 'file:' || (port && port !== '3000')) {
+      const { protocol, port, hostname } = window.location;
+      const isLocal = hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '';
+      if (protocol === 'file:' || (isLocal && port && port !== '3000')) {
         return 'http://localhost:3000/api/v1';
       }
     }

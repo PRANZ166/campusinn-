@@ -694,7 +694,18 @@ document.addEventListener('DOMContentLoaded', () => {
       if (authPayload.user) {
         localStorage.setItem('ci_auth', JSON.stringify(authPayload.user));
       }
-      const target = urlParams.get('redirect') || 'index.html';
+      let target = urlParams.get('redirect') || 'index.html';
+      // Safety: in production, never redirect to localhost
+      if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+        if (target.includes('localhost') || target.includes('127.0.0.1')) {
+          try {
+            const parsed = new URL(target, window.location.origin);
+            target = parsed.pathname + parsed.search + parsed.hash;
+          } catch (e) {
+            target = 'index.html';
+          }
+        }
+      }
       CampusInn.Toast.success(`Signed in as ${authPayload.user.firstName || authPayload.user.email}! Redirecting...`, 3000);
       window.history.replaceState({}, document.title, window.location.pathname);
       setTimeout(() => {
@@ -711,7 +722,12 @@ document.addEventListener('DOMContentLoaded', () => {
     googleBtn.addEventListener('click', () => {
       CampusInn.Toast.info('Connecting to Google Identity Services...', 3000);
       const redirectParam = new URLSearchParams(window.location.search).get('redirect');
-      const oauthUrl = redirectParam ? `/api/v1/auth/google?redirect=${encodeURIComponent(redirectParam)}` : '/api/v1/auth/google';
+      const apiBase = (typeof API !== 'undefined' && API.resolveBaseUrl) ? API.resolveBaseUrl() : '/api/v1';
+      const cleanBase = apiBase.replace(/\/+$/, '');
+      const params = new URLSearchParams();
+      if (redirectParam) params.set('redirect', redirectParam);
+      params.set('frontend_url', window.location.origin);
+      const oauthUrl = `${cleanBase}/auth/google?${params.toString()}`;
       window.location.href = oauthUrl;
     });
   }

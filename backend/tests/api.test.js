@@ -77,11 +77,13 @@ describe('Campus Inn+ Backend API Suite', () => {
     expect(cookieHeader).toContain('ci_oauth_state=');
   });
 
-  it('GET /api/v1/auth/google/callback with user cancellation should redirect with error', async () => {
+  it('GET /api/v1/auth/google/callback with user cancellation should redirect with error to frontend', async () => {
     const res = await request(app).get('/api/v1/auth/google/callback?error=access_denied');
     expect(res.statusCode).toEqual(302);
     expect(res.headers.location).toContain('/login.html?error=');
     expect(res.headers.location).toContain('cancelled');
+    // Location must redirect to Vercel production frontend or configured frontendUrl
+    expect(res.headers.location).toMatch(/campusinn-frontend.*\.vercel\.app|localhost:5500/);
   });
 
   it('GET /api/v1/auth/google/callback with missing or mismatched state should reject with error', async () => {
@@ -89,6 +91,16 @@ describe('Campus Inn+ Backend API Suite', () => {
     expect(res.statusCode).toEqual(302);
     expect(res.headers.location).toContain('/login.html?error=');
     expect(res.headers.location).toContain('state');
+    expect(res.headers.location).toMatch(/campusinn-frontend.*\.vercel\.app|localhost:5500/);
+  });
+
+  it('GET /api/v1/auth/google should track frontend_url and set secure state cookie', async () => {
+    const res = await request(app).get('/api/v1/auth/google?frontend_url=https://campusinn-frontend-9nxrritaj-pranz.vercel.app');
+    expect(res.statusCode).toEqual(302);
+    expect(res.headers.location).toContain('accounts.google.com');
+    const cookieHeader = res.headers['set-cookie'].join(';');
+    expect(cookieHeader).toContain('ci_oauth_state=');
+    expect(cookieHeader).toContain('ci_oauth_frontend=');
   });
 
   it('POST /api/v1/auth/google-sso with missing credential should return 400', async () => {
