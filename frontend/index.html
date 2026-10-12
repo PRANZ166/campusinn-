@@ -1,0 +1,617 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><meta content="web_standard" name="shell-type"><title>Campus Inn+</title><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=Hanken+Grotesk:ital,wght@0,300..900;1,300..900&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={"darkMode":"class","theme":{"extend":{"colors":{"surface-container-low":"#f2f3ff","error":"#ba1a1a","tertiary-container":"#006544","primary-fixed-dim":"#d3bbff","surface-container":"#eaedff","surface-container-lowest":"#ffffff","primary-container":"#6d28d9","error-container":"#ffdad6","on-tertiary-fixed-variant":"#005236","outline-variant":"#ccc3d7","tertiary":"#004b31","on-primary":"#ffffff","surface-variant":"#dae2fd","inverse-surface":"#283044","surface-tint":"#7331df","primary":"#5300b7","secondary-fixed":"#e4e0f5","on-secondary-fixed":"#1b1a29","on-primary-fixed-variant":"#5b00c5","on-secondary":"#ffffff","on-surface-variant":"#4a4455","surface":"#faf8ff","secondary-fixed-dim":"#c7c4d8","on-error":"#ffffff","tertiary-fixed-dim":"#4edea3","surface-dim":"#d2d9f4","surface-container-highest":"#dae2fd","on-tertiary-container":"#58e7ab","primary-fixed":"#ebddff","on-background":"#131b2e","outline":"#7b7486","inverse-on-surface":"#eef0ff","on-primary-container":"#dac5ff","surface-container-high":"#e2e7ff","on-tertiary":"#ffffff","secondary-container":"#e4e0f5","secondary":"#5e5c6e","tertiary-fixed":"#6ffbbe","on-secondary-container":"#646274","surface-bright":"#faf8ff","inverse-primary":"#d3bbff","on-surface":"#131b2e","on-tertiary-fixed":"#002113","background":"#faf8ff","on-primary-fixed":"#250059","on-secondary-fixed-variant":"#464555","on-error-container":"#93000a"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"gutter-mobile":"1rem","space-sm":"0.5rem","space-md":"1rem","space-xs":"0.25rem","space-lg":"1.5rem","gutter-desktop":"2rem","gutter":"1.5rem","margin-desktop":"3rem","margin":"1.5rem","space-xl":"2.5rem","margin-mobile":"1rem"},"fontFamily":{"label-md":["Hanken Grotesk"],"body-md":["Hanken Grotesk"],"headline-sm":["Bricolage Grotesque"],"body-xl":["Hanken Grotesk"],"label-lg":["Hanken Grotesk"],"headline-xl":["Bricolage Grotesque"],"display-lg-mobile":["Bricolage Grotesque"],"body-sm":["Hanken Grotesk"],"body-lg":["Hanken Grotesk"],"headline-md":["Bricolage Grotesque"],"headline-lg":["Bricolage Grotesque"],"display-lg":["Bricolage Grotesque"],"label-caps":["Hanken Grotesk"],"headline-xl-mobile":["Bricolage Grotesque"]},"fontSize":{"label-md":["0.75rem",{"lineHeight":"1rem","letterSpacing":"0.02em","fontWeight":"600"}],"body-md":["0.875rem",{"lineHeight":"1.375rem","fontWeight":"400"}],"headline-sm":["1.25rem",{"lineHeight":"1.75rem","letterSpacing":"-0.01em","fontWeight":"600"}],"body-xl":["1.125rem",{"lineHeight":"1.75rem","letterSpacing":"-0.005em","fontWeight":"400"}],"label-lg":["0.875rem",{"lineHeight":"1.25rem","letterSpacing":"0.01em","fontWeight":"600"}],"headline-xl":["2.5rem",{"lineHeight":"3rem","letterSpacing":"-0.025em","fontWeight":"700"}],"display-lg-mobile":["2.25rem",{"lineHeight":"2.75rem","letterSpacing":"-0.025em","fontWeight":"800"}],"body-sm":["0.75rem",{"lineHeight":"1.125rem","fontWeight":"400"}],"body-lg":["1rem",{"lineHeight":"1.5rem","fontWeight":"400"}],"headline-md":["1.5rem",{"lineHeight":"2rem","letterSpacing":"-0.015em","fontWeight":"600"}],"headline-lg":["2rem",{"lineHeight":"2.5rem","letterSpacing":"-0.02em","fontWeight":"700"}],"display-lg":["3.5rem",{"lineHeight":"4rem","letterSpacing":"-0.03em","fontWeight":"800"}],"label-caps":["0.6875rem",{"lineHeight":"0.875rem","letterSpacing":"0.06em","fontWeight":"700"}],"headline-xl-mobile":["1.75rem",{"lineHeight":"2.25rem","letterSpacing":"-0.02em","fontWeight":"700"}]}}}};</script><link rel="stylesheet" href="css/theme.css">
+<script src="js/mock-data.js"></script>
+<script src="js/api.js"></script>
+<script src="js/shared.js"></script>
+</head><body class="bg-background font-body-md text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 max-w-[1440px] mx-auto px-margin-mobile lg:px-margin-desktop flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-sm shrink-0"><a class="flex items-center shrink-0" data-path="home" href="index.html" aria-label="Campus Inn+ Home"><img alt="Campus Inn+ Brand Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1Vf7o906NO_q9oQd1FlxYnOheLogJdekuf1OlrltZ2LSvyhi6eGbAULdPdjy44FJ_kCFyc5mWDfS35NKD0RW97rdOVwng8Gpkvh7_XOS_0rnox3QrQzdY-hinoj7EgikfKmi2e_P8b1BXYd2FBqsgV8yBLG3QrQKkmNjuozBaY9pPlLEfDc-A1bsuX9i0QMiuMR0dxIjQk_Jt12AeDrJNjG4dJ1OpZIceBETIMJ-6No10yxND6HfW6yMw"></a></div><nav class="hidden lg:flex items-center gap-space-sm" data-active-classes="bg-secondary-container text-on-secondary-fixed font-bold rounded-lg px-3 py-1.5"><a aria-current="page" class="transition-colors bg-secondary-container text-on-secondary-fixed font-bold rounded-lg px-3 py-1.5" data-path="home" href="index.html">Home</a><a class="px-3 py-1.5 font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors" data-path="events" href="events.html">Events</a><a class="px-3 py-1.5 font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors" data-path="placements" href="index.html#placements">Placements</a><a class="px-3 py-1.5 font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors" data-path="companies" href="companies.html">Companies</a><a class="px-3 py-1.5 font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors" data-path="about" href="about.html">About</a><div class="relative group"><button class="flex items-center gap-space-xs px-3 py-1.5 font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors" type="button">Portals <span class="material-symbols-outlined text-[18px]">expand_more</span></button><div class="absolute top-full left-0 mt-1 hidden group-hover:block w-48 bg-surface-container-lowest shadow-[0_4px_12px_-2px_rgba(109,40,217,0.08)] rounded-xl p-space-xs z-50"><a class="block px-space-md py-space-sm font-body-sm text-body-sm text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface rounded-lg transition-colors" data-path="student-portal" href="student.html">Student Portal</a><a class="block px-space-md py-space-sm font-body-sm text-body-sm text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface rounded-lg transition-colors" data-path="admin-portal" href="admin.html">Admin Console</a><a class="block px-space-md py-space-sm font-body-sm text-body-sm text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface rounded-lg transition-colors" data-path="recruiter-portal" href="company.html">Recruiter Hub</a></div></div></nav><div class="flex items-center gap-space-sm shrink-0"><div class="hidden sm:flex items-center bg-surface-container-low px-3 py-1.5 rounded-lg text-on-surface-variant"><span class="material-symbols-outlined text-[18px] mr-2">search</span><input class="bg-transparent text-on-surface placeholder:text-outline text-body-sm font-body-sm focus:outline-none w-28 lg:w-40" placeholder="Search campus..." type="text"></div><button aria-label="Toggle Theme" class="p-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-lg transition-colors flex items-center justify-center" type="button"><span class="material-symbols-outlined text-[20px]">light_mode</span></button><div class="relative"><button aria-label="Notifications" class="p-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-lg transition-colors flex items-center justify-center" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full"></span></button></div><a class="hidden md:inline-flex px-3 py-1.5 font-label-lg text-label-lg text-on-surface-variant hover:text-primary transition-colors" data-path="login" href="login.html">Login</a><a class="inline-flex items-center justify-center px-4 py-2 font-label-lg text-label-lg bg-primary text-on-primary hover:bg-primary-container hover:text-on-primary-container rounded-lg shadow-[0_1px_3px_0_rgba(15,23,42,0.04),0_4px_12px_-2px_rgba(109,40,217,0.05)] transition-all" data-path="join-campus" href="login.html">Join Campus</a><div class="relative shrink-0 ml-1 ci-profile-menu-container"><button id="ci-profile-btn" type="button" class="ci-profile-btn flex items-center justify-center rounded-full p-0.5 focus:outline-none focus:ring-2 focus:ring-primary transition-all cursor-pointer" aria-label="Account menu" aria-haspopup="menu" aria-expanded="false" aria-controls="ci-profile-dropdown" data-path="user-profile"><div class="w-8 h-8 rounded-full bg-surface-container-high text-on-surface-variant ring-1 ring-outline-variant flex items-center justify-center hover:bg-surface-variant hover:text-on-surface transition-colors select-none"><span class="material-symbols-outlined text-[20px]">account_circle</span></div></button><div id="ci-profile-dropdown" role="menu" aria-labelledby="ci-profile-btn" class="ci-profile-dropdown hidden fixed sm:absolute right-4 sm:right-0 top-16 sm:top-[calc(100%+8px)] w-72 max-w-[calc(100vw-32px)] bg-surface-container-lowest rounded-2xl shadow-2xl border border-outline-variant/30 py-2 z-[9999] overflow-hidden backdrop-blur-md"></div></div></div></div></header><main class="w-full pt-16 bg-background min-h-screen"><div class="flex flex-col w-full">
+<!-- HERO SECTION -->
+<section class="relative w-full overflow-hidden bg-surface py-space-lg lg:py-space-xl">
+<!-- Ambient Violet Glow Orbs -->
+<div class="absolute -top-32 right-10 w-96 h-96 bg-primary-fixed/50 rounded-full blur-3xl pointer-events-none"></div>
+<div class="absolute top-1/2 left-4 w-72 h-72 bg-surface-variant/70 rounded-full blur-2xl pointer-events-none"></div>
+<div class="max-w-[1440px] mx-auto px-margin-mobile lg:px-margin-desktop">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-center">
+<!-- Hero Text & CTA -->
+<div class="lg:col-span-5 flex flex-col gap-space-md z-10">
+<div class="inline-flex items-center gap-space-xs px-3 py-1 bg-secondary-container text-primary rounded-full w-fit">
+<span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+<span class="font-label-caps text-label-caps uppercase tracking-wider font-bold">Fall 2026 Campus Portal Active</span>
+</div>
+<h1 class="font-display-lg text-display-lg-mobile lg:text-display-lg text-on-surface tracking-tight leading-[1.08]">Your Campus Life, <span class="text-primary font-bold italic underline decoration-primary-fixed">Connected.</span></h1>
+<p class="font-body-xl text-body-xl text-on-surface-variant leading-relaxed">
+            Discover campus events, manage your academic journey, and unlock career opportunities — all in one place.
+          </p>
+<div class="flex flex-wrap items-center gap-space-sm pt-space-xs">
+<a class="inline-flex items-center justify-center px-6 py-3 font-label-lg text-label-lg bg-primary text-on-primary hover:bg-primary-container rounded-lg shadow-md transition-all gap-space-xs group" href="#placements">
+<span class="">Explore Opportunities</span>
+<span class="material-symbols-outlined text-[18px] transition-transform group-hover:translate-x-1">arrow_forward</span>
+</a>
+<a class="inline-flex items-center justify-center px-6 py-3 font-label-lg text-label-lg bg-secondary-container text-primary hover:bg-surface-variant rounded-lg transition-all" href="#events">
+              Discover Campus Life
+            </a>
+</div>
+<!-- Micro Proof Stats -->
+<div class="grid grid-cols-3 gap-space-sm pt-space-sm">
+<div class="p-space-sm rounded-lg bg-surface-container-low shadow-sm">
+<span class="block font-headline-md text-headline-md text-primary font-bold">140+</span>
+<span class="font-label-md text-label-md text-secondary">Verified Drives</span>
+</div>
+<div class="p-space-sm rounded-lg bg-surface-container-low shadow-sm">
+<span class="block font-headline-md text-headline-md text-primary font-bold">45k+</span>
+<span class="font-label-md text-label-md text-secondary">Students Active</span>
+</div>
+<div class="p-space-sm rounded-lg bg-surface-container-low shadow-sm">
+<span class="block font-headline-md text-headline-md text-primary font-bold">98%</span>
+<span class="font-label-md text-label-md text-secondary">Hiring Accuracy</span>
+</div>
+</div>
+</div>
+<!-- Hero Visual Composition with Floating Cards -->
+<div class="lg:col-span-7 relative flex justify-center items-center">
+<!-- Main Hero Image Frame -->
+<div class="relative w-full rounded-2xl overflow-hidden shadow-xl aspect-[16/10] bg-surface-container">
+<img alt="Vibrant young Indian college students collaborating outdoors on campus with laptops" class="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700 ease-out" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCacmaGb9T93P1aip9UMzrIjOfqlVm5fRkB1n3q_pR0_V01Kz__ozxcyIhXTuaygTcqAzzKaFaM1kzpxAxq2hsratoj_078707FxEvW7gizJimyggmyAk91cLHAaZ9XRP9M5tcUYS-Dn6YMB8BrcgoTEfuthclLyi1_PS1Qh2Wop_Dd4b7_y5Pm8QHd9vLE2STmfx99EaaiNwGA2iRB8rbZpmcWJOuZ0lcdC0JNdmqTpk13yjArgTc">
+<div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/40 via-transparent to-transparent"></div>
+</div>
+<!-- Floating Card A: Campus Event -->
+<div class="absolute -bottom-6 -left-2 sm:left-4 max-w-[280px] sm:max-w-[320px] bg-surface-container-lowest/95 backdrop-blur-md p-space-md rounded-xl shadow-xl transition-transform hover:-translate-y-1">
+<div class="flex items-center justify-between mb-space-xs">
+<span class="inline-flex items-center gap-1 text-[11px] font-label-md font-bold px-2 py-0.5 rounded-full bg-secondary-container text-primary">
+<span class="material-symbols-outlined text-[14px]">celebration</span> Event Flagship
+              </span>
+<span class="text-error font-label-md text-label-md font-semibold">Ends 18 Oct</span>
+</div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold leading-tight">MET TechFest 2026</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mt-1">Innovation, technology, and campus creativity. Registration closes: 18 October</p>
+<a class="mt-space-sm inline-flex items-center text-primary font-label-lg text-label-lg hover:underline gap-1" href="#events">
+<span class="">Explore Event</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</a>
+</div>
+<!-- Floating Card B: Placement Opportunity -->
+<div class="absolute -top-4 -right-2 sm:right-4 max-w-[280px] sm:max-w-[310px] bg-surface-container-lowest/95 backdrop-blur-md p-space-md rounded-xl shadow-xl transition-transform hover:-translate-y-1">
+<div class="flex items-center justify-between mb-space-xs">
+<span class="inline-flex items-center gap-1 text-[11px] font-label-md font-bold px-2 py-0.5 rounded-full bg-tertiary-container/15 text-tertiary">
+<span class="material-symbols-outlined text-[14px]">verified</span> Fast-Track ATS
+              </span>
+<span class="text-secondary font-label-md text-label-md">22 October</span>
+</div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold leading-tight">Graduate Hiring Drive</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mt-1">Applications open for eligible final-year students. Application deadline: 22 October</p>
+<a class="mt-space-sm inline-flex items-center text-tertiary font-label-lg text-label-lg hover:underline gap-1" href="#placements">
+<span class="">View Opportunity</span>
+<span class="material-symbols-outlined text-[16px]">arrow_outward</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SLIDING ANNOUNCEMENT TICKER -->
+<section class="w-full bg-surface-container-high py-2.5 overflow-hidden shadow-inner"><div class="max-w-[1440px] mx-auto px-margin-mobile lg:px-margin-desktop py-1 flex flex-wrap items-center justify-between gap-space-sm"><div class="flex items-center gap-2"><div class="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-primary text-on-primary font-label-caps text-label-caps uppercase tracking-wider font-bold"><span class="material-symbols-outlined text-[16px]">campaign</span> LIVE PULSE</div><span class="text-body-sm font-semibold text-on-surface hidden md:inline">Campus Updates &amp; Announcements</span></div><div class="flex flex-wrap items-center gap-space-md text-body-sm"><div class="inline-flex items-center gap-2"><span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed text-xs font-bold">CAMPUS EVENT</span><span class="text-on-surface font-medium">TechFest 2026 Registrations Open</span></div><span class="text-outline-variant font-bold hidden sm:inline">•</span><div class="inline-flex items-center gap-2"><span class="px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed text-xs font-bold">PLACEMENTS</span><span class="text-on-surface font-medium">Tier-1 Hiring Drives Active</span></div><span class="text-outline-variant font-bold hidden lg:inline">•</span><div class="hidden lg:inline-flex items-center gap-2"><span class="px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed text-xs font-bold">ACADEMIC</span><span class="text-on-surface font-medium">End-Sem Exam Timetable Published</span></div></div></div></section>
+<!-- SECTION A: UPCOMING EVENTS -->
+<section class="w-full max-w-[1440px] mx-auto px-margin-mobile lg:px-margin-desktop py-space-xl" id="events">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-sm mb-space-lg">
+<div>
+<span class="font-label-caps text-label-caps text-primary uppercase font-bold tracking-widest">Campus Calendar</span>
+<h2 class="font-headline-xl text-headline-xl text-on-surface tracking-tight mt-1">Upcoming Events &amp; Summits</h2>
+</div>
+<div class="flex items-center gap-space-xs">
+<button class="px-4 py-2 bg-surface-container rounded-lg font-label-md text-label-md text-primary font-bold hover:bg-surface-container-high transition-colors" type="button">All Categories</button>
+<button class="px-4 py-2 bg-surface-container-lowest rounded-lg font-label-md text-label-md text-on-surface-variant hover:text-on-surface shadow-sm transition-colors" type="button">Tech</button>
+<button class="px-4 py-2 bg-surface-container-lowest rounded-lg font-label-md text-label-md text-on-surface-variant hover:text-on-surface shadow-sm transition-colors" type="button">Cultural</button>
+</div>
+</div>
+<!-- 4 Cards Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-md">
+<!-- Event 1: Technical Fest -->
+<div class="flex flex-col bg-surface-container-lowest rounded-xl p-space-md shadow-md hover:shadow-xl transition-all duration-300">
+<div class="relative w-full h-40 rounded-lg overflow-hidden mb-space-sm bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Futuristic glowing college robotics and innovation festival stage with dynamic violet and emerald neon stage lights, passionate students exhibiting prototypes in a grand auditorium" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8gu4IzvTagK9WorpEr4Z59EerZeyqlin6wT_7bQvENI-yNCWnIrwrLjKd9fx96Tuvr1drhPSa8XoGKdUgI7sjDwCaO6VMwtq_juAJjeLLZjAD172EwbAjBriagbqFY2EXqgja0ymyMUDUoHeaWiu4z6GoNGRAxEsmD-M5PKsefl9lTHbqmmrWML-lXNQpYddL8XWyCiplV7QwY-gKikc3IrJyRRXhh5bjzkHBtw5E7PLz-Kq7cWI">
+<span class="absolute top-2 left-2 bg-primary text-on-primary font-label-caps text-label-caps px-2 py-0.5 rounded-full uppercase font-bold">Tech Flagship</span>
+<span class="absolute bottom-2 right-2 bg-inverse-surface/80 text-inverse-on-surface backdrop-blur-sm font-label-md text-label-md px-2 py-0.5 rounded-md">24-26 Oct</span>
+</div>
+<div class="flex items-center gap-1 text-primary text-xs font-semibold mb-1">
+<span class="material-symbols-outlined text-[16px]">pin_drop</span> Auditorium B &amp; Courtyard
+        </div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">MET TechFest 2026</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 flex-1">Annual national technological convergence featuring robo-wars, hack lanes, and investor showcases.</p>
+<div class="mt-space-md pt-space-xs flex items-center justify-between">
+<span class="inline-flex items-center px-2 py-1 bg-tertiary-fixed text-on-tertiary-fixed rounded-full text-[11px] font-bold">Seats Open</span>
+<button class="px-3 py-1.5 bg-primary text-on-primary font-label-md text-label-md rounded-lg hover:bg-primary-container transition-colors" type="button">Register</button>
+</div>
+</div>
+<!-- Event 2: Cultural Wave -->
+<div class="flex flex-col bg-surface-container-lowest rounded-xl p-space-md shadow-md hover:shadow-xl transition-all duration-300">
+<div class="relative w-full h-40 rounded-lg overflow-hidden mb-space-sm bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Energetic open air collegiate cultural music festival stage at twilight with vibrant lights, students cheering with wristbands, musical performance in an Indian university amphitheater" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBqAsVsbM9D_0S23aFsDi6e58D6UBHtqRHxGsb2MHDf1t4sQ8JFaG2KGsVpycahqsDZ0rZ1PVBUSIjj2Udr5SwoEdRDnrfnYG8getoPd3EUUuMn1xDzlwFxdFQVPGfMGDyZ5kJY_HHetIFvQ53OmV3Emyg2ZLLtUf5PNyPFvL7tjO2z7484Y_eAOiRqeMIUCOjqG2nfk7HH9D4MiZLQYrI33SGRcryXicMNLK_TY2aKrZTJpMGpPGM">
+<span class="absolute top-2 left-2 bg-secondary text-on-secondary font-label-caps text-label-caps px-2 py-0.5 rounded-full uppercase font-bold">Cultural Fest</span>
+<span class="absolute bottom-2 right-2 bg-inverse-surface/80 text-inverse-on-surface backdrop-blur-sm font-label-md text-label-md px-2 py-0.5 rounded-md">02-04 Nov</span>
+</div>
+<div class="flex items-center gap-1 text-primary text-xs font-semibold mb-1">
+<span class="material-symbols-outlined text-[16px]">pin_drop</span> Main Open Amphitheatre
+        </div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">MET Utsav 27</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 flex-1">Three evenings of classical music fusion, street theatre, dance choreography, and artistic guild showcases.</p>
+<div class="mt-space-md pt-space-xs flex items-center justify-between">
+<span class="inline-flex items-center px-2 py-1 bg-tertiary-fixed text-on-tertiary-fixed rounded-full text-[11px] font-bold">Pass Available</span>
+<button class="px-3 py-1.5 bg-secondary-container text-primary font-label-md text-label-md rounded-lg hover:bg-surface-variant transition-colors" type="button">Get Pass</button>
+</div>
+</div>
+<!-- Event 3: Inter-College Hackathon -->
+<div class="flex flex-col bg-surface-container-lowest rounded-xl p-space-md shadow-md hover:shadow-xl transition-all duration-300">
+<div class="relative w-full h-40 rounded-lg overflow-hidden mb-space-sm bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="High energy 36 hour hackathon room filled with diverse college coders writing code on monitors with sticky notes and caffeine drinks, modern academic glass incubator space" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKv7EfJdzbtHcvf5lX1oXu3nS5JWNgFYiquIxJLlWvGDW1FTxjjfotTY8BR6lpuzvQpe2fIQjkqcXlgE_ohZIJUwGKai_BE0UEP3iHD1O1f59TA11CzG4oD53KOPqpMADZ95IZKBJBI65cQEiv9hiPKSLAFBFLveylRiMSwHKFnF7Ln72dpnV4b2ofKCtx4Uomt_4BDrSmjyqp_QiChpRn6WrybhlDGc-SLtA5LjLs-Y6SmDtHpWc">
+<span class="absolute top-2 left-2 bg-tertiary-container text-on-tertiary-container font-label-caps text-label-caps px-2 py-0.5 rounded-full uppercase font-bold">Hackathon</span>
+<span class="absolute bottom-2 right-2 bg-inverse-surface/80 text-inverse-on-surface backdrop-blur-sm font-label-md text-label-md px-2 py-0.5 rounded-md">11-12 Nov</span>
+</div>
+<div class="flex items-center gap-1 text-primary text-xs font-semibold mb-1">
+<span class="material-symbols-outlined text-[16px]">pin_drop</span> Innovation Incubation Hub
+        </div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">HackBKC 2026: InterCollege Hackathon</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 flex-1">Solve real-world civic and FinTech problems. ₹3,50,000 cash pool with direct fast-track partner interviews.</p>
+<div class="mt-space-md pt-space-xs flex items-center justify-between">
+<span class="inline-flex items-center px-2 py-1 bg-error-container text-on-error-container rounded-full text-[11px] font-bold">Filling Fast</span>
+<button class="px-3 py-1.5 bg-primary text-on-primary font-label-md text-label-md rounded-lg hover:bg-primary-container transition-colors" type="button">Join Team</button>
+</div>
+</div>
+<!-- Event 4: AI Bootcamp -->
+<div class="flex flex-col bg-surface-container-lowest rounded-xl p-space-md shadow-md hover:shadow-xl transition-all duration-300">
+<div class="relative w-full h-40 rounded-lg overflow-hidden mb-space-sm bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="College computer laboratory training session on deep learning and generative models with an industry instructor presenting interactive Python code on digital projector" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB51e2Mc-QoC29eKNiy_gA4Uq0voUYS0yP5fdog7AkX5vGxfHF48w0jqJitTN4IIo9qXxgklhNsG9t3dOXVh30EKkQ-fBgLrzZppXdF9QIUk6KKRoHXarRjdoM6L9l4uOqEGJvzXYRh4NrSwerxhZDlelEZUiOjqY5FY101CyYVDTrlZKVu8Qiz5mIKvisrAIEU6nPQTiJpW3UarvuFE8F5YiV6lqf13h7J6tlSg4p9gppQHi6-9KM">
+<span class="absolute top-2 left-2 bg-surface-tint text-on-primary font-label-caps text-label-caps px-2 py-0.5 rounded-full uppercase font-bold">Bootcamp</span>
+<span class="absolute bottom-2 right-2 bg-inverse-surface/80 text-inverse-on-surface backdrop-blur-sm font-label-md text-label-md px-2 py-0.5 rounded-md">Every Sat</span>
+</div>
+<div class="flex items-center gap-1 text-primary text-xs font-semibold mb-1">
+<span class="material-symbols-outlined text-[16px]">pin_drop</span> Advanced Tech Lab 4
+        </div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">GenAI &amp; LLM Architecture</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 flex-1">Hands-on micro-credentials covering transformer models, vector retrieval, and scalable inference hosting.</p>
+<div class="mt-space-md pt-space-xs flex items-center justify-between">
+<span class="inline-flex items-center px-2 py-1 bg-tertiary-fixed text-on-tertiary-fixed rounded-full text-[11px] font-bold">Certified</span>
+<button class="px-3 py-1.5 bg-secondary-container text-primary font-label-md text-label-md rounded-lg hover:bg-surface-variant transition-colors" type="button">Enroll</button>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION B: CAREER & PLACEMENT OPPORTUNITIES -->
+<section class="w-full bg-surface-container-low py-space-xl" id="placements">
+<div class="max-w-[1440px] mx-auto px-margin-mobile lg:px-margin-desktop">
+<div class="flex flex-col lg:flex-row lg:items-end justify-between gap-space-sm mb-space-lg">
+<div>
+<span class="font-label-caps text-label-caps text-primary uppercase font-bold tracking-widest">ATS Recruitment Gateway</span>
+<h2 class="font-headline-xl text-headline-xl text-on-surface tracking-tight mt-1">Verified Placement Drives</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Direct institutional tie-ups with structured recruitment rounds and transparent criteria.</p>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-body-sm text-body-sm text-secondary">Sort by:</span>
+<div class="px-3 py-1.5 bg-surface-container-lowest rounded-lg font-label-md text-label-md text-primary font-semibold shadow-sm flex items-center gap-1 cursor-pointer">
+<span class="">Highest Package</span>
+<span class="material-symbols-outlined text-[16px]">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Recruitment Drives Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-md">
+<!-- Card 1: Infosys -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-md flex flex-col justify-between hover:shadow-xl transition-all duration-300">
+<div>
+<div class="flex items-center justify-between mb-space-sm">
+<div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center font-headline-sm font-bold text-primary">
+                INF
+              </div>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-md text-[11px] font-bold">
+<span class="material-symbols-outlined text-[13px]">check_circle</span> Verified ATS
+              </span>
+</div>
+<div class="mb-space-sm">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Software Dev Engineer</h3>
+<p class="font-body-md text-body-md text-secondary">Infosys Limited • Bangalore / Pune</p>
+</div>
+<div class="p-space-sm bg-surface-container-low rounded-lg mb-space-sm">
+<div class="flex items-baseline justify-between">
+<span class="font-label-md text-label-md text-secondary">CTC Offer</span>
+<span class="font-headline-sm text-headline-sm text-primary font-bold">₹9.5 - 13.2 LPA</span>
+</div>
+</div>
+<div class="space-y-1.5 mb-space-md text-xs font-body-sm text-on-surface-variant">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-tertiary text-[16px]">school</span>
+<span class="">B.Tech / BCA (2025/2026 Batch)</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-tertiary text-[16px]">grade</span>
+<span class="">65% or 7.0 CGPA minimum • 0 active backlogs</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-tertiary text-[16px]">schedule</span>
+<span class="">Drive Date: 28 October 2026</span>
+</div>
+</div>
+</div>
+<button class="w-full py-2.5 bg-primary text-on-primary font-label-lg text-label-lg rounded-lg hover:bg-primary-container transition-colors shadow-sm ci-apply-btn" type="button" data-action="apply" data-drive-id="drv_inf_2025" data-company="Infosys Limited" data-role="Software Dev Engineer">
+            Apply Now
+          </button>
+</div>
+<!-- Card 2: TCS Innovate -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-md flex flex-col justify-between hover:shadow-xl transition-all duration-300">
+<div>
+<div class="flex items-center justify-between mb-space-sm">
+<div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center font-headline-sm font-bold text-primary">
+                TCS
+              </div>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-md text-[11px] font-bold">
+<span class="material-symbols-outlined text-[13px]">check_circle</span> Digital Track
+              </span>
+</div>
+<div class="mb-space-sm">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Associate Data Analyst</h3>
+<p class="font-body-md text-body-md text-secondary">TCS Innovate • Mumbai / Hybrid</p>
+</div>
+<div class="p-space-sm bg-surface-container-low rounded-lg mb-space-sm">
+<div class="flex items-baseline justify-between">
+<span class="font-label-md text-label-md text-secondary">CTC Offer</span>
+<span class="font-headline-sm text-headline-sm text-primary font-bold">₹7.5 - 9.0 LPA</span>
+</div>
+</div>
+<div class="space-y-1.5 mb-space-md text-xs font-body-sm text-on-surface-variant">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-tertiary text-[16px]">school</span>
+<span class="">BE / B.Tech / MCA (2025/2026 Batch)</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-tertiary text-[16px]">grade</span>
+<span class="">60%+ throughout 10th, 12th &amp; Degree</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-tertiary text-[16px]">schedule</span>
+<span class="">Drive Date: 03 November 2026</span>
+</div>
+</div>
+</div>
+<button class="w-full py-2.5 bg-primary text-on-primary font-label-lg text-label-lg rounded-lg hover:bg-primary-container transition-colors shadow-sm ci-apply-btn" type="button" data-action="apply" data-drive-id="drv_tcs_2025" data-company="TCS Innovate" data-role="Associate Data Analyst">
+            Apply Now
+          </button>
+</div>
+<!-- Card 3: Tata Elxsi -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-md flex flex-col justify-between hover:shadow-xl transition-all duration-300">
+<div>
+<div class="flex items-center justify-between mb-space-sm">
+<div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center font-headline-sm font-bold text-primary">
+                ELX
+              </div>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-secondary-container text-primary font-label-md text-[11px] font-bold">
+<span class="material-symbols-outlined text-[13px]">bolt</span> High Package
+              </span>
+</div>
+<div class="mb-space-sm">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Embedded &amp; AI Engineer</h3>
+<p class="font-body-md text-body-md text-secondary">Tata Elxsi • Trivandrum / Bangalore</p>
+</div>
+<div class="p-space-sm bg-surface-container-low rounded-lg mb-space-sm">
+<div class="flex items-baseline justify-between">
+<span class="font-label-md text-label-md text-secondary">CTC Offer</span>
+<span class="font-headline-sm text-headline-sm text-primary font-bold">₹11.0 - 14.2 LPA</span>
+</div>
+</div>
+<div class="space-y-1.5 mb-space-md text-xs font-body-sm text-on-surface-variant">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-tertiary text-[16px]">school</span>
+<span class="">BE/B.Tech (ECE/CSE/EE) 2026 Passing</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-tertiary text-[16px]">grade</span>
+<span class="">70%+ aggregate, C/C++ &amp; RTOS basics</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-tertiary text-[16px]">schedule</span>
+<span class="">Drive Date: 08 November 2026</span>
+</div>
+</div>
+</div>
+<button class="w-full py-2.5 bg-primary text-on-primary font-label-lg text-label-lg rounded-lg hover:bg-primary-container transition-colors shadow-sm ci-apply-btn" type="button" data-action="apply" data-drive-id="drv_elx_2025" data-company="Tata Elxsi" data-role="Embedded & AI Engineer">
+            Apply Now
+          </button>
+</div>
+<!-- Card 4: Zomato Tech -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-md flex flex-col justify-between hover:shadow-xl transition-all duration-300">
+<div>
+<div class="flex items-center justify-between mb-space-sm">
+<div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center font-headline-sm font-bold text-primary">
+                ZOM
+              </div>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-error-container text-on-error-container font-label-md text-[11px] font-bold">
+<span class="material-symbols-outlined text-[13px]">timer</span> 2 Days Left
+              </span>
+</div>
+<div class="mb-space-sm">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Product Intern / Associate</h3>
+<p class="font-body-md text-body-md text-secondary">Zomato Tech • Gurgaon HQ</p>
+</div>
+<div class="p-space-sm bg-surface-container-low rounded-lg mb-space-sm">
+<div class="flex items-baseline justify-between">
+<span class="font-label-md text-label-md text-secondary">CTC Offer</span>
+<span class="font-headline-sm text-headline-sm text-primary font-bold">₹8.0 - 12.0 LPA</span>
+</div>
+</div>
+<div class="space-y-1.5 mb-space-md text-xs font-body-sm text-on-surface-variant">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-tertiary text-[16px]">school</span>
+<span class="">All Disciplines (2025/2026 Graduates)</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-tertiary text-[16px]">grade</span>
+<span class="">Portfolio or live mobile app demo mandatory</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-tertiary text-[16px]">schedule</span>
+<span class="">Drive Date: 19 October 2026</span>
+</div>
+</div>
+</div>
+<button class="w-full py-2.5 bg-primary text-on-primary font-label-lg text-label-lg rounded-lg hover:bg-primary-container transition-colors shadow-sm ci-apply-btn" type="button" data-action="apply" data-drive-id="drv_zom_2025" data-company="Zomato Tech" data-role="Product Intern / Associate">
+            Apply Now
+          </button>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION C & D: WHY CAMPUS INN+ & STUDENT EXPERIENCE -->
+<section class="w-full max-w-[1440px] mx-auto px-margin-mobile lg:px-margin-desktop py-space-xl">
+<div class="text-center max-w-3xl mx-auto mb-space-xl">
+<span class="font-label-caps text-label-caps text-primary uppercase font-bold tracking-widest">Built for Campus Modernization</span>
+<h2 class="font-headline-xl text-headline-xl text-on-surface tracking-tight mt-1">Everything You Need To Flourish in One Ecosystem</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-2">Replace chaotic WhatsApp groups and scattered university portals with a unified, high-octane academic headquarters.</p>
+</div>
+<!-- Bento Grid of Key Advantages -->
+<div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-space-md">
+<!-- Feature 1: Academic Visibility -->
+<div class="md:col-span-2 bg-surface-container rounded-2xl p-space-lg shadow-sm flex flex-col justify-between">
+<div>
+<div class="w-12 h-12 rounded-xl bg-primary text-on-primary flex items-center justify-center mb-space-md shadow-md">
+<span class="material-symbols-outlined text-[24px]">analytics</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface font-bold">Academic Visibility &amp; Real-Time CGPA Tracking</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2">
+            Predict your degree trajectory with dynamic weightage calculators, internal assessment logs, and automated credit warnings before exams.
+          </p>
+</div>
+<div class="mt-space-md p-space-sm bg-surface-container-lowest rounded-xl shadow-sm flex items-center gap-space-md">
+<div class="flex-1">
+<div class="flex justify-between font-label-md text-label-md mb-1">
+<span class="text-on-surface">Target CGPA: 8.85</span>
+<span class="text-primary font-bold">92% on track</span>
+</div>
+<div class="w-full h-2 bg-surface-container-high rounded-full overflow-hidden">
+<div class="w-[92%] h-full bg-primary rounded-full"></div>
+</div>
+</div>
+<span class="material-symbols-outlined text-tertiary text-[28px]">verified</span>
+</div>
+</div>
+<!-- Feature 2: Centralized Attendance -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-lg shadow-md flex flex-col justify-between">
+<div>
+<div class="w-12 h-12 rounded-xl bg-secondary-container text-primary flex items-center justify-center mb-space-md">
+<span class="material-symbols-outlined text-[24px]">co_present</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Smart Attendance</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-2">
+            Instant geo-fenced lecture attendance with shortfall alarms before institutional cutoffs hit 75%.
+          </p>
+</div>
+<div class="mt-space-md text-center py-2 bg-tertiary-fixed text-on-tertiary-fixed font-label-md text-label-md rounded-lg font-semibold">
+          Current Average: 84.6% Safe
+        </div>
+</div>
+<!-- Feature 3: Seamless Event Passes -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-lg shadow-md flex flex-col justify-between">
+<div>
+<div class="w-12 h-12 rounded-xl bg-surface-tint text-on-primary flex items-center justify-center mb-space-md">
+<span class="material-symbols-outlined text-[24px]">qr_code_scanner</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Fast Event Passes</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-2">
+            One-tap contactless event passes directly in Apple/Google Wallet. No paper badges or gate queues.
+          </p>
+</div>
+<div class="mt-space-md flex items-center justify-between text-xs text-primary font-bold">
+<span class="">Active Passes</span>
+<span class="bg-secondary-container px-2 py-0.5 rounded-full">2 Upcoming</span>
+</div>
+</div>
+<!-- Feature 4: Smart Resume Builder -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-lg shadow-md flex flex-col justify-between">
+<div>
+<div class="w-12 h-12 rounded-xl bg-primary-container text-on-primary flex items-center justify-center mb-space-md">
+<span class="material-symbols-outlined text-[24px]">description</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">AI Resume Parser</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-2">
+            Auto-syncs verifiable university achievements, hackathons, and certifications into recruitment-standard ATS format.
+          </p>
+</div>
+<div class="mt-space-md text-xs text-secondary flex items-center gap-1 font-semibold">
+<span class="material-symbols-outlined text-[16px] text-tertiary">task_alt</span> Verified by Placement Cell
+        </div>
+</div>
+<!-- Feature 5: One-Click Placements -->
+<div class="md:col-span-2 lg:col-span-3 bg-gradient-to-r from-primary to-primary-container text-on-primary rounded-2xl p-space-lg shadow-lg flex flex-col sm:flex-row items-center justify-between gap-space-md">
+<div class="flex-1">
+<span class="font-label-caps text-label-caps uppercase tracking-wider text-primary-fixed">Instant Eligibility Match</span>
+<h3 class="font-headline-md text-headline-md font-bold mt-1">One-Click Direct Placement Application</h3>
+<p class="font-body-md text-body-md text-surface-container-high mt-1 max-w-xl">
+            Never fill out duplicate 12-page employer portals again. Apply with pre-authenticated grade transcripts, coding handles, and placement tokens.
+          </p>
+</div>
+<a class="shrink-0 px-6 py-3 bg-surface-container-lowest text-primary font-label-lg text-label-lg rounded-xl hover:bg-surface-container transition-all shadow-md" href="#placements">
+          Explore ATS Gateway
+        </a>
+</div>
+</div>
+</section>
+<!-- SECTION E: FOR COMPANIES & RECRUITERS -->
+<section class="w-full bg-surface-container-low py-space-xl">
+<div class="max-w-[1440px] mx-auto px-margin-mobile lg:px-margin-desktop">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-center">
+<!-- Visual Column -->
+<div class="lg:col-span-6 relative">
+<div class="rounded-2xl overflow-hidden shadow-xl aspect-[16/10] bg-surface-container">
+<img alt="Indian student undergoing professional campus recruitment interview in modern conference room" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOQtTU_883jJOE_wj2-Hmm1yFCAx2g9vHuA6H-DOhlbqxaXR_0uiuVD5r6lLckoGnhY7z2KFz6xyC2Wo23ODJkM9H1m5PjL-_uAJh2bSrQ7s2L4UUjXqqI7vG7YWrilJ23byhjgg65q64rP4WU0gCz90eoj0ij0i6SkaIoX7OE27OtJxga8GG5wEU5VUVcnr3jx8kupKxgjL7OiYTYT6zHBznm8GgWMEKyxDkWPpcX8xo_1ZuO0EQ">
+</div>
+<div class="absolute -bottom-6 right-4 bg-surface-container-lowest p-space-md rounded-xl shadow-xl max-w-xs hidden sm:block">
+<div class="flex items-center gap-space-sm mb-1">
+<span class="w-3 h-3 rounded-full bg-tertiary"></span>
+<span class="font-label-md text-label-md text-on-surface font-bold">Recruiter Turnaround</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary">Shortlist-to-offer cycle dropped from 24 days to 4.2 days via unified transcripts.</p>
+</div>
+</div>
+<!-- Copy & Recruiter CTA -->
+<div class="lg:col-span-6 flex flex-col gap-space-md">
+<div>
+<span class="font-label-caps text-label-caps text-primary uppercase font-bold tracking-widest">Industry Partnerships</span>
+<h2 class="font-headline-xl text-headline-xl text-on-surface tracking-tight mt-1">
+              Meet Your Next Generation of Talent.
+            </h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-space-sm">
+              Campus Inn+ transforms collegiate hiring for enterprise HR and high-growth tech startups. Access verified academic data, schedule on-campus drives, and run zero-drop ATS pipelines.
+            </p>
+</div>
+<div class="space-y-space-sm">
+<div class="flex items-start gap-space-sm">
+<div class="w-6 h-6 rounded-full bg-tertiary-fixed text-on-tertiary-fixed flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface"><strong>Zero Fraud Transcripts:</strong> Direct registrar-stamped grade and attendance authentication.</p>
+</div>
+<div class="flex items-start gap-space-sm">
+<div class="w-6 h-6 rounded-full bg-tertiary-fixed text-on-tertiary-fixed flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface"><strong>Batch Filter Engine:</strong> Filter candidates instantly by specific tech stacks, active hackathon wins, or CGPA.</p>
+</div>
+<div class="flex items-start gap-space-sm">
+<div class="w-6 h-6 rounded-full bg-tertiary-fixed text-on-tertiary-fixed flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface"><strong>Automated Slot Scheduling:</strong> Instant interview slot allotment syncing with student lecture free-hours.</p>
+</div>
+</div>
+<div class="flex flex-wrap items-center gap-space-sm pt-space-xs">
+<button class="px-6 py-3 bg-primary text-on-primary font-label-lg text-label-lg rounded-lg hover:bg-primary-container shadow-md transition-colors" type="button">
+              Register Your Company
+            </button>
+<button class="px-6 py-3 bg-surface-container-lowest text-on-surface font-label-lg text-label-lg rounded-lg hover:bg-surface-container shadow-sm transition-colors" type="button">
+              Explore HR Portal
+            </button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION F: CAMPUS COMMUNITIES -->
+<section class="w-full max-w-[1440px] mx-auto px-margin-mobile lg:px-margin-desktop py-space-xl">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-sm mb-space-lg">
+<div>
+<span class="font-label-caps text-label-caps text-primary uppercase font-bold tracking-widest">Student Guilds &amp; Clubs</span>
+<h2 class="font-headline-xl text-headline-xl text-on-surface tracking-tight mt-1">Join Vibrant Campus Societies</h2>
+</div>
+<a class="font-label-lg text-label-lg text-primary font-bold hover:underline flex items-center gap-1" href="#">
+<span class="">View all 32 Societies</span>
+<span class="material-symbols-outlined text-[18px]">east</span>
+</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+<!-- Society 1: Robotics Club -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-md hover:shadow-xl transition-all flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-space-sm">
+<span class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">smart_toy</span>
+</span>
+<span class="font-label-md text-label-md text-secondary">420+ Members</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Robotics &amp; Autonomous Systems Club</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-2">
+            Build competitive combat bots, drones, and autonomous rovers. Regular hardware workshops and lab access for all engineering years.
+          </p>
+</div>
+<div class="mt-space-md pt-space-xs flex items-center justify-between">
+<span class="text-xs text-primary font-semibold">Weekly Meets: Fridays 5 PM</span>
+<button class="px-3 py-1.5 bg-secondary-container text-primary font-label-md text-label-md rounded-lg hover:bg-surface-variant transition-colors" type="button">Join Guild</button>
+</div>
+</div>
+<!-- Society 2: FinTech Society -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-md hover:shadow-xl transition-all flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-space-sm">
+<span class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">currency_exchange</span>
+</span>
+<span class="font-label-md text-label-md text-secondary">310+ Members</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">FinTech &amp; Quantitative Society</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-2">
+            Explore algorithmic trading, blockchain networks, and micro-investing models. Backed by alumni working across Wall Street and Dalal Street.
+          </p>
+</div>
+<div class="mt-space-md pt-space-xs flex items-center justify-between">
+<span class="text-xs text-primary font-semibold">Weekly Meets: Tuesdays 6 PM</span>
+<button class="px-3 py-1.5 bg-secondary-container text-primary font-label-md text-label-md rounded-lg hover:bg-surface-variant transition-colors" type="button">Join Guild</button>
+</div>
+</div>
+<!-- Society 3: Design Guild -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-md hover:shadow-xl transition-all flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-space-sm">
+<span class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">palette</span>
+</span>
+<span class="font-label-md text-label-md text-secondary">285+ Members</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">UI/UX &amp; Product Design Guild</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-2">
+            Creative hub for product thinkers, visual designers, and front-end experimenters. Weekly Figma critiques and campus sprint jams.
+          </p>
+</div>
+<div class="mt-space-md pt-space-xs flex items-center justify-between">
+<span class="text-xs text-primary font-semibold">Weekly Meets: Saturdays 11 AM</span>
+<button class="px-3 py-1.5 bg-secondary-container text-primary font-label-md text-label-md rounded-lg hover:bg-surface-variant transition-colors" type="button">Join Guild</button>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION G: FINAL CTA BANNER -->
+<section class="w-full max-w-[1440px] mx-auto px-margin-mobile lg:px-margin-desktop py-space-xl">
+<div class="relative w-full rounded-3xl overflow-hidden bg-primary text-on-primary p-space-lg lg:p-space-xl shadow-2xl flex flex-col md:flex-row items-center justify-between gap-space-lg">
+<!-- Decorative Backdrop Graphic -->
+<div class="absolute -right-20 -bottom-20 w-96 h-96 bg-primary-container/40 rounded-full blur-3xl pointer-events-none"></div>
+<div class="max-w-2xl z-10">
+<span class="font-label-caps text-label-caps uppercase text-on-primary-container tracking-widest font-bold">Join the Collegiate Movement</span>
+<h2 class="font-display-lg text-headline-xl lg:text-display-lg font-bold tracking-tight mt-2 text-on-primary">
+          Your next campus opportunity starts here.
+        </h2>
+<p class="font-body-xl text-body-xl text-on-primary-container mt-space-sm">
+          Join over 45,000 students and 500+ recruitment partners connecting, managing, and growing together on Campus Inn+.
+        </p>
+</div>
+<div class="z-10 shrink-0 flex flex-col sm:flex-row gap-space-sm w-full sm:w-auto">
+<button class="px-8 py-4 bg-surface-container-lowest text-primary font-label-lg text-label-lg rounded-xl hover:bg-secondary-container transition-all shadow-xl font-bold text-center" type="button">
+          Join Campus
+        </button>
+<button class="px-8 py-4 bg-primary-container text-on-primary font-label-lg text-label-lg rounded-xl hover:bg-primary-fixed-dim hover:text-on-primary-fixed transition-all shadow-md font-bold text-center" type="button">
+          Schedule Demo
+        </button>
+</div>
+</div>
+</section>
+</div></main><footer class="w-full bg-surface-container-lowest shadow-[0_1px_8px_rgba(0,0,0,0.04)] mt-space-xl"><div class="max-w-[1440px] mx-auto px-margin-mobile lg:px-margin-desktop py-space-xl"><div class="grid grid-cols-1 md:grid-cols-4 gap-space-lg mb-space-xl"><div class="md:col-span-1"><div class="flex items-center gap-space-sm mb-space-sm"><img alt="Campus Inn+ Brand Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1Vf7o906NO_q9oQd1FlxYnOheLogJdekuf1OlrltZ2LSvyhi6eGbAULdPdjy44FJ_kCFyc5mWDfS35NKD0RW97rdOVwng8Gpkvh7_XOS_0rnox3QrQzdY-hinoj7EgikfKmi2e_P8b1BXYd2FBqsgV8yBLG3QrQKkmNjuozBaY9pPlLEfDc-A1bsuX9i0QMiuMR0dxIjQk_Jt12AeDrJNjG4dJ1OpZIceBETIMJ-6No10yxND6HfW6yMw"><span class="font-headline-sm text-headline-sm text-primary tracking-tight">Campus Inn+</span></div><p class="font-body-md text-body-md text-on-surface-variant mb-space-sm">Connect. Manage. Grow.</p><p class="font-body-sm text-body-sm text-secondary">The collegiate ecosystem empowering modern student journeys, placement pipelines, and institutional management.</p></div><div class="flex flex-col gap-space-xs"><span class="font-label-caps text-label-caps text-primary uppercase mb-space-xs tracking-wider">Discover</span><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" data-path="about" href="#">About</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" data-path="events" href="#">Events</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" data-path="placements" href="#">Placements</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" data-path="companies" href="#">Companies</a></div><div class="flex flex-col gap-space-xs"><span class="font-label-caps text-label-caps text-primary uppercase mb-space-xs tracking-wider">Resources</span><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" data-path="student-portal" href="#">Student Portal</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" data-path="recruiter-portal" href="#">Recruiter ATS</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" data-path="help" href="#">Help Center</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" data-path="contact" href="#">Contact</a></div><div class="flex flex-col gap-space-xs"><span class="font-label-caps text-label-caps text-primary uppercase mb-space-xs tracking-wider">Governance</span><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" data-path="privacy" href="#">Privacy Policy</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" data-path="terms" href="#">Terms of Service</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" data-path="accessibility" href="#">Accessibility</a></div></div><div class="pt-space-lg flex flex-col sm:flex-row items-center justify-between gap-space-sm"><p class="font-body-sm text-body-sm text-secondary">© 2026 Campus Inn+. Connect. Manage. Grow. All rights reserved.</p><div class="flex items-center gap-space-md"><a class="font-body-sm text-body-sm text-secondary hover:text-on-surface transition-colors" data-path="privacy" href="#">Privacy</a><a class="font-body-sm text-body-sm text-secondary hover:text-on-surface transition-colors" data-path="terms" href="#">Terms</a><a class="font-body-sm text-body-sm text-secondary hover:text-on-surface transition-colors" data-path="contact" href="about.html#contact">Contact</a></div></div></div></footer>
+
+
+
+
+
+
+
+</body></html>

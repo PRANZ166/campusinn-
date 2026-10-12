@@ -1,0 +1,668 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><meta content="web_dashboard" name="shell-type"><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;700;800&amp;family=Hanken+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {"surface-tint": "#7331df", "surface-dim": "#d2d9f4", "surface-container-high": "#e2e7ff", "secondary-container": "#e4e0f5", "on-primary-fixed-variant": "#5b00c5", "on-primary-container": "#dac5ff", "on-surface": "#131b2e", "on-tertiary": "#ffffff", "tertiary-container": "#006544", "on-secondary-container": "#646274", primary: "#5300b7", "on-error-container": "#93000a", "tertiary-fixed": "#6ffbbe", "surface-container-lowest": "#ffffff", "error-container": "#ffdad6", "inverse-on-surface": "#eef0ff", error: "#ba1a1a", "on-tertiary-fixed": "#002113", "on-surface-variant": "#4a4455", "primary-container": "#6d28d9", "on-primary-fixed": "#250059", "on-error": "#ffffff", "on-background": "#131b2e", "outline-variant": "#ccc3d7", surface: "#faf8ff", "surface-variant": "#dae2fd", "tertiary-fixed-dim": "#4edea3", outline: "#7b7486", "on-tertiary-fixed-variant": "#005236", "surface-bright": "#faf8ff", "secondary-fixed": "#e4e0f5", "inverse-surface": "#283044", "surface-container-highest": "#dae2fd", background: "#faf8ff", "primary-fixed-dim": "#d3bbff", secondary: "#5e5c6e", "secondary-fixed-dim": "#c7c4d8", "on-secondary-fixed": "#1b1a29", "on-tertiary-container": "#58e7ab", "surface-container": "#eaedff", tertiary: "#004b31", "surface-container-low": "#f2f3ff", "on-secondary": "#ffffff", "on-primary": "#ffffff", "inverse-primary": "#d3bbff", "on-secondary-fixed-variant": "#464555", "primary-fixed": "#ebddff"}, borderRadius: {DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px"}, spacing: {"gutter-mobile": "1rem", "space-lg": "1.5rem", "gutter-desktop": "2rem", gutter: "1.5rem", "margin-desktop": "3rem", "space-xs": "0.25rem", "space-md": "1rem", margin: "1.5rem", "space-sm": "0.5rem", "space-xl": "2.5rem", "margin-mobile": "1rem"}, fontFamily: {"display-lg-mobile": ["Bricolage Grotesque"], "body-sm": ["Hanken Grotesk"], "label-md": ["Hanken Grotesk"], "body-lg": ["Hanken Grotesk"], "headline-xl": ["Bricolage Grotesque"], "body-md": ["Hanken Grotesk"], "headline-md": ["Bricolage Grotesque"], "headline-sm": ["Bricolage Grotesque"], "display-lg": ["Bricolage Grotesque"], "body-xl": ["Hanken Grotesk"], "headline-xl-mobile": ["Bricolage Grotesque"], "headline-lg": ["Bricolage Grotesque"], "label-caps": ["Hanken Grotesk"], "label-lg": ["Hanken Grotesk"], headline: ["Bricolage Grotesque"], display: ["Bricolage Grotesque"], body: ["Hanken Grotesk"], label: ["Hanken Grotesk"]}, fontSize: {"display-lg-mobile": ["2.25rem", {lineHeight: "2.75rem", letterSpacing: "-0.025em", fontWeight: "800"}], "body-sm": ["0.75rem", {lineHeight: "1.125rem", fontWeight: "400"}], "label-md": ["0.75rem", {lineHeight: "1rem", letterSpacing: "0.02em", fontWeight: "600"}], "body-lg": ["1rem", {lineHeight: "1.5rem", fontWeight: "400"}], "headline-xl": ["2.5rem", {lineHeight: "3rem", letterSpacing: "-0.025em", fontWeight: "700"}], "body-md": ["0.875rem", {lineHeight: "1.375rem", fontWeight: "400"}], "headline-md": ["1.5rem", {lineHeight: "2rem", letterSpacing: "-0.015em", fontWeight: "600"}], "headline-sm": ["1.25rem", {lineHeight: "1.75rem", letterSpacing: "-0.01em", fontWeight: "600"}], "display-lg": ["3.5rem", {lineHeight: "4rem", letterSpacing: "-0.03em", fontWeight: "800"}], "body-xl": ["1.125rem", {lineHeight: "1.75rem", letterSpacing: "-0.005em", fontWeight: "400"}], "headline-xl-mobile": ["1.75rem", {lineHeight: "2.25rem", letterSpacing: "-0.02em", fontWeight: "700"}], "headline-lg": ["2rem", {lineHeight: "2.5rem", letterSpacing: "-0.02em", fontWeight: "700"}], "label-caps": ["0.6875rem", {lineHeight: "0.875rem", letterSpacing: "0.06em", fontWeight: "700"}], "label-lg": ["0.875rem", {lineHeight: "1.25rem", letterSpacing: "0.01em", fontWeight: "600"}]}}}};</script></head><body class="bg-surface font-body-md text-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-low shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-50 flex flex-col justify-between"><div class="flex flex-col"><div class="h-16 px-space-md flex items-center gap-space-sm bg-surface-container"><div class="w-9 h-9 rounded-lg bg-primary flex items-center justify-center text-on-primary font-headline-sm text-headline-sm font-bold">C</div><div class="flex flex-col"><span class="font-headline-sm text-headline-sm font-bold text-on-surface tracking-tight leading-none">Campus Inn<span class="text-primary">+</span></span><span class="font-label-caps text-label-caps text-primary tracking-widest uppercase">Placement Suite</span></div></div><div class="px-space-md py-space-sm"><div class="bg-surface-container-high rounded-lg p-space-sm flex items-center gap-space-sm"><span class="material-symbols-outlined text-primary text-[20px]">account_balance</span><div class="flex flex-col min-w-0 flex-1"><span class="font-label-caps text-label-caps text-on-surface-variant uppercase font-semibold">Campus Node</span><span class="font-label-md text-label-md text-on-surface truncate">MET BKC, Nashik</span></div><span class="w-2 h-2 rounded-full bg-tertiary-fixed-dim"></span></div></div><div class="px-space-md mt-space-xs"><span class="font-label-caps text-label-caps text-on-surface-variant tracking-wider uppercase px-space-xs block mb-space-xs">Operations &amp; ATS</span><nav class="space-y-space-xs" data-active-classes="bg-primary-container text-on-primary font-semibold"><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="overview" href="#"><span class="material-symbols-outlined text-[20px]">dashboard</span><span class="font-label-lg text-label-lg">Overview</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="drives" href="#"><span class="material-symbols-outlined text-[20px]">campaign</span><span class="font-label-lg text-label-lg">Placement Drives</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="students" href="#"><span class="material-symbols-outlined text-[20px]">school</span><span class="font-label-lg text-label-lg">Candidate Roster</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="recruiters" href="#"><span class="material-symbols-outlined text-[20px]">business_center</span><span class="font-label-lg text-label-lg">Corporate Partners</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="interviews" href="#"><span class="material-symbols-outlined text-[20px]">event_available</span><span class="font-label-lg text-label-lg">Interview Grid</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="analytics" href="#"><span class="material-symbols-outlined text-[20px]">query_stats</span><span class="font-label-lg text-label-lg">Metrics &amp; Offers</span></a></nav></div><div class="px-space-md mt-space-md"><span class="font-label-caps text-label-caps text-on-surface-variant tracking-wider uppercase px-space-xs block mb-space-xs">Governance</span><nav class="space-y-space-xs" data-active-classes="bg-primary-container text-on-primary font-semibold"><a aria-current="page" class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-lg transition-colors bg-primary-container text-on-primary font-semibold" data-path="eligibility-criteria" href="#"><span class="material-symbols-outlined text-[20px]">rule</span><span class="font-label-lg text-label-lg">Eligibility Policy</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="broadcasts" href="#"><span class="material-symbols-outlined text-[20px]">podcasts</span><span class="font-label-lg text-label-lg">Campus Broadcasts</span></a></nav></div></div><div class="p-space-md bg-surface-container-low"><div class="bg-surface-container rounded-lg p-space-sm flex items-center justify-between"><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="flex flex-col min-w-0"><span class="font-label-md text-label-md text-on-surface font-semibold truncate">Dr. P. Sharma</span><span class="font-label-caps text-label-caps text-primary">Lead TPO</span></div></div><a class="text-on-surface-variant hover:text-error transition-colors p-space-xs flex items-center" data-path="logout" href="#"><span class="material-symbols-outlined text-[18px]">logout</span></a></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 px-space-lg flex items-center justify-between"><div class="flex items-center gap-space-md"><a class="flex items-center gap-space-xs text-on-surface hover:text-primary transition-colors" data-path="overview" href="#"><span class="font-headline-sm text-headline-sm font-bold tracking-tight">Campus Inn+</span></a><span class="text-outline-variant font-body-sm text-body-sm">/</span><div class="flex items-center gap-space-xs bg-surface-container px-space-sm py-space-xs rounded-full"><span class="material-symbols-outlined text-primary text-[16px]">domain</span><span class="font-label-md text-label-md text-on-surface font-medium">MET Bhujbal Knowledge City, Nashik</span></div></div><div class="flex items-center gap-space-sm"><button aria-label="Toggle Light/Dark Theme" class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">light_mode</span></button><button aria-label="View Notifications" class="w-10 h-10 rounded-full relative flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-error ring-2 ring-surface"></span></button><div class="h-6 w-px bg-surface-container-high mx-space-xs"></div><div class="flex items-center gap-space-sm pl-space-xs"><div class="flex flex-col text-right"><span class="font-label-lg text-label-lg text-on-surface leading-tight font-semibold">Training &amp; Placement Cell</span><span class="font-label-caps text-label-caps text-tertiary-container leading-none font-bold">Authorized Desk</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-16 bg-surface px-space-lg"><div class="flex flex-col w-full pb-space-xl">
+<!-- Top Context Header & Institutional Notice -->
+<div class="flex flex-col gap-space-sm pt-space-md mb-space-lg">
+<div class="flex flex-wrap items-center justify-between gap-space-md">
+<div>
+<div class="flex items-center gap-space-xs mb-1">
+<span class="font-label-caps text-label-caps uppercase text-primary font-bold tracking-widest">Campus Recruitment Desk</span>
+<span class="text-outline-variant font-label-caps text-label-caps">•</span>
+<span class="font-label-caps text-label-caps text-secondary font-semibold">MET BKC Job Requisition #REQ-2025-084</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight font-extrabold">Educational Eligibility &amp; Course Matrix</h1>
+</div>
+<div class="flex items-center gap-space-sm">
+<span class="px-space-sm py-1 rounded-full bg-secondary-container text-on-secondary-fixed text-label-md font-label-md font-semibold flex items-center gap-1.5 shadow-sm">
+<span class="material-symbols-outlined text-[16px] text-primary">apartment</span>
+          Campus Node: MET Adgaon, Nashik
+        </span>
+<button class="px-space-md py-2 rounded-lg bg-surface-container-high hover:bg-surface-variant text-on-surface font-label-lg text-label-lg transition-colors flex items-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-[18px]">history</span>
+          Load 2024 Criteria Template
+        </button>
+</div>
+</div>
+<!-- Institutional Verification Assurance Banner -->
+<div class="rounded-xl bg-surface-container-high/60 p-space-md flex items-start gap-space-md relative overflow-hidden shadow-sm">
+<div class="w-10 h-10 rounded-xl bg-primary-container text-on-primary flex items-center justify-center shrink-0 shadow-md">
+<span class="material-symbols-outlined text-[22px]">verified_user</span>
+</div>
+<div class="flex-1 min-w-0 pr-space-md">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-lg text-label-lg text-on-surface font-bold">Mandatory Institutional Verification Gate</span>
+<span class="px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed text-label-caps font-label-caps uppercase font-bold tracking-wider">Active Policy</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mt-0.5">
+          Hiring requirements configured here are submitted to the <strong class="text-on-surface">MET Central Training &amp; Placement Cell</strong> for institutional verification prior to student roster release and automated push alerts.
+        </p>
+</div>
+<div class="shrink-0 flex items-center self-center">
+<span class="font-label-caps text-label-caps text-secondary-container font-mono px-space-xs py-1 rounded bg-on-secondary-container/10">SPPU / AICTE COMPLIANT</span>
+</div>
+</div>
+</div>
+<!-- Stepper: 8 Recruitment Configuration Stages -->
+<div class="w-full bg-surface-container-lowest rounded-xl p-space-md mb-space-xl shadow-sm">
+<div class="flex items-center justify-between mb-space-xs px-1">
+<span class="font-label-caps text-label-caps uppercase tracking-wider text-on-surface-variant font-bold">Requisition Lifecycle Progression</span>
+<span class="font-label-md text-label-md text-primary font-bold">Stage 2 of 8: Academic Gates</span>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-2 relative">
+<!-- Step 1: Position Details (Done) -->
+<div class="flex flex-col gap-1.5 p-2 rounded-lg bg-surface-container-low transition-all">
+<div class="flex items-center justify-between">
+<span class="w-6 h-6 rounded-full bg-tertiary text-on-tertiary text-label-caps font-label-caps flex items-center justify-center font-bold">
+<span class="material-symbols-outlined text-[14px]">check</span>
+</span>
+<span class="font-label-caps text-label-caps text-tertiary font-bold">01</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface font-semibold truncate">Role Spec</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">Completed</span>
+</div>
+<!-- Step 2: Educational Eligibility (Active) -->
+<div class="flex flex-col gap-1.5 p-2 rounded-lg bg-primary-container text-on-primary shadow-md relative overflow-hidden">
+<div class="flex items-center justify-between">
+<span class="w-6 h-6 rounded-full bg-surface-container-lowest text-primary text-label-caps font-label-caps flex items-center justify-center font-bold">02</span>
+<span class="font-label-caps text-label-caps text-on-primary-container font-bold uppercase tracking-widest">Active</span>
+</div>
+<span class="font-label-md text-label-md text-on-primary font-bold truncate">Academic Matrix</span>
+<span class="font-label-caps text-label-caps text-on-primary-container">Eligibility Rules</span>
+</div>
+<!-- Step 3: Required Skills -->
+<div class="flex flex-col gap-1.5 p-2 rounded-lg bg-surface-container-low opacity-75">
+<div class="flex items-center justify-between">
+<span class="w-6 h-6 rounded-full bg-surface-container text-on-surface-variant text-label-caps font-label-caps flex items-center justify-center font-bold">03</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant font-medium">Next</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface font-medium truncate">Skill Matrix</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">Tech / Soft</span>
+</div>
+<!-- Step 4: Experience & Certifications -->
+<div class="flex flex-col gap-1.5 p-2 rounded-lg bg-surface-container-low opacity-75">
+<div class="flex items-center justify-between">
+<span class="w-6 h-6 rounded-full bg-surface-container text-on-surface-variant text-label-caps font-label-caps flex items-center justify-center font-bold">04</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant font-medium">Pending</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface font-medium truncate">Credentials</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">Internships</span>
+</div>
+<!-- Step 5: Compensation (INR CTC) -->
+<div class="flex flex-col gap-1.5 p-2 rounded-lg bg-surface-container-low opacity-75">
+<div class="flex items-center justify-between">
+<span class="w-6 h-6 rounded-full bg-surface-container text-on-surface-variant text-label-caps font-label-caps flex items-center justify-center font-bold">05</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant font-medium">Pending</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface font-medium truncate">Compensation</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">CTC Breakdown</span>
+</div>
+<!-- Step 6: Application Rules -->
+<div class="flex flex-col gap-1.5 p-2 rounded-lg bg-surface-container-low opacity-75">
+<div class="flex items-center justify-between">
+<span class="w-6 h-6 rounded-full bg-surface-container text-on-surface-variant text-label-caps font-label-caps flex items-center justify-center font-bold">06</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant font-medium">Pending</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface font-medium truncate">Intake Rules</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">Attempt Caps</span>
+</div>
+<!-- Step 7: Selection Pipeline -->
+<div class="flex flex-col gap-1.5 p-2 rounded-lg bg-surface-container-low opacity-75">
+<div class="flex items-center justify-between">
+<span class="w-6 h-6 rounded-full bg-surface-container text-on-surface-variant text-label-caps font-label-caps flex items-center justify-center font-bold">07</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant font-medium">Pending</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface font-medium truncate">Selection Grid</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">Interview Stages</span>
+</div>
+<!-- Step 8: Review & Submission -->
+<div class="flex flex-col gap-1.5 p-2 rounded-lg bg-surface-container-low opacity-75">
+<div class="flex items-center justify-between">
+<span class="w-6 h-6 rounded-full bg-surface-container text-on-surface-variant text-label-caps font-label-caps flex items-center justify-center font-bold">08</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant font-medium">Gate</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface font-medium truncate">Final Review</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">TPO Approval</span>
+</div>
+</div>
+</div>
+<!-- Primary Workspace Layout: 8-col Builder + 4-col Real-time Pool Simulator -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+<!-- LEFT COLUMN: Configurations (8 Cols) -->
+<div class="lg:col-span-8 flex flex-col gap-space-lg">
+<!-- SECTION 1: Participating MET Campus Institutes -->
+<section class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm"><div class="flex items-start justify-between mb-space-md pb-space-xs border-b border-surface-container-high/60">
+<div>
+<div class="flex items-center gap-space-xs mb-1">
+<span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
+<span class="font-label-caps text-label-caps uppercase tracking-wider text-primary font-bold">Section 1</span>
+</div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-extrabold tracking-tight">Eligible MET Campus Institutes</h2>
+<p class="font-body-md text-body-md text-on-surface-variant font-medium">Select authorized collegiate units under MET Bhujbal Knowledge City to participate in this recruitment cycle.</p>
+</div>
+<button class="px-3 py-1.5 rounded-lg bg-surface-container-low hover:bg-surface-container text-primary font-label-md text-label-md font-bold transition-colors border border-outline-variant/40" onclick="document.querySelectorAll('.inst-check').forEach(c=&gt;c.checked=true); calculatePool();" type="button">Select All (5)</button>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-sm">
+<!-- Institute 1 -->
+<label class="p-space-md rounded-xl bg-surface-container-lowest hover:bg-surface-container-low border-2 border-primary/20 hover:border-primary/50 cursor-pointer flex items-start gap-space-sm transition-all group shadow-sm">
+<input checked="" class="inst-check mt-1 w-5 h-5 rounded text-primary accent-primary cursor-pointer" onchange="calculatePool()" type="checkbox">
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg text-label-lg font-bold text-on-surface group-hover:text-primary transition-colors">MET Institute of Engineering</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium">SPPU Permanent Affiliation • NBA Accredited</span>
+<div class="flex items-center gap-2 mt-2">
+<span class="px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface font-label-caps text-label-caps font-bold">B.Tech / MCA</span>
+<span class="font-label-caps text-label-caps text-tertiary font-extrabold">1,120 Candidates</span>
+</div>
+</div>
+</label>
+<!-- Institute 2 -->
+<label class="p-space-md rounded-xl bg-surface-container-lowest hover:bg-surface-container-low border-2 border-primary/20 hover:border-primary/50 cursor-pointer flex items-start gap-space-sm transition-all group shadow-sm">
+<input checked="" class="inst-check mt-1 w-5 h-5 rounded text-primary accent-primary cursor-pointer" onchange="calculatePool()" type="checkbox">
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg text-label-lg font-bold text-on-surface group-hover:text-primary transition-colors">MET Institute of Management</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium">DTE Code: MB5103 • AICTE / Savitribai Phule Pune Univ.</span>
+<div class="flex items-center gap-2 mt-2">
+<span class="px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface font-label-caps text-label-caps font-bold">MBA / BBA / BCA</span>
+<span class="font-label-caps text-label-caps text-tertiary font-extrabold">960 Candidates</span>
+</div>
+</div>
+</label>
+<!-- Institute 3 -->
+<label class="p-space-md rounded-xl bg-surface-container-lowest hover:bg-surface-container-low border border-outline-variant/60 hover:border-primary/40 cursor-pointer flex items-start gap-space-sm transition-all group shadow-sm">
+<input class="inst-check mt-1 w-5 h-5 rounded text-primary accent-primary cursor-pointer" onchange="calculatePool()" type="checkbox">
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg text-label-lg font-bold text-on-surface group-hover:text-primary transition-colors">MET Institute of Technology (Polytechnic)</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium">MSBTE Approved • Engineering Diplomas</span>
+<div class="flex items-center gap-2 mt-2">
+<span class="px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface font-label-caps text-label-caps font-bold">Diploma Polytechnic</span>
+<span class="font-label-caps text-label-caps text-secondary font-bold">540 Candidates</span>
+</div>
+</div>
+</label>
+<!-- Institute 4 -->
+<label class="p-space-md rounded-xl bg-surface-container-lowest hover:bg-surface-container-low border border-outline-variant/60 hover:border-primary/40 cursor-pointer flex items-start gap-space-sm transition-all group shadow-sm">
+<input class="inst-check mt-1 w-5 h-5 rounded text-primary accent-primary cursor-pointer" onchange="calculatePool()" type="checkbox">
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg text-label-lg font-bold text-on-surface group-hover:text-primary transition-colors">MET Institute of Pharmacy</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium">PCI Recognized • B.Pharm &amp; M.Pharm Division</span>
+<div class="flex items-center gap-2 mt-2">
+<span class="px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface font-label-caps text-label-caps font-bold">B.Pharm / M.Pharm</span>
+<span class="font-label-caps text-label-caps text-secondary font-bold">280 Candidates</span>
+</div>
+</div>
+</label>
+<!-- Institute 5 -->
+<label class="p-space-md rounded-xl bg-surface-container-lowest hover:bg-surface-container-low border border-outline-variant/60 hover:border-primary/40 cursor-pointer flex items-start gap-space-sm transition-all group sm:col-span-2 shadow-sm">
+<input class="inst-check mt-1 w-5 h-5 rounded text-primary accent-primary cursor-pointer" onchange="calculatePool()" type="checkbox">
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-2">
+<span class="font-label-lg text-label-lg font-bold text-on-surface group-hover:text-primary transition-colors">MET Institute of Architecture and Interior Design</span>
+<span class="px-2.5 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-caps text-label-caps font-bold">CoA Approved</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium mt-0.5">Council of Architecture • 5-Year B.Arch Professional Degree Stream</span>
+</div>
+</label>
+</div></section>
+<!-- SECTION 2: Management & Computing Program Matrix -->
+<section class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm"><div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm mb-space-md pb-space-xs border-b border-surface-container-high/60">
+<div>
+<div class="flex items-center gap-space-xs mb-1">
+<span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
+<span class="font-label-caps text-label-caps uppercase tracking-wider text-primary font-bold">Section 2</span>
+</div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-extrabold tracking-tight">Management &amp; Computing Program Matrix</h2>
+<p class="font-body-md text-body-md text-on-surface-variant font-medium">Granular eligibility mapping for business and applied software degrees.</p>
+</div>
+<!-- Live Counter Badge -->
+<div class="shrink-0 px-space-md py-2 rounded-xl bg-primary text-on-primary shadow-sm flex items-center gap-2 self-start sm:self-auto">
+<span class="material-symbols-outlined text-[20px]">verified</span>
+<span class="font-label-md text-label-md font-bold tracking-wide" id="managementCounter">4 Selected — 1,480 Eligible MET Candidates</span>
+</div>
+</div>
+<!-- Filter & Search Toolbar -->
+<div class="flex flex-wrap items-center justify-between gap-space-sm mb-space-md bg-surface-container-low p-2 rounded-xl border border-outline-variant/40">
+<div class="flex items-center gap-space-xs flex-1 min-w-[200px]">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant pl-2">search</span>
+<input class="bg-transparent text-on-surface placeholder:text-outline font-body-sm text-body-sm py-1.5 px-2 w-full focus:outline-none" placeholder="Search degrees, specialization or course code..." type="text">
+</div>
+<div class="flex items-center gap-2">
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant font-bold">Target Batch:</span>
+<div class="flex items-center gap-1.5">
+<label class="px-3.5 py-1.5 rounded-lg bg-primary text-on-primary font-label-md text-label-md font-bold cursor-pointer shadow-sm">
+<input checked="" class="hidden" type="checkbox"> 2025 Passing Out
+</label>
+<label class="px-3.5 py-1.5 rounded-lg bg-surface-container text-on-surface-variant hover:text-on-surface font-label-md text-label-md font-semibold cursor-pointer border border-outline-variant/30">
+<input class="hidden" type="checkbox"> 2026 Pre-Final
+</label>
+</div>
+</div>
+</div>
+<!-- Course Matrix List -->
+<div class="space-y-space-sm">
+<!-- Course Card 1: BBA -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest border-2 border-primary/20 hover:border-primary/50 transition-all flex flex-col md:flex-row md:items-center justify-between gap-space-sm shadow-sm">
+<div class="flex items-start gap-space-sm">
+<input checked="" class="prog-toggle mt-1 w-5 h-5 rounded text-primary accent-primary cursor-pointer" data-count="240" id="prog_bba" onchange="calculatePool()" type="checkbox">
+<div class="flex flex-col">
+<div class="flex items-center gap-2 flex-wrap">
+<label class="font-label-lg text-label-lg font-extrabold text-on-surface cursor-pointer tracking-tight" for="prog_bba">BBA — Bachelor of Business Administration</label>
+<span class="px-2.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-fixed text-label-caps font-label-caps font-bold">Undergraduate</span>
+<span class="px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface font-label-caps text-label-caps font-semibold">3 Years (6 Semesters)</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium mt-0.5">MET Institute of Management • SPPU Affiliated • Focus: Marketing, Finance, HR Operations</span>
+</div>
+</div>
+<div class="flex items-center gap-space-md pl-7 md:pl-0">
+<div class="text-right">
+<span class="font-headline-sm text-headline-sm font-extrabold text-primary block leading-none">240</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase font-bold">Registered</span>
+</div>
+<span class="material-symbols-outlined text-[24px] text-tertiary">check_circle</span>
+</div>
+</div>
+<!-- Course Card 2: BCA -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest border-2 border-primary/20 hover:border-primary/50 transition-all flex flex-col md:flex-row md:items-center justify-between gap-space-sm shadow-sm">
+<div class="flex items-start gap-space-sm">
+<input checked="" class="prog-toggle mt-1 w-5 h-5 rounded text-primary accent-primary cursor-pointer" data-count="380" id="prog_bca" onchange="calculatePool()" type="checkbox">
+<div class="flex flex-col">
+<div class="flex items-center gap-2 flex-wrap">
+<label class="font-label-lg text-label-lg font-extrabold text-on-surface cursor-pointer tracking-tight" for="prog_bca">BCA — Bachelor of Computer Applications</label>
+<span class="px-2.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-fixed text-label-caps font-label-caps font-bold">Undergraduate</span>
+<span class="px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface font-label-caps text-label-caps font-semibold">3 Years (Full-Time)</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium mt-0.5">MET Institute of Management • SPPU Affiliated • Core: Web Arch, Java, Cloud, RDBMS</span>
+</div>
+</div>
+<div class="flex items-center gap-space-md pl-7 md:pl-0">
+<div class="text-right">
+<span class="font-headline-sm text-headline-sm font-extrabold text-primary block leading-none">380</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase font-bold">Registered</span>
+</div>
+<span class="material-symbols-outlined text-[24px] text-tertiary">check_circle</span>
+</div>
+</div>
+<!-- Course Card 3: MCA -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest border-2 border-primary/20 hover:border-primary/50 transition-all flex flex-col md:flex-row md:items-center justify-between gap-space-sm shadow-sm">
+<div class="flex items-start gap-space-sm">
+<input checked="" class="prog-toggle mt-1 w-5 h-5 rounded text-primary accent-primary cursor-pointer" data-count="410" id="prog_mca" onchange="calculatePool()" type="checkbox">
+<div class="flex flex-col">
+<div class="flex items-center gap-2 flex-wrap">
+<label class="font-label-lg text-label-lg font-extrabold text-on-surface cursor-pointer tracking-tight" for="prog_mca">MCA — Master of Computer Applications</label>
+<span class="px-2.5 py-0.5 rounded-full bg-primary text-on-primary text-label-caps font-label-caps font-bold">Postgraduate</span>
+<span class="px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface font-label-caps text-label-caps font-semibold">2 Years (AICTE Approved)</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium mt-0.5">MET Institute of Engineering &amp; Technology • SPPU • Focus: Full Stack, DSA, Cloud Dev</span>
+</div>
+</div>
+<div class="flex items-center gap-space-md pl-7 md:pl-0">
+<div class="text-right">
+<span class="font-headline-sm text-headline-sm font-extrabold text-primary block leading-none">410</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase font-bold">Registered</span>
+</div>
+<span class="material-symbols-outlined text-[24px] text-tertiary">check_circle</span>
+</div>
+</div>
+<!-- Course Card 4: MBA -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest border-2 border-primary/20 hover:border-primary/50 transition-all flex flex-col md:flex-row md:items-center justify-between gap-space-sm shadow-sm">
+<div class="flex items-start gap-space-sm">
+<input checked="" class="prog-toggle mt-1 w-5 h-5 rounded text-primary accent-primary cursor-pointer" data-count="450" id="prog_mba" onchange="calculatePool()" type="checkbox">
+<div class="flex flex-col">
+<div class="flex items-center gap-2 flex-wrap">
+<label class="font-label-lg text-label-lg font-extrabold text-on-surface cursor-pointer tracking-tight" for="prog_mba">MBA — Master of Business Administration</label>
+<span class="px-2.5 py-0.5 rounded-full bg-primary text-on-primary text-label-caps font-label-caps font-bold">Postgraduate</span>
+<span class="px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface font-label-caps text-label-caps font-semibold">Dual Specialization</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium mt-0.5">MET Institute of Management • AICTE Approved • Business Analytics, MarTech, FinTech</span>
+</div>
+</div>
+<div class="flex items-center gap-space-md pl-7 md:pl-0">
+<div class="text-right">
+<span class="font-headline-sm text-headline-sm font-extrabold text-primary block leading-none">450</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase font-bold">Registered</span>
+</div>
+<span class="material-symbols-outlined text-[24px] text-tertiary">check_circle</span>
+</div>
+</div>
+</div></section>
+<!-- SECTION 3: Engineering & Technical Streams -->
+<section class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm"><div class="flex items-start justify-between mb-space-md pb-space-xs border-b border-surface-container-high/60">
+<div>
+<div class="flex items-center gap-space-xs mb-1">
+<span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
+<span class="font-label-caps text-label-caps uppercase tracking-wider text-primary font-bold">Section 3</span>
+</div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-extrabold tracking-tight">Engineering &amp; Technical Streams (B.Tech / B.E.)</h2>
+<p class="font-body-md text-body-md text-on-surface-variant font-medium">Include specialized engineering branches from MET Institute of Engineering.</p>
+</div>
+<span class="px-3 py-1 rounded-full bg-primary/10 text-primary font-label-caps text-label-caps font-bold border border-primary/20">4-Year Degree Track</span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-space-sm">
+<label class="p-space-md rounded-xl bg-surface-container-lowest border-2 border-primary/20 hover:border-primary/50 cursor-pointer flex items-center justify-between transition-all shadow-sm group">
+<div class="flex items-center gap-space-sm">
+<input checked="" class="eng-toggle w-5 h-5 rounded text-primary accent-primary cursor-pointer" data-count="180" onchange="calculatePool()" type="checkbox">
+<div>
+<span class="font-label-lg text-label-lg font-bold text-on-surface group-hover:text-primary transition-colors block">Computer Engineering</span>
+<span class="font-label-caps text-label-caps text-tertiary font-bold">180 Candidates</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-primary text-[22px]">terminal</span>
+</label>
+<label class="p-space-md rounded-xl bg-surface-container-lowest border-2 border-primary/20 hover:border-primary/50 cursor-pointer flex items-center justify-between transition-all shadow-sm group">
+<div class="flex items-center gap-space-sm">
+<input checked="" class="eng-toggle w-5 h-5 rounded text-primary accent-primary cursor-pointer" data-count="120" onchange="calculatePool()" type="checkbox">
+<div>
+<span class="font-label-lg text-label-lg font-bold text-on-surface group-hover:text-primary transition-colors block">Information Technology</span>
+<span class="font-label-caps text-label-caps text-tertiary font-bold">120 Candidates</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-primary text-[22px]">hub</span>
+</label>
+<label class="p-space-md rounded-xl bg-surface-container-lowest border-2 border-primary/20 hover:border-primary/50 cursor-pointer flex items-center justify-between transition-all shadow-sm group">
+<div class="flex items-center gap-space-sm">
+<input checked="" class="eng-toggle w-5 h-5 rounded text-primary accent-primary cursor-pointer" data-count="60" onchange="calculatePool()" type="checkbox">
+<div>
+<span class="font-label-lg text-label-lg font-bold text-on-surface group-hover:text-primary transition-colors block">AI &amp; Data Science</span>
+<span class="font-label-caps text-label-caps text-tertiary font-bold">60 Candidates</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-primary text-[22px]">neurology</span>
+</label>
+<label class="p-space-md rounded-xl bg-surface-container-lowest border border-outline-variant/60 hover:border-primary/40 cursor-pointer flex items-center justify-between transition-all shadow-sm group">
+<div class="flex items-center gap-space-sm">
+<input class="eng-toggle w-5 h-5 rounded text-primary accent-primary cursor-pointer" data-count="120" onchange="calculatePool()" type="checkbox">
+<div>
+<span class="font-label-lg text-label-lg font-bold text-on-surface group-hover:text-primary transition-colors block">Electronics &amp; Telecom (E&amp;TC)</span>
+<span class="font-label-caps text-label-caps text-secondary font-bold">120 Candidates</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-secondary text-[22px]">sensors</span>
+</label>
+<label class="p-space-md rounded-xl bg-surface-container-lowest border border-outline-variant/60 hover:border-primary/40 cursor-pointer flex items-center justify-between transition-all shadow-sm group">
+<div class="flex items-center gap-space-sm">
+<input class="eng-toggle w-5 h-5 rounded text-primary accent-primary cursor-pointer" data-count="120" onchange="calculatePool()" type="checkbox">
+<div>
+<span class="font-label-lg text-label-lg font-bold text-on-surface group-hover:text-primary transition-colors block">Mechanical Engineering</span>
+<span class="font-label-caps text-label-caps text-secondary font-bold">120 Candidates</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-secondary text-[22px]">precision_manufacturing</span>
+</label>
+</div></section>
+<!-- SECTION 4: Academic Cut-Off & Backlog Criteria -->
+<section class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm"><div class="flex items-center gap-space-xs mb-1">
+<span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
+<span class="font-label-caps text-label-caps uppercase tracking-wider text-primary font-bold">Section 4</span>
+</div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-extrabold tracking-tight">Academic Cut-Off &amp; Backlog Governance</h2>
+<p class="font-body-md text-body-md text-on-surface-variant font-medium mb-space-lg pb-space-xs border-b border-surface-container-high/60">Enforce institutional scoring thresholds, historical aggregate cut-offs, and live academic backlogs.</p>
+<!-- Threshold Inputs Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md mb-space-lg">
+<!-- Graduation Threshold -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl border-2 border-primary/20 shadow-sm">
+<div class="flex items-center justify-between mb-2">
+<label class="font-label-md text-label-md font-bold text-on-surface">Min. Graduation Score</label>
+<span class="font-label-caps text-label-caps text-primary font-extrabold uppercase px-2 py-0.5 bg-primary/10 rounded">CUT-OFF</span>
+</div>
+<div class="flex items-center gap-3 mb-3">
+<input class="w-20 px-2 py-1 rounded-lg bg-surface-container-low font-headline-lg text-headline-lg font-extrabold text-primary text-center focus:outline-none border border-outline-variant/50" id="cgpaVal" step="0.1" type="number" value="6.5">
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg font-extrabold text-on-surface leading-tight">6.5 CGPA</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium">or 60.0% Aggregate</span>
+</div>
+</div>
+<input class="w-full accent-primary h-2 bg-surface-container-high rounded-lg cursor-pointer" max="9.0" min="5.0" oninput="document.getElementById('cgpaVal').value = this.value" step="0.1" type="range" value="6.5">
+</div>
+<!-- 12th Std Threshold -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl border-2 border-primary/20 shadow-sm">
+<div class="flex items-center justify-between mb-2">
+<label class="font-label-md text-label-md font-bold text-on-surface">Class 12th / Diploma Cut-off</label>
+<span class="font-label-caps text-label-caps text-secondary font-extrabold uppercase px-2 py-0.5 bg-surface-container rounded">HSC/MSBTE</span>
+</div>
+<div class="flex items-center gap-3 mb-3">
+<input class="w-20 px-2 py-1 rounded-lg bg-surface-container-low font-headline-lg text-headline-lg font-extrabold text-primary text-center focus:outline-none border border-outline-variant/50" id="hscVal" type="number" value="60">
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg font-extrabold text-on-surface leading-tight">60.0% Aggregate</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium">Across all subjects</span>
+</div>
+</div>
+<input class="w-full accent-primary h-2 bg-surface-container-high rounded-lg cursor-pointer" max="85" min="50" oninput="document.getElementById('hscVal').value = this.value" step="1" type="range" value="60">
+</div>
+<!-- 10th Std Threshold -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl border-2 border-primary/20 shadow-sm">
+<div class="flex items-center justify-between mb-2">
+<label class="font-label-md text-label-md font-bold text-on-surface">Class 10th (SSC) Cut-off</label>
+<span class="font-label-caps text-label-caps text-secondary font-extrabold uppercase px-2 py-0.5 bg-surface-container rounded">Matric</span>
+</div>
+<div class="flex items-center gap-3 mb-3">
+<input class="w-20 px-2 py-1 rounded-lg bg-surface-container-low font-headline-lg text-headline-lg font-extrabold text-primary text-center focus:outline-none border border-outline-variant/50" id="sscVal" type="number" value="60">
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg font-extrabold text-on-surface leading-tight">60.0% Matriculation</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium">State Board / CBSE / ICSE</span>
+</div>
+</div>
+<input class="w-full accent-primary h-2 bg-surface-container-high rounded-lg cursor-pointer" max="85" min="50" oninput="document.getElementById('sscVal').value = this.value" step="1" type="range" value="60">
+</div>
+</div>
+<!-- Strict Backlog Policy Selector -->
+<div class="mb-space-lg">
+<div class="flex items-center justify-between mb-2">
+<label class="font-label-lg text-label-lg font-extrabold text-on-surface">Live Academic Backlog Policy</label>
+<span class="font-label-caps text-label-caps text-primary font-bold">ATS Screening Rules</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium block mb-space-sm">Students failing to meet this criterion will be filtered automatically by the ATS screening engine.</span>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-sm">
+<label class="p-space-md rounded-xl bg-surface-container-lowest border-2 border-primary cursor-pointer flex flex-col justify-between gap-space-sm relative shadow-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-lg text-label-lg font-extrabold text-primary">Strict Zero Backlog</span>
+<input checked="" class="w-5 h-5 text-primary accent-primary cursor-pointer" name="backlog_policy" type="radio">
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant font-medium">No Active / Live Backlogs Allowed. Candidate must have cleared all preceding semesters at time of registration.</p>
+<span class="px-2.5 py-1 rounded-lg bg-primary text-on-primary text-label-caps font-label-caps font-extrabold w-fit">Corporate Standard</span>
+</label>
+<label class="p-space-md rounded-xl bg-surface-container-lowest border border-outline-variant/60 hover:border-primary/40 cursor-pointer flex flex-col justify-between gap-space-sm transition-all shadow-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-lg text-label-lg font-bold text-on-surface">Up to 1 Active Backlog</span>
+<input class="w-5 h-5 text-primary accent-primary cursor-pointer" name="backlog_policy" type="radio">
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant font-medium">Permitted subject to college undertaking that arrear will be cleared prior to company joining date.</p>
+<span class="px-2.5 py-1 rounded-lg bg-secondary-fixed text-on-secondary-fixed text-label-caps font-label-caps font-bold w-fit">Conditional Intake</span>
+</label>
+<label class="p-space-md rounded-xl bg-surface-container-lowest border border-outline-variant/60 hover:border-primary/40 cursor-pointer flex flex-col justify-between gap-space-sm transition-all shadow-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-lg text-label-lg font-bold text-on-surface">Dead Backlogs Allowed</span>
+<input class="w-5 h-5 text-primary accent-primary cursor-pointer" name="backlog_policy" type="radio">
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant font-medium">Historical backlogs permitted, provided all current academic papers stand cleared at application close.</p>
+<span class="px-2.5 py-1 rounded-lg bg-surface-container text-on-surface-variant text-label-caps font-label-caps font-bold w-fit">Relaxed Entry</span>
+</label>
+</div>
+</div>
+<!-- Academic Gap Policy -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest border border-outline-variant/60 flex flex-col sm:flex-row sm:items-center justify-between gap-space-md shadow-sm">
+<div class="flex items-start gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[24px] mt-0.5">calendar_month</span>
+<div>
+<span class="font-label-lg text-label-lg font-extrabold text-on-surface block">Maximum Academic Year Gap Allowed</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium">Cumulative gap duration during schooling, 12th to Graduation, or within degree terms.</span>
+</div>
+</div>
+<div class="flex items-center gap-2 shrink-0">
+<select class="px-3.5 py-2 rounded-lg bg-surface-container-low border border-outline-variant/50 text-on-surface font-label-md text-label-md font-bold focus:outline-none">
+<option>No Gap Allowed (0 Years)</option>
+<option selected="">Max 1 Year Gap Allowed</option>
+<option>Max 2 Years Gap Allowed</option>
+<option>Any Gap with Valid Reason</option>
+</select>
+</div>
+</div></section>
+<!-- Bottom Nav Control Bar -->
+<div class="flex flex-wrap items-center justify-between gap-space-md pt-space-xs">
+<a class="px-space-lg py-2.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-lg text-label-lg transition-colors flex items-center gap-2" data-path="drives" href="#">
+<span class="material-symbols-outlined text-[18px]">arrow_back</span>
+          Back to Step 1 (Position Details)
+        </a>
+<div class="flex items-center gap-space-sm">
+<button class="px-space-md py-2.5 rounded-lg bg-surface-container-high hover:bg-surface-variant text-on-surface font-label-lg text-label-lg transition-colors" type="button">
+            Save Draft
+          </button>
+<button class="px-space-xl py-2.5 rounded-lg bg-primary hover:bg-primary-container text-on-primary font-label-lg text-label-lg shadow-md hover:shadow-lg transition-all flex items-center gap-2 font-bold" type="button">
+            Save &amp; Continue to Step 3 (Skills)
+            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- RIGHT COLUMN: Real-Time Pool Matching Simulator & Verification Card (4 Cols) -->
+<div class="lg:col-span-4 flex flex-col gap-space-lg sticky top-20">
+<!-- Real-Time Pool Match Simulator -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-md relative overflow-hidden"><div class="flex items-center justify-between mb-space-sm pb-space-xs border-b border-surface-container-high/60">
+<span class="font-label-caps text-label-caps uppercase tracking-wider text-primary font-extrabold">MET Candidate Roster ATS</span>
+<span class="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-caps text-label-caps font-extrabold">
+<span class="w-2 h-2 rounded-full bg-tertiary-container animate-pulse"></span>
+LIVE SYNC
+</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm font-extrabold text-on-surface mb-1 tracking-tight">Eligible Student Pool</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant font-medium mb-space-md">Real-time simulation based on your selected program matrix and academic cut-off restrictions.</p>
+<!-- Giant Counter Display -->
+<div class="p-space-md rounded-xl bg-surface-container-low border border-outline-variant/40 mb-space-md flex flex-col items-center justify-center text-center relative overflow-hidden shadow-sm">
+<span class="font-display-lg text-display-lg font-extrabold text-primary leading-none tracking-tight" id="totalCandidatesDisplay">1,840</span>
+<span class="font-label-lg text-label-lg font-extrabold text-on-surface mt-1.5">Total Verified Candidates</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium">Class of 2025 • MET Bhujbal Knowledge City</span>
+<!-- Radial Progress / Distribution SVG -->
+<div class="w-full mt-4 flex items-center justify-between text-body-sm font-body-sm text-on-surface-variant px-1 font-semibold">
+<span class="">Pool Penetration</span>
+<span class="font-extrabold text-primary px-2 py-0.5 rounded-full bg-primary/10">64.8% of Campus Total</span>
+</div>
+<div class="w-full h-2.5 rounded-full bg-surface-container-high mt-2 overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 64.8%"></div>
+</div>
+</div>
+<!-- Program Breakdown Rows -->
+<div class="space-y-2 mb-space-md">
+<span class="font-label-caps text-label-caps uppercase tracking-wider text-on-surface-variant font-extrabold block mb-1">Stream Distribution</span>
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-low border border-outline-variant/30" id="row_bba">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-surface-tint"></span>
+<span class="font-label-md text-label-md text-on-surface font-bold">BBA (MET IOM)</span>
+</div>
+<span class="font-label-md text-label-md font-extrabold text-primary">240 Candidates</span>
+</div>
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-low border border-outline-variant/30" id="row_bca">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
+<span class="font-label-md text-label-md text-on-surface font-bold">BCA (MET IOM)</span>
+</div>
+<span class="font-label-md text-label-md font-extrabold text-primary">380 Candidates</span>
+</div>
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-low border border-outline-variant/30" id="row_mca">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-primary-container"></span>
+<span class="font-label-md text-label-md text-on-surface font-bold">MCA (MET IOE&amp;T)</span>
+</div>
+<span class="font-label-md text-label-md font-extrabold text-primary">410 Candidates</span>
+</div>
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-low border border-outline-variant/30" id="row_mba">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-tertiary"></span>
+<span class="font-label-md text-label-md text-on-surface font-bold">MBA (MET IOM)</span>
+</div>
+<span class="font-label-md text-label-md font-extrabold text-primary">450 Candidates</span>
+</div>
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-low border border-outline-variant/30" id="row_eng">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary"></span>
+<span class="font-label-md text-label-md text-on-surface font-bold">Engineering Streams</span>
+</div>
+<span class="font-label-md text-label-md font-extrabold text-primary" id="engCountDisplay">360 Candidates</span>
+</div>
+</div>
+<!-- Academic Filters Penalty Notice -->
+<div class="p-space-sm rounded-lg bg-primary/5 border border-primary/20 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">filter_alt</span>
+<span class="font-body-sm text-body-sm text-on-surface font-medium">Min. CGPA 6.5 &amp; Zero Backlog filters applied automatically.</span>
+</div></div>
+<!-- Campus Verification Advisory -->
+<div class="bg-surface-container-low rounded-xl p-space-md shadow-sm">
+<div class="flex items-center gap-space-xs mb-2">
+<span class="material-symbols-outlined text-tertiary-container text-[20px]">policy</span>
+<span class="font-label-lg text-label-lg font-bold text-on-surface">T&amp;P Cell Compliance Policy</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+          The Placement Cell at MET Bhujbal Knowledge City validates all job descriptions against AICTE norms and SPPU academic calendars. Direct notifications will be distributed upon approval within 4 business hours.
+        </p>
+<div class="mt-space-sm pt-space-xs flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant">Placement Coordinator</span>
+<span class="font-label-md text-label-md font-semibold text-on-surface">Dr. P. Sharma</span>
+</div>
+<span class="px-2 py-1 rounded bg-surface-container-high text-primary font-label-caps text-label-caps font-bold">DESK: EXT-412</span>
+</div>
+</div>
+<!-- Quick Action Shortcuts -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-2">
+<span class="font-label-caps text-label-caps uppercase tracking-wider text-on-surface-variant font-bold mb-1">Administrative Actions</span>
+<button class="w-full text-left px-3 py-2 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface font-label-md text-label-md transition-colors flex items-center justify-between" type="button">
+<span class="">Export Current Pool CSV Matrix</span>
+<span class="material-symbols-outlined text-[16px]">download</span>
+</button>
+<button class="w-full text-left px-3 py-2 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface font-label-md text-label-md transition-colors flex items-center justify-between" type="button">
+<span class="">Request Special Course Relaxation</span>
+<span class="material-symbols-outlined text-[16px]">contact_support</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<script>
+  function calculatePool() {
+    let mgmtCount = 0;
+    let selectedMgmtPrograms = 0;
+    
+    // Management courses
+    const progToggles = document.querySelectorAll('.prog-toggle');
+    progToggles.forEach(chk => {
+      const rowId = 'row_' + chk.id.replace('prog_', '');
+      const rowEl = document.getElementById(rowId);
+      if (chk.checked) {
+        mgmtCount += parseInt(chk.getAttribute('data-count') || 0);
+        selectedMgmtPrograms++;
+        if (rowEl) rowEl.style.display = 'flex';
+      } else {
+        if (rowEl) rowEl.style.display = 'none';
+      }
+    });
+
+    // Engineering courses
+    let engCount = 0;
+    const engToggles = document.querySelectorAll('.eng-toggle');
+    engToggles.forEach(chk => {
+      if (chk.checked) {
+        engCount += parseInt(chk.getAttribute('data-count') || 0);
+      }
+    });
+
+    const engRow = document.getElementById('row_eng');
+    const engDisplay = document.getElementById('engCountDisplay');
+    if (engDisplay) engDisplay.innerText = engCount + ' Candidates';
+    if (engRow) {
+      engRow.style.display = engCount > 0 ? 'flex' : 'none';
+    }
+
+    const total = mgmtCount + engCount;
+    const totalDisplay = document.getElementById('totalCandidatesDisplay');
+    if (totalDisplay) {
+      totalDisplay.innerText = total.toLocaleString();
+    }
+
+    const counterBadge = document.getElementById('managementCounter');
+    if (counterBadge) {
+      counterBadge.innerText = `${selectedMgmtPrograms} Selected — ${mgmtCount.toLocaleString()} Eligible MET Candidates`;
+    }
+  }
+
+  // Initialize on load
+  document.addEventListener('DOMContentLoaded', () => {
+    calculatePool();
+  });
+</script></main></div>
+
+</body></html>

@@ -1,0 +1,720 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><meta content="web_blank" name="shell-type"><title>Campus Inn+ • Authentication &amp; Student Registration</title><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=Hanken+Grotesk:ital,wght@0,300..900;1,300..900&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={"darkMode":"class","theme":{"extend":{"colors":{"surface-container-low":"#f2f3ff","error":"#ba1a1a","tertiary-container":"#006544","primary-fixed-dim":"#d3bbff","surface-container":"#eaedff","surface-container-lowest":"#ffffff","primary-container":"#6d28d9","error-container":"#ffdad6","on-tertiary-fixed-variant":"#005236","outline-variant":"#ccc3d7","tertiary":"#004b31","on-primary":"#ffffff","surface-variant":"#dae2fd","inverse-surface":"#283044","surface-tint":"#7331df","primary":"#5300b7","secondary-fixed":"#e4e0f5","on-secondary-fixed":"#1b1a29","on-primary-fixed-variant":"#5b00c5","on-secondary":"#ffffff","on-surface-variant":"#4a4455","surface":"#faf8ff","secondary-fixed-dim":"#c7c4d8","on-error":"#ffffff","tertiary-fixed-dim":"#4edea3","surface-dim":"#d2d9f4","surface-container-highest":"#dae2fd","on-tertiary-container":"#58e7ab","primary-fixed":"#ebddff","on-background":"#131b2e","outline":"#7b7486","inverse-on-surface":"#eef0ff","on-primary-container":"#dac5ff","surface-container-high":"#e2e7ff","on-tertiary":"#ffffff","secondary-container":"#e4e0f5","secondary":"#5e5c6e","tertiary-fixed":"#6ffbbe","on-secondary-container":"#646274","surface-bright":"#faf8ff","inverse-primary":"#d3bbff","on-surface":"#131b2e","on-tertiary-fixed":"#002113","background":"#faf8ff","on-primary-fixed":"#250059","on-secondary-fixed-variant":"#464555","on-error-container":"#93000a"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"gutter-mobile":"1rem","space-sm":"0.5rem","space-md":"1rem","space-xs":"0.25rem","space-lg":"1.5rem","gutter-desktop":"2rem","gutter":"1.5rem","margin-desktop":"3rem","margin":"1.5rem","space-xl":"2.5rem","margin-mobile":"1rem"},"fontFamily":{"label-md":["Hanken Grotesk"],"body-md":["Hanken Grotesk"],"headline-sm":["Bricolage Grotesque"],"body-xl":["Hanken Grotesk"],"label-lg":["Hanken Grotesk"],"headline-xl":["Bricolage Grotesque"],"display-lg-mobile":["Bricolage Grotesque"],"body-sm":["Hanken Grotesk"],"body-lg":["Hanken Grotesk"],"headline-md":["Bricolage Grotesque"],"headline-lg":["Bricolage Grotesque"],"display-lg":["Bricolage Grotesque"],"label-caps":["Hanken Grotesk"],"headline-xl-mobile":["Bricolage Grotesque"]},"fontSize":{"label-md":["0.75rem",{"lineHeight":"1rem","letterSpacing":"0.02em","fontWeight":"600"}],"body-md":["0.875rem",{"lineHeight":"1.375rem","fontWeight":"400"}],"headline-sm":["1.25rem",{"lineHeight":"1.75rem","letterSpacing":"-0.01em","fontWeight":"600"}],"body-xl":["1.125rem",{"lineHeight":"1.75rem","letterSpacing":"-0.005em","fontWeight":"400"}],"label-lg":["0.875rem",{"lineHeight":"1.25rem","letterSpacing":"0.01em","fontWeight":"600"}],"headline-xl":["2.5rem",{"lineHeight":"3rem","letterSpacing":"-0.025em","fontWeight":"700"}],"display-lg-mobile":["2.25rem",{"lineHeight":"2.75rem","letterSpacing":"-0.025em","fontWeight":"800"}],"body-sm":["0.75rem",{"lineHeight":"1.125rem","fontWeight":"400"}],"body-lg":["1rem",{"lineHeight":"1.5rem","fontWeight":"400"}],"headline-md":["1.5rem",{"lineHeight":"2rem","letterSpacing":"-0.015em","fontWeight":"600"}],"headline-lg":["2rem",{"lineHeight":"2.5rem","letterSpacing":"-0.02em","fontWeight":"700"}],"display-lg":["3.5rem",{"lineHeight":"4rem","letterSpacing":"-0.03em","fontWeight":"800"}],"label-caps":["0.6875rem",{"lineHeight":"0.875rem","letterSpacing":"0.06em","fontWeight":"700"}],"headline-xl-mobile":["1.75rem",{"lineHeight":"2.25rem","letterSpacing":"-0.02em","fontWeight":"700"}]}}}};</script><link rel="stylesheet" href="css/theme.css">
+<script src="js/mock-data.js"></script>
+<script src="js/api.js"></script>
+<script src="js/shared.js"></script>
+</head><body class="bg-background font-body-md text-on-surface antialiased"><main class="w-full min-h-screen bg-background flex flex-col justify-center items-center"><div class="flex flex-col w-full">
+<div class="w-full min-h-screen bg-background flex items-center justify-center p-4 lg:p-8">
+<div class="w-full max-w-7xl bg-surface-container-lowest rounded-2xl shadow-xl overflow-hidden flex flex-col lg:flex-row">
+<!-- Left Column: Immersive Campus Experience & Social Proof (PRESERVED) -->
+<div class="relative w-full lg:w-5/12 min-h-[460px] lg:min-h-[820px] flex flex-col justify-between p-8 lg:p-12 overflow-hidden bg-inverse-surface">
+<!-- Background Imagery -->
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-1000 scale-105" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCacmaGb9T93P1aip9UMzrIjOfqlVm5fRkB1n3q_pR0_V01Kz__ozxcyIhXTuaygTcqAzzKaFaM1kzpxAxq2hsratoj_078707FxEvW7gizJimyggmyAk91cLHAaZ9XRP9M5tcUYS-Dn6YMB8BrcgoTEfuthclLyi1_PS1Qh2Wop_Dd4b7_y5Pm8QHd9vLE2STmfx99EaaiNwGA2iRB8rbZpmcWJOuZ0lcdC0JNdmqTpk13yjArgTc');">
+</div>
+<!-- Scrim Gradients -->
+<div class="absolute inset-0 bg-gradient-to-t from-inverse-surface via-inverse-surface/70 to-inverse-surface/30"></div>
+<div class="absolute inset-0 bg-primary/25 mix-blend-multiply"></div>
+<!-- Brand Topmark -->
+<a href="index.html" class="relative z-10 flex items-center gap-3 group cursor-pointer" aria-label="Campus Inn+ Home">
+<div class="w-12 h-12 rounded-xl bg-primary-container text-on-primary flex items-center justify-center shadow-lg relative group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-[28px]">school</span>
+<span class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed text-[11px] font-bold flex items-center justify-center shadow-sm">
+              +
+            </span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="font-headline-sm text-headline-sm text-white tracking-tight leading-none">CAMPUS INN</span>
+<span class="font-headline-sm text-headline-sm text-primary-fixed leading-none">+</span>
+</div>
+<span class="font-label-caps text-label-caps text-surface-container tracking-widest uppercase mt-0.5 opacity-90">
+              Connect. Manage. Grow.
+            </span>
+</div>
+</a>
+<!-- Dynamic Ambient Feature Content -->
+<div class="relative z-10 flex flex-col gap-6 my-auto pt-12 pb-6">
+<div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-white/90 text-label-md font-label-md w-fit">
+<span class="w-2 h-2 rounded-full bg-tertiary-fixed animate-pulse"></span>
+            Unified Institutional Gateway
+          </div>
+<h2 class="font-headline-xl text-headline-xl text-white tracking-tight leading-snug max-w-md">
+            Empowering <span class="text-primary-fixed">50,000+</span> Students, Faculty &amp; Recruiters across Premier Indian Campuses
+          </h2>
+<p class="font-body-md text-body-md text-surface-variant max-w-sm leading-relaxed">
+            One singular ecosystem orchestrating continuous learning, ATS placement pipelines, academic milestones, and campus guilds with zero friction.
+          </p>
+<!-- Metrics Cluster -->
+<div class="grid grid-cols-3 gap-3 pt-2">
+<div class="bg-white/10 backdrop-blur-md rounded-xl p-3 flex flex-col">
+<span class="font-headline-sm text-headline-sm text-white leading-tight">120+</span>
+<span class="font-body-sm text-body-sm text-surface-variant">Institutions</span>
+</div>
+<div class="bg-white/10 backdrop-blur-md rounded-xl p-3 flex flex-col">
+<span class="font-headline-sm text-headline-sm text-white leading-tight">94.8%</span>
+<span class="font-body-sm text-body-sm text-surface-variant">Placement Rate</span>
+</div>
+<div class="bg-white/10 backdrop-blur-md rounded-xl p-3 flex flex-col">
+<span class="font-headline-sm text-headline-sm text-white leading-tight">4.2k+</span>
+<span class="font-body-sm text-body-sm text-surface-variant">Active Recruiters</span>
+</div>
+</div>
+</div>
+<!-- Student Voice Card -->
+<div class="relative z-10 bg-white/10 backdrop-blur-lg rounded-xl p-4 flex items-center gap-3.5 shadow-lg">
+<div class="w-11 h-11 rounded-full bg-primary text-on-primary font-label-lg text-label-lg flex items-center justify-center shrink-0 shadow-sm">
+            AR
+          </div>
+<div class="flex flex-col min-w-0">
+<p class="font-body-sm text-body-sm text-white italic truncate">
+              "Secured my Tier-1 recruitment drive through the automated placement stream in 48 hours."
+            </p>
+<span class="font-label-md text-label-md text-primary-fixed mt-0.5">
+              Ananya Rao • Computer Science '25, IIT Delhi
+            </span>
+</div>
+</div>
+</div>
+
+<!-- Right Column: Authentication & Student Registration Gateway -->
+<div class="w-full lg:w-7/12 p-8 lg:p-12 flex flex-col justify-between bg-surface-container-lowest">
+<div class="flex flex-col">
+
+<!-- Top Mode Switcher (Login vs Create Student Account) -->
+<div class="flex items-center justify-between pb-6 border-b border-outline-variant/30 flex-wrap gap-4">
+  <div class="inline-flex p-1 bg-surface-container rounded-xl border border-outline-variant/40" role="tablist">
+    <button type="button" id="tabModeLogin" role="tab" aria-selected="true" class="px-5 py-2.5 rounded-lg font-semibold text-body-md transition-all bg-primary text-white shadow-sm flex items-center gap-2">
+      <span class="material-symbols-outlined text-[18px]">login</span>
+      <span>Sign In</span>
+    </button>
+    <button type="button" id="tabModeRegister" role="tab" aria-selected="false" class="px-5 py-2.5 rounded-lg font-semibold text-body-md transition-all text-secondary hover:text-on-surface flex items-center gap-2">
+      <span class="material-symbols-outlined text-[18px]">person_add</span>
+      <span>Create Student Account</span>
+    </button>
+  </div>
+  <a href="index.html" class="inline-flex items-center gap-1.5 text-body-sm font-semibold text-secondary hover:text-primary transition-colors">
+    <span class="material-symbols-outlined text-[18px]">home</span>
+    <span>Explore Campus</span>
+  </a>
+</div>
+
+<!-- SECTION 1: LOGIN VIEW -->
+<div id="loginView" class="pt-6">
+  <div class="flex flex-col">
+    <h1 class="font-headline-lg text-headline-xl font-bold text-on-surface tracking-tight">Welcome to Campus Inn+</h1>
+    <p class="font-body-md text-body-md text-secondary mt-1">
+      Select your institutional designation to enter your dedicated dashboard.
+    </p>
+  </div>
+
+  <!-- Role Selector Tabs -->
+  <div class="mt-6 flex flex-col gap-2">
+    <span class="font-label-caps text-label-caps uppercase text-secondary tracking-wider">
+      Select Designation / Role
+    </span>
+    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="roleTabGroup">
+      <button class="role-tab flex items-center justify-center sm:justify-start gap-2.5 px-4 py-3 rounded-xl text-left transition-all font-semibold bg-primary text-white shadow-sm ring-2 ring-primary ring-offset-2" data-cta="Sign In to Student Portal" data-placeholder="rollno@campus.edu.in" data-role="student" data-role-label="Student" type="button">
+        <span class="material-symbols-outlined text-[20px]">school</span>
+        <span class="font-label-md text-label-md truncate">Student</span>
+      </button>
+      <button class="role-tab flex items-center justify-center sm:justify-start gap-2.5 px-4 py-3 rounded-xl text-left transition-all font-semibold bg-surface-container text-on-surface hover:bg-surface-variant" data-cta="Sign In to Faculty Portal" data-placeholder="dr.sharma@campus.edu.in" data-role="faculty" data-role-label="Faculty" type="button">
+        <span class="material-symbols-outlined text-[20px]">badge</span>
+        <span class="font-label-md text-label-md truncate">Faculty</span>
+      </button>
+      <button class="role-tab flex items-center justify-center sm:justify-start gap-2.5 px-4 py-3 rounded-xl text-left transition-all font-semibold bg-surface-container text-on-surface hover:bg-surface-variant" data-cta="Sign In to Admin Console" data-placeholder="admin@campus.edu.in" data-role="admin" data-role-label="College Admin" type="button">
+        <span class="material-symbols-outlined text-[20px]">admin_panel_settings</span>
+        <span class="font-label-md text-label-md truncate">Admin</span>
+      </button>
+      <button class="role-tab flex items-center justify-center sm:justify-start gap-2.5 px-4 py-3 rounded-xl text-left transition-all font-semibold bg-surface-container text-on-surface hover:bg-surface-variant" data-cta="Sign In to Placement Office" data-placeholder="tpo@campus.edu.in" data-role="tpo" data-role-label="Placement Officer" type="button">
+        <span class="material-symbols-outlined text-[20px]">work</span>
+        <span class="font-label-md text-label-md truncate">Placement</span>
+      </button>
+      <button class="role-tab flex items-center justify-center sm:justify-start gap-2.5 px-4 py-3 rounded-xl text-left transition-all font-semibold bg-surface-container text-on-surface hover:bg-surface-variant" data-cta="Sign In to Guild Hub" data-placeholder="cultural@campus.edu.in" data-role="coordinator" data-role-label="Event / Club Coordinator" type="button">
+        <span class="material-symbols-outlined text-[20px]">celebration</span>
+        <span class="font-label-md text-label-md truncate">Clubs &amp; Events</span>
+      </button>
+      <button class="role-tab flex items-center justify-center sm:justify-start gap-2.5 px-4 py-3 rounded-xl text-left transition-all font-semibold bg-surface-container text-on-surface hover:bg-surface-variant" data-cta="Sign In to Recruiter ATS" data-placeholder="hr@company.com" data-role="recruiter" data-role-label="Company / HR" type="button">
+        <span class="material-symbols-outlined text-[20px]">apartment</span>
+        <span class="font-label-md text-label-md truncate">Recruiter / HR</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Registration Success Banner (displayed after student registration) -->
+  <div id="regSuccessBanner" class="hidden mt-4 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 font-body-md flex items-start gap-3">
+    <span class="material-symbols-outlined text-emerald-600 text-[22px] shrink-0">check_circle</span>
+    <div class="flex-1">
+      <div class="font-semibold text-emerald-950" id="regSuccessTitle">Account created successfully!</div>
+      <div class="text-body-sm text-emerald-800 mt-0.5" id="regSuccessMsg">Your student account has been registered. Please enter your password to sign in.</div>
+    </div>
+  </div>
+
+  <!-- Authentication Form -->
+  <form class="mt-6 flex flex-col gap-4.5" id="authForm" novalidate>
+    <!-- Institutional Identifier Field -->
+    <div class="flex flex-col gap-1.5">
+      <label class="font-label-md text-label-md text-on-surface" for="identifierInput" id="inputLabel">
+        Student ID / College Email
+      </label>
+      <div class="relative flex items-center">
+        <span class="material-symbols-outlined absolute left-3.5 text-secondary text-[20px] pointer-events-none">
+          alternate_email
+        </span>
+        <input class="w-full pl-11 pr-4 py-3.5 bg-surface-container-lowest rounded-xl border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md transition-all focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="identifierInput" placeholder="rollno@campus.edu.in" required type="text">
+      </div>
+    </div>
+
+    <!-- Password Field with Reveal Toggle -->
+    <div class="flex flex-col gap-1.5 mt-1">
+      <div class="flex items-center justify-between">
+        <label class="font-label-md text-label-md text-on-surface" for="passwordInput">
+          Password
+        </label>
+        <a class="font-label-md text-label-md text-primary hover:text-primary-container transition-colors" href="mailto:support@met.edu?subject=Password%20Reset%20Request">
+          Forgot Password?
+        </a>
+      </div>
+      <div class="relative flex items-center">
+        <span class="material-symbols-outlined absolute left-3.5 text-secondary text-[20px] pointer-events-none">
+          lock
+        </span>
+        <input class="w-full pl-11 pr-12 py-3.5 bg-surface-container-lowest rounded-xl border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md transition-all focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="passwordInput" placeholder="Enter your password" required type="password">
+        <button aria-label="Toggle password visibility" class="absolute right-3.5 text-secondary hover:text-on-surface p-1 rounded transition-colors flex items-center justify-center" id="togglePasswordBtn" type="button">
+          <span class="material-symbols-outlined text-[20px]" id="eyeIcon">visibility</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Persist & Auxiliary Row -->
+    <div class="flex items-center justify-between pt-1">
+      <label class="flex items-center gap-2 cursor-pointer select-none">
+        <input checked class="w-4 h-4 rounded text-primary-container bg-surface-container-low focus:ring-primary focus:ring-offset-0 cursor-pointer" id="rememberMeInput" type="checkbox">
+        <span class="font-body-md text-body-md text-secondary">
+          Remember this device for 30 days
+        </span>
+      </label>
+      <span class="hidden sm:inline-flex items-center gap-1 font-label-md text-label-md text-secondary">
+        <span class="material-symbols-outlined text-[16px] text-tertiary">lock_reset</span>
+        2FA Protected
+      </span>
+    </div>
+
+    <!-- Primary Action CTA Button -->
+    <button class="w-full mt-2 py-4 px-6 rounded-xl bg-primary text-white font-semibold text-body-md shadow-md hover:bg-primary-container transition-all duration-200 flex items-center justify-center gap-2 group active:scale-[0.99]" id="submitCta" type="submit">
+      <span class="font-semibold" id="ctaText">Sign In to Student Portal</span>
+      <span class="material-symbols-outlined text-[20px] transition-transform group-hover:translate-x-1">arrow_forward</span>
+    </button>
+
+    <!-- Switch to Registration Link -->
+    <div class="text-center pt-2">
+      <span class="text-body-sm text-secondary">New student? </span>
+      <button type="button" id="btnSwitchToReg" class="text-body-sm font-semibold text-primary hover:underline cursor-pointer">
+        Create Student Account
+      </button>
+    </div>
+  </form>
+
+  <!-- Divider -->
+  <div class="relative my-6 flex items-center justify-center">
+    <div class="w-full bg-surface-variant h-[1px]"></div>
+    <span class="absolute px-4 bg-surface-container-lowest font-body-sm text-body-sm text-secondary uppercase tracking-wider">
+      or continue with
+    </span>
+  </div>
+
+  <!-- Google SSO OAuth Button -->
+  <button id="googleSsoBtn" class="w-full py-3.5 px-4 rounded-xl bg-surface-container-lowest border border-outline-variant hover:bg-surface-container text-on-surface font-semibold text-body-md flex items-center justify-center gap-3 transition-colors shadow-sm" type="button">
+    <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24">
+      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
+      <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
+      <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"></path>
+      <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"></path>
+    </svg>
+    <span class="font-medium">Continue with Institutional Google ID</span>
+  </button>
+</div>
+
+<!-- SECTION 2: STUDENT SIGN-UP FORM VIEW -->
+<div id="registerView" class="hidden pt-6">
+  <div class="flex items-center justify-between pb-2">
+    <div class="flex flex-col">
+      <h1 class="font-headline-lg text-headline-xl font-bold text-on-surface tracking-tight">Student Registration</h1>
+      <p class="font-body-md text-body-md text-secondary mt-1">
+        Enroll in MET Bhujbal Knowledge City central placement and academic ecosystem.
+      </p>
+    </div>
+  </div>
+
+  <form class="mt-6 flex flex-col gap-6" id="studentRegisterForm" novalidate>
+    <!-- Group A: Personal Information -->
+    <div class="flex flex-col gap-3 p-4 bg-surface-container-low rounded-xl border border-outline-variant/30">
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary text-[20px]">person</span>
+        <span class="font-label-md text-label-md uppercase font-bold text-primary tracking-wider">1. Personal Information</span>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+        <div class="flex flex-col gap-1">
+          <label class="font-label-md text-label-md text-on-surface" for="regFirstName">First Name *</label>
+          <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regFirstName" placeholder="e.g. Priya" required type="text">
+        </div>
+        <div class="flex flex-col gap-1">
+          <label class="font-label-md text-label-md text-on-surface" for="regLastName">Last Name *</label>
+          <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regLastName" placeholder="e.g. Sharma" required type="text">
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+        <div class="flex flex-col gap-1">
+          <label class="font-label-md text-label-md text-on-surface" for="regEmail">Email Address *</label>
+          <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regEmail" placeholder="student@met.edu" required type="email">
+        </div>
+        <div class="flex flex-col gap-1">
+          <label class="font-label-md text-label-md text-on-surface" for="regPhone">Phone Number *</label>
+          <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regPhone" placeholder="10-digit mobile (e.g. 9820123456)" required type="tel">
+        </div>
+      </div>
+    </div>
+
+    <!-- Group B: Academic Information -->
+    <div class="flex flex-col gap-3 p-4 bg-surface-container-low rounded-xl border border-outline-variant/30">
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary text-[20px]">school</span>
+        <span class="font-label-md text-label-md uppercase font-bold text-primary tracking-wider">2. Academic Information</span>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+        <div class="flex flex-col gap-1">
+          <label class="font-label-md text-label-md text-on-surface" for="regCollege">College / Institute *</label>
+          <select class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regCollege" required>
+            <option value="MET Institute of Engineering, Nashik" selected>MET Institute of Engineering, Nashik</option>
+            <option value="MET Institute of Technology (Polytechnic), Nashik">MET Institute of Technology (Polytechnic), Nashik</option>
+            <option value="MET Institute of Management, Nashik">MET Institute of Management, Nashik</option>
+            <option value="MET Institute of Pharmacy, Nashik">MET Institute of Pharmacy, Nashik</option>
+          </select>
+        </div>
+        <div class="flex flex-col gap-1">
+          <label class="font-label-md text-label-md text-on-surface" for="regRollNumber">Roll Number / PRN *</label>
+          <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm uppercase" id="regRollNumber" placeholder="e.g. 2022CS8901" required type="text">
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+        <div class="flex flex-col gap-1">
+          <label class="font-label-md text-label-md text-on-surface" for="regDepartment">Department *</label>
+          <select class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regDepartment" required>
+            <option value="Computer Engineering" selected>Computer Engineering</option>
+            <option value="Information Technology">Information Technology</option>
+            <option value="Artificial Intelligence &amp; Data Science">Artificial Intelligence &amp; Data Science</option>
+            <option value="Electronics &amp; Telecommunication">Electronics &amp; Telecommunication</option>
+            <option value="Mechanical Engineering">Mechanical Engineering</option>
+            <option value="Civil Engineering">Civil Engineering</option>
+            <option value="Master of Computer Applications">Master of Computer Applications (MCA)</option>
+            <option value="Master of Business Administration">Master of Business Administration (MBA)</option>
+          </select>
+        </div>
+        <div class="flex flex-col gap-1">
+          <label class="font-label-md text-label-md text-on-surface" for="regProgram">Course / Program *</label>
+          <select class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regProgram" required>
+            <option value="B.Tech CSE" selected>B.Tech / B.E.</option>
+            <option value="MCA">MCA</option>
+            <option value="BCA">BCA</option>
+            <option value="M.Tech">M.Tech</option>
+            <option value="MBA">MBA</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+        <div class="flex flex-col gap-1">
+          <label class="font-label-md text-label-md text-on-surface" for="regYear">Academic Year *</label>
+          <select class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regYear" required>
+            <option value="1st Year (2025-2026)">1st Year (2025-2026)</option>
+            <option value="2nd Year (2024-2025)">2nd Year (2024-2025)</option>
+            <option value="3rd Year (2023-2024)">3rd Year (2023-2024)</option>
+            <option value="Final Year (2022-2026)" selected>Final Year (2022-2026)</option>
+          </select>
+        </div>
+        <div class="flex flex-col gap-1">
+          <label class="font-label-md text-label-md text-on-surface" for="regSemester">Semester *</label>
+          <select class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regSemester" required>
+            <option value="Semester 1">Semester 1</option>
+            <option value="Semester 2">Semester 2</option>
+            <option value="Semester 3">Semester 3</option>
+            <option value="Semester 4">Semester 4</option>
+            <option value="Semester 5">Semester 5</option>
+            <option value="Semester 6">Semester 6</option>
+            <option value="Semester 7" selected>Semester 7</option>
+            <option value="Semester 8">Semester 8</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Group C: Account Security -->
+    <div class="flex flex-col gap-3 p-4 bg-surface-container-low rounded-xl border border-outline-variant/30">
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary text-[20px]">lock</span>
+        <span class="font-label-md text-label-md uppercase font-bold text-primary tracking-wider">3. Account Security</span>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+        <div class="flex flex-col gap-1">
+          <label class="font-label-md text-label-md text-on-surface" for="regPassword">Password *</label>
+          <div class="relative flex items-center">
+            <input class="w-full px-3.5 pr-10 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regPassword" placeholder="Min. 8 characters" required type="password">
+            <button aria-label="Toggle password" class="absolute right-2.5 text-secondary hover:text-on-surface p-1 rounded" id="toggleRegPasswordBtn" type="button">
+              <span class="material-symbols-outlined text-[18px]">visibility</span>
+            </button>
+          </div>
+          <span class="text-[11px] text-secondary">Must contain both letters and numbers.</span>
+        </div>
+        <div class="flex flex-col gap-1">
+          <label class="font-label-md text-label-md text-on-surface" for="regConfirmPassword">Confirm Password *</label>
+          <div class="relative flex items-center">
+            <input class="w-full px-3.5 pr-10 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regConfirmPassword" placeholder="Re-type password" required type="password">
+            <button aria-label="Toggle confirm password" class="absolute right-2.5 text-secondary hover:text-on-surface p-1 rounded" id="toggleRegConfirmBtn" type="button">
+              <span class="material-symbols-outlined text-[18px]">visibility</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Registration Submit CTA -->
+    <button class="w-full py-4 px-6 rounded-xl bg-primary text-white font-semibold text-body-md shadow-md hover:bg-primary-container transition-all duration-200 flex items-center justify-center gap-2 group active:scale-[0.99]" id="regSubmitBtn" type="submit">
+      <span class="font-semibold">Complete Student Registration</span>
+      <span class="material-symbols-outlined text-[20px] transition-transform group-hover:translate-x-1">check</span>
+    </button>
+
+    <div class="text-center">
+      <span class="text-body-sm text-secondary">Already have an account? </span>
+      <button type="button" id="btnSwitchToLogin" class="text-body-sm font-semibold text-primary hover:underline cursor-pointer">
+        Sign In here
+      </button>
+    </div>
+  </form>
+</div>
+
+</div>
+
+<!-- Corporate Onboarding & Footer Meta (PRESERVED) -->
+<div class="mt-8 pt-5 pb-4 px-5 flex flex-col gap-3.5 bg-surface-container rounded-xl border border-outline-variant/50">
+<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 text-body-md">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">domain</span>
+<span class="font-semibold text-on-surface">Corporate Recruiter?</span>
+</div>
+<a class="inline-flex items-center gap-1 font-semibold text-primary hover:underline text-body-sm" href="hr-register.html">
+<span class="">Register company drive</span>
+<span class="material-symbols-outlined text-[16px]">arrow_outward</span>
+</a>
+</div>
+<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-body-sm text-secondary pt-2 border-t border-outline-variant/40">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-tertiary">verified_user</span>
+<span class="">DPDP 2023 Compliant • ISO 27001 Certified</span>
+</div>
+<div class="flex items-center gap-3">
+<a class="hover:text-on-surface transition-colors" href="index.html#faq">IT Support</a>
+<span class="">•</span>
+<a class="hover:text-on-surface transition-colors" href="index.html#privacy">Security</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></main>
+
+<!-- Interactive Logic for Tab Switching, Auth & Student Registration -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // Mode Elements (Login vs Register)
+  const tabModeLogin = document.getElementById('tabModeLogin');
+  const tabModeRegister = document.getElementById('tabModeRegister');
+  const loginView = document.getElementById('loginView');
+  const registerView = document.getElementById('registerView');
+  const btnSwitchToReg = document.getElementById('btnSwitchToReg');
+  const btnSwitchToLogin = document.getElementById('btnSwitchToLogin');
+
+  function showMode(mode) {
+    if (mode === 'register') {
+      tabModeRegister.classList.add('bg-primary', 'text-white', 'shadow-sm');
+      tabModeRegister.classList.remove('text-secondary');
+      tabModeLogin.classList.remove('bg-primary', 'text-white', 'shadow-sm');
+      tabModeLogin.classList.add('text-secondary');
+      tabModeLogin.setAttribute('aria-selected', 'false');
+      tabModeRegister.setAttribute('aria-selected', 'true');
+      loginView.classList.add('hidden');
+      registerView.classList.remove('hidden');
+    } else {
+      tabModeLogin.classList.add('bg-primary', 'text-white', 'shadow-sm');
+      tabModeLogin.classList.remove('text-secondary');
+      tabModeRegister.classList.remove('bg-primary', 'text-white', 'shadow-sm');
+      tabModeRegister.classList.add('text-secondary');
+      tabModeLogin.setAttribute('aria-selected', 'true');
+      tabModeRegister.setAttribute('aria-selected', 'false');
+      registerView.classList.add('hidden');
+      loginView.classList.remove('hidden');
+    }
+  }
+
+  tabModeLogin?.addEventListener('click', () => showMode('login'));
+  tabModeRegister?.addEventListener('click', () => showMode('register'));
+  btnSwitchToReg?.addEventListener('click', () => showMode('register'));
+  btnSwitchToLogin?.addEventListener('click', () => showMode('login'));
+
+  // Password Reveal Toggle (Login)
+  const togglePasswordBtn = document.getElementById('togglePasswordBtn');
+  const passwordInput = document.getElementById('passwordInput');
+  const eyeIcon = document.getElementById('eyeIcon');
+  if (togglePasswordBtn && passwordInput && eyeIcon) {
+    togglePasswordBtn.addEventListener('click', () => {
+      const isPass = passwordInput.type === 'password';
+      passwordInput.type = isPass ? 'text' : 'password';
+      eyeIcon.textContent = isPass ? 'visibility_off' : 'visibility';
+    });
+  }
+
+  // Password Reveal Toggles (Register)
+  const toggleRegPasswordBtn = document.getElementById('toggleRegPasswordBtn');
+  const regPassword = document.getElementById('regPassword');
+  if (toggleRegPasswordBtn && regPassword) {
+    toggleRegPasswordBtn.addEventListener('click', () => {
+      const isPass = regPassword.type === 'password';
+      regPassword.type = isPass ? 'text' : 'password';
+      toggleRegPasswordBtn.querySelector('.material-symbols-outlined').textContent = isPass ? 'visibility_off' : 'visibility';
+    });
+  }
+
+  const toggleRegConfirmBtn = document.getElementById('toggleRegConfirmBtn');
+  const regConfirmPassword = document.getElementById('regConfirmPassword');
+  if (toggleRegConfirmBtn && regConfirmPassword) {
+    toggleRegConfirmBtn.addEventListener('click', () => {
+      const isPass = regConfirmPassword.type === 'password';
+      regConfirmPassword.type = isPass ? 'text' : 'password';
+      toggleRegConfirmBtn.querySelector('.material-symbols-outlined').textContent = isPass ? 'visibility_off' : 'visibility';
+    });
+  }
+
+  // Role Tab Switching (Login)
+  const tabs = document.querySelectorAll('.role-tab');
+  const inputLabel = document.getElementById('inputLabel');
+  const identifierInput = document.getElementById('identifierInput');
+  const ctaText = document.getElementById('ctaText');
+  let selectedRole = 'student';
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => {
+        t.classList.remove('bg-primary', 'text-white', 'shadow-sm', 'ring-2', 'ring-primary', 'ring-offset-2');
+        t.classList.add('bg-surface-container', 'text-on-surface');
+      });
+      tab.classList.remove('bg-surface-container', 'text-on-surface');
+      tab.classList.add('bg-primary', 'text-white', 'shadow-sm', 'ring-2', 'ring-primary', 'ring-offset-2');
+
+      const roleLabel = tab.getAttribute('data-role-label') || 'User';
+      const placeholder = tab.getAttribute('data-placeholder') || 'id@campus.edu.in';
+      const cta = tab.getAttribute('data-cta') || 'Sign In';
+      selectedRole = tab.getAttribute('data-role') || 'student';
+
+      if (inputLabel) inputLabel.textContent = `${roleLabel} ID / Email`;
+      if (identifierInput) identifierInput.placeholder = placeholder;
+      if (ctaText) ctaText.textContent = cta;
+    });
+  });
+
+  // 1. SUBMIT LOGIN FORM
+  const authForm = document.getElementById('authForm');
+  const submitCta = document.getElementById('submitCta');
+
+  if (authForm) {
+    authForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      CampusInn.FormUtils.clearAllErrors(authForm);
+
+      const idVal = identifierInput ? identifierInput.value.trim() : '';
+      const passVal = passwordInput ? passwordInput.value : '';
+
+      if (!idVal) {
+        CampusInn.FormUtils.showFieldError(identifierInput, 'Please enter your ID or college email.');
+        identifierInput?.focus();
+        return;
+      }
+      if (!passVal) {
+        CampusInn.FormUtils.showFieldError(passwordInput, 'Please enter your password.');
+        passwordInput?.focus();
+        return;
+      }
+
+      CampusInn.FormUtils.setButtonLoading(submitCta, true);
+      try {
+        const session = await CampusInn.Auth.login(idVal, passVal);
+        CampusInn.Toast.success(`Authenticated as ${session.name || session.email}. Redirecting...`);
+        const redirectTarget = new URLSearchParams(window.location.search).get('redirect') || 'index.html';
+        setTimeout(() => {
+          window.location.replace(redirectTarget);
+        }, 500);
+      } catch (err) {
+        CampusInn.Toast.error(err.message || 'Invalid credentials. Please verify your ID and password.');
+        CampusInn.FormUtils.showFieldError(passwordInput, err.message || 'Invalid credentials.');
+        CampusInn.FormUtils.setButtonLoading(submitCta, false);
+      }
+    });
+  }
+
+  // 2. SUBMIT STUDENT REGISTRATION FORM
+  const registerForm = document.getElementById('studentRegisterForm');
+  const regSubmitBtn = document.getElementById('regSubmitBtn');
+
+  if (registerForm) {
+    registerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      CampusInn.FormUtils.clearAllErrors(registerForm);
+
+      const firstName = document.getElementById('regFirstName')?.value.trim();
+      const lastName = document.getElementById('regLastName')?.value.trim();
+      const email = document.getElementById('regEmail')?.value.trim();
+      const phone = document.getElementById('regPhone')?.value.trim();
+      const college = document.getElementById('regCollege')?.value;
+      const rollNumber = document.getElementById('regRollNumber')?.value.trim();
+      const department = document.getElementById('regDepartment')?.value;
+      const program = document.getElementById('regProgram')?.value;
+      const academicYear = document.getElementById('regYear')?.value;
+      const semester = document.getElementById('regSemester')?.value;
+      const password = document.getElementById('regPassword')?.value;
+      const confirmPassword = document.getElementById('regConfirmPassword')?.value;
+
+      // Validation
+      let hasError = false;
+
+      if (!firstName) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('regFirstName'), 'First name is required.');
+        hasError = true;
+      }
+      if (!lastName) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('regLastName'), 'Last name is required.');
+        hasError = true;
+      }
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('regEmail'), 'Please provide a valid email address.');
+        hasError = true;
+      }
+      if (!phone || phone.replace(/[\s-]/g, '').length < 10) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('regPhone'), 'Please provide a valid 10-digit phone number.');
+        hasError = true;
+      }
+      if (!rollNumber) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('regRollNumber'), 'Roll number or student PRN is required.');
+        hasError = true;
+      }
+      if (!password || password.length < 8) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('regPassword'), 'Password must be at least 8 characters.');
+        hasError = true;
+      } else if (!/(?=.*[a-zA-Z])(?=.*[0-9])/.test(password)) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('regPassword'), 'Password must include both letters and numbers.');
+        hasError = true;
+      }
+      if (password !== confirmPassword) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('regConfirmPassword'), 'Passwords do not match.');
+        hasError = true;
+      }
+
+      if (hasError) return;
+
+      CampusInn.FormUtils.setButtonLoading(regSubmitBtn, true);
+
+      try {
+        const payload = {
+          firstName,
+          lastName,
+          email,
+          phone,
+          college,
+          rollNumber,
+          department,
+          program,
+          academicYear,
+          semester,
+          password
+        };
+
+        const result = await CampusInn.Auth.registerStudent(payload);
+        CampusInn.Toast.success('Student account created successfully!');
+
+        // Display green success alert on login view and prefill email
+        const regSuccessBanner = document.getElementById('regSuccessBanner');
+        const regSuccessMsg = document.getElementById('regSuccessMsg');
+        if (regSuccessBanner) {
+          regSuccessBanner.classList.remove('hidden');
+          if (regSuccessMsg) {
+            regSuccessMsg.textContent = `Welcome ${firstName} ${lastName}! Your student account (${rollNumber}) has been registered. Please sign in with your password.`;
+          }
+        }
+
+        if (identifierInput) {
+          identifierInput.value = email;
+        }
+        if (passwordInput) {
+          passwordInput.value = '';
+          passwordInput.focus();
+        }
+
+        // Reset register form & switch to login view
+        registerForm.reset();
+        showMode('login');
+        CampusInn.FormUtils.setButtonLoading(regSubmitBtn, false);
+
+      } catch (err) {
+        CampusInn.Toast.error(err.message || 'Registration failed.');
+        if (err.message && err.message.toLowerCase().includes('email')) {
+          CampusInn.FormUtils.showFieldError(document.getElementById('regEmail'), err.message);
+        } else if (err.message && err.message.toLowerCase().includes('roll')) {
+          CampusInn.FormUtils.showFieldError(document.getElementById('regRollNumber'), err.message);
+        }
+        CampusInn.FormUtils.setButtonLoading(regSubmitBtn, false);
+      }
+    });
+  }
+
+  // Check for Google OAuth redirect results in URL query params
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.has('error')) {
+    const errorMsg = urlParams.get('error');
+    CampusInn.Toast.error(errorMsg, 6000);
+    // Clean URL query without reloading
+    window.history.replaceState({}, document.title, window.location.pathname);
+  } else if (urlParams.get('google_auth_success') === '1' && urlParams.has('auth_payload')) {
+    try {
+      const authPayload = JSON.parse(decodeURIComponent(urlParams.get('auth_payload')));
+      if (authPayload.token) {
+        localStorage.setItem('ci_token', authPayload.token);
+      }
+      if (authPayload.user) {
+        localStorage.setItem('ci_auth', JSON.stringify(authPayload.user));
+      }
+      const target = urlParams.get('redirect') || 'index.html';
+      CampusInn.Toast.success(`Signed in as ${authPayload.user.firstName || authPayload.user.email}! Redirecting...`, 3000);
+      window.history.replaceState({}, document.title, window.location.pathname);
+      setTimeout(() => {
+        window.location.replace(target);
+      }, 400);
+    } catch (e) {
+      console.warn('Failed to parse Google auth payload:', e);
+    }
+  }
+
+  // Google SSO Button — Initiates Genuine OAuth 2.0 Flow
+  const googleBtn = document.getElementById('googleSsoBtn');
+  if (googleBtn) {
+    googleBtn.addEventListener('click', () => {
+      CampusInn.Toast.info('Connecting to Google Identity Services...', 3000);
+      const redirectParam = new URLSearchParams(window.location.search).get('redirect');
+      const oauthUrl = redirectParam ? `/api/v1/auth/google?redirect=${encodeURIComponent(redirectParam)}` : '/api/v1/auth/google';
+      window.location.href = oauthUrl;
+    });
+  }
+});
+</script>
+</body></html>

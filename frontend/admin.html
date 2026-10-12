@@ -1,0 +1,408 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><meta content="web_dashboard" name="shell-type"><title>Campus Inn+</title><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;700;800&amp;family=Hanken+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {"surface-tint": "#7331df", "surface-dim": "#d2d9f4", "surface-container-high": "#e2e7ff", "secondary-container": "#e4e0f5", "on-primary-fixed-variant": "#5b00c5", "on-primary-container": "#dac5ff", "on-surface": "#131b2e", "on-tertiary": "#ffffff", "tertiary-container": "#006544", "on-secondary-container": "#646274", primary: "#5300b7", "on-error-container": "#93000a", "tertiary-fixed": "#6ffbbe", "surface-container-lowest": "#ffffff", "error-container": "#ffdad6", "inverse-on-surface": "#eef0ff", error: "#ba1a1a", "on-tertiary-fixed": "#002113", "on-surface-variant": "#4a4455", "primary-container": "#6d28d9", "on-primary-fixed": "#250059", "on-error": "#ffffff", "on-background": "#131b2e", "outline-variant": "#ccc3d7", surface: "#faf8ff", "surface-variant": "#dae2fd", "tertiary-fixed-dim": "#4edea3", outline: "#7b7486", "on-tertiary-fixed-variant": "#005236", "surface-bright": "#faf8ff", "secondary-fixed": "#e4e0f5", "inverse-surface": "#283044", "surface-container-highest": "#dae2fd", background: "#faf8ff", "primary-fixed-dim": "#d3bbff", secondary: "#5e5c6e", "secondary-fixed-dim": "#c7c4d8", "on-secondary-fixed": "#1b1a29", "on-tertiary-container": "#58e7ab", "surface-container": "#eaedff", tertiary: "#004b31", "surface-container-low": "#f2f3ff", "on-secondary": "#ffffff", "on-primary": "#ffffff", "inverse-primary": "#d3bbff", "on-secondary-fixed-variant": "#464555", "primary-fixed": "#ebddff"}, borderRadius: {DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px"}, spacing: {"gutter-mobile": "1rem", "space-lg": "1.5rem", "gutter-desktop": "2rem", gutter: "1.5rem", "margin-desktop": "3rem", "space-xs": "0.25rem", "space-md": "1rem", margin: "1.5rem", "space-sm": "0.5rem", "space-xl": "2.5rem", "margin-mobile": "1rem"}, fontFamily: {"display-lg-mobile": ["Bricolage Grotesque"], "body-sm": ["Hanken Grotesk"], "label-md": ["Hanken Grotesk"], "body-lg": ["Hanken Grotesk"], "headline-xl": ["Bricolage Grotesque"], "body-md": ["Hanken Grotesk"], "headline-md": ["Bricolage Grotesque"], "headline-sm": ["Bricolage Grotesque"], "display-lg": ["Bricolage Grotesque"], "body-xl": ["Hanken Grotesk"], "headline-xl-mobile": ["Bricolage Grotesque"], "headline-lg": ["Bricolage Grotesque"], "label-caps": ["Hanken Grotesk"], "label-lg": ["Hanken Grotesk"], headline: ["Bricolage Grotesque"], display: ["Bricolage Grotesque"], body: ["Hanken Grotesk"], label: ["Hanken Grotesk"]}, fontSize: {"display-lg-mobile": ["2.25rem", {lineHeight: "2.75rem", letterSpacing: "-0.025em", fontWeight: "800"}], "body-sm": ["0.75rem", {lineHeight: "1.125rem", fontWeight: "400"}], "label-md": ["0.75rem", {lineHeight: "1rem", letterSpacing: "0.02em", fontWeight: "600"}], "body-lg": ["1rem", {lineHeight: "1.5rem", fontWeight: "400"}], "headline-xl": ["2.5rem", {lineHeight: "3rem", letterSpacing: "-0.025em", fontWeight: "700"}], "body-md": ["0.875rem", {lineHeight: "1.375rem", fontWeight: "400"}], "headline-md": ["1.5rem", {lineHeight: "2rem", letterSpacing: "-0.015em", fontWeight: "600"}], "headline-sm": ["1.25rem", {lineHeight: "1.75rem", letterSpacing: "-0.01em", fontWeight: "600"}], "display-lg": ["3.5rem", {lineHeight: "4rem", letterSpacing: "-0.03em", fontWeight: "800"}], "body-xl": ["1.125rem", {lineHeight: "1.75rem", letterSpacing: "-0.005em", fontWeight: "400"}], "headline-xl-mobile": ["1.75rem", {lineHeight: "2.25rem", letterSpacing: "-0.02em", fontWeight: "700"}], "headline-lg": ["2rem", {lineHeight: "2.5rem", letterSpacing: "-0.02em", fontWeight: "700"}], "label-caps": ["0.6875rem", {lineHeight: "0.875rem", letterSpacing: "0.06em", fontWeight: "700"}], "label-lg": ["0.875rem", {lineHeight: "1.25rem", letterSpacing: "0.01em", fontWeight: "600"}]}}}};</script><link rel="stylesheet" href="css/theme.css"><script src="js/mock-data.js"></script>
+<script src="js/api.js"></script>
+<script src="js/shared.js"></script></head>
+<body class="bg-surface font-body-md text-body-md text-on-surface antialiased">
+<aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-low shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-50 flex flex-col justify-between">
+  <div class="flex flex-col">
+    <div class="h-16 px-space-md flex items-center gap-space-sm bg-surface-container">
+      <div class="w-9 h-9 rounded-lg bg-primary flex items-center justify-center text-on-primary font-headline-sm text-headline-sm font-bold">C</div>
+      <div class="flex flex-col">
+        <span class="font-headline-sm text-headline-sm font-bold text-on-surface tracking-tight leading-none">Campus Inn<span class="text-primary">+</span></span>
+        <span class="font-label-caps text-label-caps text-primary tracking-widest uppercase">Admin Console</span>
+      </div>
+    </div>
+    <div class="px-space-md py-space-sm">
+      <div class="bg-surface-container-high rounded-lg p-space-sm flex items-center gap-space-sm">
+        <span class="material-symbols-outlined text-primary text-[20px]">account_balance</span>
+        <div class="flex flex-col min-w-0 flex-1">
+          <span class="font-label-caps text-label-caps text-on-surface-variant uppercase font-semibold">Campus Node</span>
+          <span class="font-label-md text-label-md text-on-surface truncate">MET BKC, Nashik</span>
+        </div>
+        <span class="w-2 h-2 rounded-full bg-tertiary-fixed-dim"></span>
+      </div>
+    </div>
+    <div class="px-space-md mt-space-xs">
+      <span class="font-label-caps text-label-caps text-on-surface-variant tracking-wider uppercase px-space-xs block mb-space-xs">Institutional Control</span>
+      <nav class="space-y-space-xs">
+        <a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-lg transition-colors bg-primary-container text-on-primary font-semibold" href="admin.html">
+          <span class="material-symbols-outlined text-[20px]">dashboard</span>
+          <span class="font-label-lg text-label-lg">Console Overview</span>
+        </a>
+        <a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="placement.html">
+          <span class="material-symbols-outlined text-[20px]">work</span>
+          <span class="font-label-lg text-label-lg">Placement & TPO Desk</span>
+        </a>
+        <a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="events.html">
+          <span class="material-symbols-outlined text-[20px]">celebration</span>
+          <span class="font-label-lg text-label-lg">Campus Events & Guilds</span>
+        </a>
+        <a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="student.html">
+          <span class="material-symbols-outlined text-[20px]">school</span>
+          <span class="font-label-lg text-label-lg">Student Directory</span>
+        </a>
+        <a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="hr-register.html">
+          <span class="material-symbols-outlined text-[20px]">apartment</span>
+          <span class="font-label-lg text-label-lg">Partner Approvals</span>
+        </a>
+      </nav>
+    </div>
+  </div>
+  <div class="p-space-md bg-surface-container-low">
+    <div class="bg-surface-container rounded-lg p-space-sm flex items-center justify-between">
+      <div class="flex items-center gap-space-sm">
+        <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+          <span class="material-symbols-outlined text-on-primary text-[18px]">admin_panel_settings</span>
+        </div>
+        <div class="flex flex-col min-w-0">
+          <span class="font-label-md text-label-md text-on-surface font-semibold truncate" data-bind="user-name">Campus Administrator</span>
+          <span class="font-label-caps text-label-caps text-primary">Executive Office</span>
+        </div>
+      </div>
+      <a class="text-on-surface-variant hover:text-error transition-colors p-space-xs flex items-center" data-path="logout" href="#">
+        <span class="material-symbols-outlined text-[18px]">logout</span>
+      </a>
+    </div>
+  </div>
+</aside>
+<div class="pl-72">
+  <header class="fixed top-0 left-72 right-0 h-16 bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 px-space-lg flex items-center justify-between">
+    <div class="flex items-center gap-space-md">
+      <a class="flex items-center gap-space-xs text-on-surface hover:text-primary transition-colors" href="index.html">
+        <span class="font-headline-sm text-headline-sm font-bold tracking-tight">Campus Inn+</span>
+      </a>
+      <span class="text-outline-variant font-body-sm text-body-sm">/</span>
+      <div class="flex items-center gap-space-xs bg-surface-container px-space-sm py-space-xs rounded-full">
+        <span class="material-symbols-outlined text-primary text-[16px]">domain</span>
+        <span class="font-label-md text-label-md text-on-surface font-medium">MET Bhujbal Knowledge City, Adgaon, Nashik</span>
+      </div>
+    </div>
+    <div class="flex items-center gap-space-sm">
+      <button aria-label="Toggle Theme" class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors" type="button">
+        <span class="material-symbols-outlined text-[20px]">light_mode</span>
+      </button>
+      <div class="h-6 w-px bg-surface-container-high mx-space-xs"></div>
+      <a href="index.html" class="px-3 py-1.5 rounded-lg bg-surface-container font-label-md font-semibold text-primary hover:bg-surface-variant transition-colors flex items-center gap-1">
+        <span class="material-symbols-outlined text-[16px]">public</span> Public Site
+      </a>
+    </div>
+  </header>
+  <main class="w-full pt-16 bg-surface px-space-lg">
+    <div class="flex flex-col w-full pb-space-xl">
+      <!-- Top Title Banner -->
+      <div class="relative bg-surface-container-lowest rounded-xl p-space-lg mb-space-lg shadow-sm overflow-hidden mt-space-md">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md">
+          <div>
+            <div class="flex items-center gap-space-xs mb-space-xs">
+              <span class="inline-flex items-center gap-1.5 px-space-sm py-0.5 rounded-full bg-primary/10 text-primary font-label-caps text-label-caps uppercase tracking-wider font-bold">
+                <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span> Academic Year 2025-2026 Active
+              </span>
+              <span class="text-on-surface-variant font-label-caps text-label-caps font-medium">• Central Administrative Headquarters</span>
+            </div>
+            <h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight font-extrabold">Executive College Admin Console</h1>
+            <p class="font-body-md text-body-md text-on-surface-variant mt-0.5 max-w-2xl font-medium">Holistic campus governance spanning Engineering, Management (BBA/MBA), Computer Applications (BCA/MCA), and Corporate Partnerships.</p>
+          </div>
+          <div class="flex items-center gap-space-sm">
+            <button onclick="CampusInn.Toast.success('Institution census audit synchronized with SPPU ledger.')" class="inline-flex items-center gap-space-xs px-space-md py-space-sm rounded-lg bg-primary text-on-primary hover:bg-primary-container font-label-lg font-bold shadow-sm transition-all">
+              <span class="material-symbols-outlined text-[18px]">sync</span> Sync Campus Registry
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- Metrics Strip -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md mb-space-xl">
+        <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm border-l-4 border-l-primary">
+          <span class="font-label-caps text-label-caps text-secondary uppercase font-bold">Enrolled Students</span>
+          <div class="font-headline-xl text-headline-xl text-on-surface font-extrabold my-1">4,820</div>
+          <span class="font-body-sm text-tertiary font-semibold">100% Aadhaar/SPPU Verified</span>
+        </div>
+        <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm border-l-4 border-l-secondary">
+          <span class="font-label-caps text-label-caps text-secondary uppercase font-bold">Verified Recruiters</span>
+          <div class="font-headline-xl text-headline-xl text-on-surface font-extrabold my-1">142</div>
+          <span class="font-body-sm text-primary font-semibold">3 Pending Approvals</span>
+        </div>
+        <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm border-l-4 border-l-tertiary">
+          <span class="font-label-caps text-label-caps text-secondary uppercase font-bold">Active Placement Drives</span>
+          <div class="font-headline-xl text-headline-xl text-tertiary font-extrabold my-1">28</div>
+          <span class="font-body-sm text-tertiary font-semibold">Phase 1 Dream & Super Dream</span>
+        </div>
+        <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm border-l-4 border-l-primary bg-primary-fixed/20">
+          <span class="font-label-caps text-label-caps text-primary uppercase font-bold">Campus Guilds & Events</span>
+          <div class="font-headline-xl text-headline-xl text-primary font-extrabold my-1">32</div>
+          <span class="font-body-sm text-primary font-bold">MET TechFest 2026 Scheduled</span>
+        </div>
+      </div>
+      <!-- Detailed Table: Constituent Institutes Status -->
+      <div class="bg-surface-container-lowest rounded-xl shadow-sm p-space-lg mb-space-lg">
+        <div class="flex items-center justify-between pb-space-md">
+          <div>
+            <h2 class="font-headline-md text-headline-md font-bold text-on-surface">MET BKC Constituent Institutes Operational Status</h2>
+            <p class="font-body-md text-body-md text-on-surface-variant font-medium">Real-time status of academic units, accreditation compliance, and department faculties.</p>
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left font-body-md text-body-md">
+            <thead>
+              <tr class="bg-surface-container-low text-on-surface font-label-caps uppercase tracking-wider">
+                <th class="py-space-sm px-space-md rounded-l-lg font-bold">Institute / College</th>
+                <th class="py-space-sm px-space-md font-bold">Code</th>
+                <th class="py-space-sm px-space-md font-bold">Head of Institute</th>
+                <th class="py-space-sm px-space-md text-right font-bold">Active Batches</th>
+                <th class="py-space-sm px-space-md text-right font-bold">Placement Readiness</th>
+                <th class="py-space-sm px-space-md rounded-r-lg font-bold text-center">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="hover:bg-surface-container-low/50 border-b border-surface-container">
+                <td class="py-space-md px-space-md font-bold text-on-surface">MET Institute of Engineering</td>
+                <td class="py-space-md px-space-md font-semibold text-secondary">EN5188</td>
+                <td class="py-space-md px-space-md">Dr. V. P. Wani</td>
+                <td class="py-space-md px-space-md text-right font-bold">BE (Comp, IT, E&TC, Mech, Civil), MCA</td>
+                <td class="py-space-md px-space-md text-right text-tertiary font-bold">95.4%</td>
+                <td class="py-space-md px-space-md text-center"><span class="px-3 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-bold text-xs uppercase">Accredited A</span></td>
+              </tr>
+              <tr class="hover:bg-surface-container-low/50 border-b border-surface-container">
+                <td class="py-space-md px-space-md font-bold text-on-surface">MET Institute of Management</td>
+                <td class="py-space-md px-space-md font-semibold text-secondary">MB5102</td>
+                <td class="py-space-md px-space-md">Dr. B. K. Sharma</td>
+                <td class="py-space-md px-space-md text-right font-bold">MBA, BBA, BCA</td>
+                <td class="py-space-md px-space-md text-right text-tertiary font-bold">96.8%</td>
+                <td class="py-space-md px-space-md text-center"><span class="px-3 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-bold text-xs uppercase">Accredited A+</span></td>
+              </tr>
+              <tr class="hover:bg-surface-container-low/50">
+                <td class="py-space-md px-space-md font-bold text-on-surface">MET Institute of Pharmacy</td>
+                <td class="py-space-md px-space-md font-semibold text-secondary">PH5189</td>
+                <td class="py-space-md px-space-md">Dr. S. J. Kshirsagar</td>
+                <td class="py-space-md px-space-md text-right font-bold">B.Pharm, M.Pharm</td>
+                <td class="py-space-md px-space-md text-right text-tertiary font-bold">92.0%</td>
+                <td class="py-space-md px-space-md text-center"><span class="px-3 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-bold text-xs uppercase">Accredited A</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Governance & Institutional Control Workspaces -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg mb-space-xl">
+        <!-- Panel A: Corporate Recruiter Accreditations Queue (8 cols) -->
+        <div class="lg:col-span-8 flex flex-col bg-surface-container-lowest rounded-xl shadow-sm p-space-lg">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm pb-space-md border-b border-surface-container">
+            <div>
+              <div class="flex items-center gap-space-xs">
+                <span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
+                <span class="font-label-caps text-label-caps text-primary uppercase font-bold tracking-wider">Executive Review</span>
+              </div>
+              <h2 class="font-headline-md text-headline-md text-on-surface font-bold mt-0.5">Corporate Recruiter Accreditations & MoUs</h2>
+            </div>
+            <span class="px-space-sm py-1 rounded-full bg-secondary-container text-on-secondary-fixed font-label-md text-label-md font-bold self-start sm:self-auto">142 Active Partners</span>
+          </div>
+
+          <div class="space-y-space-md mt-space-md">
+            <div class="p-space-md rounded-xl bg-surface-container-low flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm hover:bg-surface-container transition-colors shadow-sm" data-partner="Tata Consultancy Services">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="font-label-lg font-bold text-on-surface">Tata Consultancy Services (TCS)</span>
+                  <span class="px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed text-[11px] font-bold">CIN/PAN Verified</span>
+                </div>
+                <div class="font-body-sm text-secondary text-xs mt-0.5 font-medium">Global IT & Engineering Services • CIN: L22210MH1995PLC084781</div>
+                <div class="font-body-sm text-on-surface text-xs mt-1 font-semibold">Requested: Standard 3-Year Institutional MoU • Target: BE & MCA</div>
+              </div>
+              <div class="flex items-center gap-1.5 self-start sm:self-auto">
+                <button data-action="approve-partner" data-partner="Tata Consultancy Services" class="px-3 py-1.5 rounded-lg bg-primary text-on-primary font-label-md text-xs font-bold hover:bg-primary-container shadow-sm">Grant Accreditation</button>
+              </div>
+            </div>
+
+            <div class="p-space-md rounded-xl bg-surface-container-low flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm hover:bg-surface-container transition-colors shadow-sm" data-partner="Deloitte India">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="font-label-lg font-bold text-on-surface">Deloitte India</span>
+                  <span class="px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed text-[11px] font-bold">GSTIN Verified</span>
+                </div>
+                <div class="font-body-sm text-secondary text-xs mt-0.5 font-medium">Enterprise Technology & Consulting Division • Mumbai / Pune</div>
+                <div class="font-body-sm text-on-surface text-xs mt-1 font-semibold">Requested: ₹7.5–₹9.2 LPA Drive Clearance • Target: BBA, BCA, MCA, BE</div>
+              </div>
+              <div class="flex items-center gap-1.5 self-start sm:self-auto">
+                <button data-action="approve-partner" data-partner="Deloitte India" class="px-3 py-1.5 rounded-lg bg-primary text-on-primary font-label-md text-xs font-bold hover:bg-primary-container shadow-sm">Grant Accreditation</button>
+              </div>
+            </div>
+
+            <div class="p-space-md rounded-xl bg-surface-container-low flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm hover:bg-surface-container transition-colors shadow-sm" data-partner="HDFC Bank Corporate">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="font-label-lg font-bold text-on-surface">HDFC Bank Corporate</span>
+                  <span class="px-2 py-0.5 rounded-full bg-error-container text-on-error-container text-[11px] font-bold">Policy Clause Review</span>
+                </div>
+                <div class="font-body-sm text-secondary text-xs mt-0.5 font-medium">Banking & Wealth Advisory Institutional Division</div>
+                <div class="font-body-sm text-error text-xs mt-1 font-semibold">MET One-Student-One-Offer norm pending acceptance</div>
+              </div>
+              <div class="flex items-center gap-1.5 self-start sm:self-auto">
+                <button onclick="CampusInn.Toast.info('Dispatched MET SPPU One-Student-One-Offer policy addendum to HDFC Bank Legal Counsel.')" class="px-3 py-1.5 rounded-lg bg-surface-container-high text-on-surface font-label-md text-xs font-semibold hover:bg-surface-container">Dispatch Addendum</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel B: Broadcast Dispatcher & Live Audit Log (4 cols) -->
+        <div class="lg:col-span-4 space-y-space-lg">
+          <!-- Institutional Broadcast Dispatcher -->
+          <div class="bg-surface-container-lowest rounded-xl shadow-sm p-space-md">
+            <div class="flex items-center justify-between pb-space-sm border-b border-surface-container">
+              <div>
+                <span class="font-label-caps text-label-caps text-primary uppercase font-bold tracking-wider">Campus Communications</span>
+                <h3 class="font-headline-sm text-headline-sm font-bold text-on-surface mt-0.5">Broadcast Notice</h3>
+              </div>
+              <span class="material-symbols-outlined text-primary text-[20px]">campaign</span>
+            </div>
+            <form id="broadcastForm" class="mt-space-md space-y-space-xs">
+              <div>
+                <label class="block font-label-caps text-xs text-secondary uppercase font-bold mb-1">Notice Heading</label>
+                <input id="broadcastTitle" type="text" placeholder="e.g. SPPU Exam Schedule Update" class="w-full px-3 py-1.5 rounded-lg bg-surface-container-low border border-surface-container text-on-surface text-body-sm font-medium focus:outline-none focus:border-primary">
+              </div>
+              <div>
+                <label class="block font-label-caps text-xs text-secondary uppercase font-bold mb-1">Target Audience</label>
+                <select id="broadcastAudience" class="w-full px-3 py-1.5 rounded-lg bg-surface-container-low border border-surface-container text-on-surface text-body-sm font-medium focus:outline-none focus:border-primary">
+                  <option value="All Students & Faculty">All Students & Faculty (All Institutes)</option>
+                  <option value="Final Year Placements">Final Year Placement Cohort (2025-26)</option>
+                  <option value="Faculty & Mentors">Department Faculty & HODs</option>
+                </select>
+              </div>
+              <button type="submit" class="w-full mt-space-sm py-space-xs rounded-lg bg-primary text-on-primary font-label-md text-label-md font-bold hover:bg-primary-container transition-colors shadow-sm flex items-center justify-center gap-1">
+                <span class="material-symbols-outlined text-[16px]">send</span> Dispatch Broadcast Notice
+              </button>
+            </form>
+          </div>
+
+          <!-- Real-Time Audit Log Card -->
+          <div class="bg-surface-container-lowest rounded-xl shadow-sm p-space-md">
+            <div class="flex items-center justify-between pb-space-sm border-b border-surface-container">
+              <div>
+                <span class="font-label-caps text-label-caps text-secondary uppercase font-bold tracking-wider">System Governance</span>
+                <h3 class="font-headline-sm text-headline-sm font-bold text-on-surface mt-0.5">Audit Ledger Stream</h3>
+              </div>
+              <span class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span>
+            </div>
+            <div class="mt-space-md space-y-space-xs text-body-sm font-body-sm">
+              <div class="p-space-xs rounded bg-surface-container-low/50 flex items-start gap-2">
+                <span class="material-symbols-outlined text-[16px] text-tertiary shrink-0 mt-0.5">check_circle</span>
+                <div>
+                  <span class="font-semibold text-on-surface block text-xs">Exam Ledger Synced</span>
+                  <span class="text-[11px] text-secondary">4,820 student CGPAs verified against SPPU-EXM-2025-V7</span>
+                </div>
+              </div>
+              <div class="p-space-xs rounded bg-surface-container-low/50 flex items-start gap-2">
+                <span class="material-symbols-outlined text-[16px] text-primary shrink-0 mt-0.5">verified_user</span>
+                <div>
+                  <span class="font-semibold text-on-surface block text-xs">Deloitte Requirement Approved</span>
+                  <span class="text-[11px] text-secondary">Published to Student Phase 1 Drive Feed</span>
+                </div>
+              </div>
+              <div class="p-space-xs rounded bg-surface-container-low/50 flex items-start gap-2">
+                <span class="material-symbols-outlined text-[16px] text-secondary shrink-0 mt-0.5">celebration</span>
+                <div>
+                  <span class="font-semibold text-on-surface block text-xs">MET TechFest 2026 Launched</span>
+                  <span class="text-[11px] text-secondary">Council docket approved for central auditorium</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // 1. Role Guard (Only College Admin)
+  if (!CampusInn.Auth.requireAuth(['admin'])) {
+    return;
+  }
+
+  // 2. Dev Mock Badge
+  const user = CampusInn.Auth.getUser();
+  if (user && user.isMock) {
+    const banner = document.querySelector('.relative.bg-surface-container-lowest h1');
+    if (banner && !document.getElementById('adm-mock-badge')) {
+      const badge = document.createElement('span');
+      badge.id = 'adm-mock-badge';
+      badge.className = 'ci-dev-mock-badge ml-3';
+      badge.innerHTML = '<span class="material-symbols-outlined text-[12px]">science</span> Dev Mock Records';
+      banner.appendChild(badge);
+    }
+  }
+
+  // 3. Sync Registry Action
+  const syncBtn = document.querySelector('button[onclick*="Sync"]');
+  if (syncBtn) {
+    syncBtn.onclick = null;
+    syncBtn.addEventListener('click', async () => {
+      syncBtn.disabled = true;
+      syncBtn.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">sync</span> Syncing SPPU Ledger...';
+      try {
+        if (window.CampusInn.API) {
+          await window.CampusInn.API.admin.syncRegistry();
+        }
+        CampusInn.Toast.success('Campus registry verified & synchronized with SPPU examination ledger (4,820 active student records).');
+      } catch (err) {
+        CampusInn.Toast.error(err.message || 'Sync failed.');
+      } finally {
+        syncBtn.disabled = false;
+        syncBtn.innerHTML = '<span class="material-symbols-outlined text-[18px]">sync</span> Sync Campus Registry';
+      }
+    });
+  }
+
+  // 4. Partner Approvals
+  document.querySelectorAll('button[data-action="approve-partner"]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const partner = btn.getAttribute('data-partner');
+      btn.disabled = true;
+      btn.textContent = 'Accrediting...';
+      try {
+        if (window.CampusInn.API) {
+          await window.CampusInn.API.admin.approvePartner(partner);
+        }
+        CampusInn.Toast.success(`Institutional accreditation granted for ${partner}! MoU catalogued.`);
+        btn.textContent = 'Accredited ✓';
+        btn.className = 'px-3 py-1.5 rounded-lg bg-tertiary-fixed text-on-tertiary-fixed font-label-md text-xs font-bold';
+      } catch (err) {
+        CampusInn.Toast.error(err.message || 'Action failed.');
+        btn.disabled = false;
+        btn.textContent = 'Grant Accreditation';
+      }
+    });
+  });
+
+  // 5. Broadcast Dispatcher
+  const broadcastForm = document.getElementById('broadcastForm');
+  if (broadcastForm) {
+    broadcastForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const titleInput = document.getElementById('broadcastTitle');
+      const audienceSelect = document.getElementById('broadcastAudience');
+      const title = titleInput ? titleInput.value.trim() : '';
+      const audience = audienceSelect ? audienceSelect.value : 'All';
+
+      if (!title) {
+        CampusInn.Toast.warning('Please enter a heading for the broadcast notice.');
+        return;
+      }
+
+      const submitBtn = broadcastForm.querySelector('button[type="submit"]');
+      if (submitBtn) submitBtn.disabled = true;
+
+      try {
+        if (window.CampusInn.API) {
+          await window.CampusInn.API.admin.broadcastAnnouncement({ title, audience });
+        }
+        CampusInn.Toast.success(`Broadcast "${title}" dispatched to ${audience}!`);
+        if (titleInput) titleInput.value = '';
+      } catch (err) {
+        CampusInn.Toast.error(err.message || 'Broadcast failed.');
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
+      }
+    });
+  }
+});
+</script>
+</body></html>

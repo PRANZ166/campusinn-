@@ -1,0 +1,600 @@
+/**
+ * Campus Inn+ — Global Theme & Full-Page Dark Mode Stylesheet
+ * Enterprise design system tokens for MET Bhujbal Knowledge City
+ * Flawless dark mode styling across all cards, containers, gradients, sidebars & inputs.
+ */
+
+/* ==========================================================================
+   1. Light Mode CSS Variables
+   ========================================================================== */
+:root {
+  --color-surface: #faf8ff;
+  --color-surface-dim: #d2d9f4;
+  --color-surface-bright: #faf8ff;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f2f3ff;
+  --color-surface-container: #eaedff;
+  --color-surface-container-high: #e2e7ff;
+  --color-surface-container-highest: #dae2fd;
+  --color-surface-variant: #dae2fd;
+  --color-on-surface: #131b2e;
+  --color-on-surface-variant: #4a4455;
+  --color-outline: #7b7486;
+  --color-outline-variant: #ccc3d7;
+  --color-primary: #5300b7;
+  --color-primary-container: #6d28d9;
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: #dac5ff;
+  --color-secondary-container: #e4e0f5;
+  --color-border: #e2e8f0;
+  --shadow-ambient: 0 1px 3px 0 rgba(15, 23, 42, 0.04), 0 4px 12px -2px rgba(109, 40, 217, 0.05);
+  --shadow-hover: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 12px 24px -4px rgba(109, 40, 217, 0.08);
+}
+
+/* ==========================================================================
+   2. Dark Mode System (html.dark and html[data-theme="dark"])
+   ========================================================================== */
+html.dark,
+html[data-theme="dark"] {
+  --color-surface: #0b0f19;
+  --color-surface-dim: #111827;
+  --color-surface-bright: #151c2c;
+  --color-surface-container-lowest: #111827;
+  --color-surface-container-low: #151c2c;
+  --color-surface-container: #1e293b;
+  --color-surface-container-high: #283044;
+  --color-surface-container-highest: #334155;
+  --color-surface-variant: #1e293b;
+  --color-on-surface: #f1f5f9;
+  --color-on-surface-variant: #cbd5e1;
+  --color-outline: #64748b;
+  --color-outline-variant: #334155;
+  --color-primary: #a78bfa;
+  --color-primary-container: #7c3aed;
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: #f3e8ff;
+  --color-secondary-container: #2e1065;
+  --color-border: #334155;
+  --shadow-ambient: 0 4px 20px rgba(0, 0, 0, 0.5);
+  --shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.7);
+  color-scheme: dark;
+}
+
+/* Base Body and Root Viewport in Dark Mode */
+html.dark,
+html.dark body,
+html[data-theme="dark"],
+html[data-theme="dark"] body {
+  background-color: #0b0f19 !important;
+  color: #f1f5f9 !important;
+}
+
+/* Main Content Area */
+html.dark main,
+html[data-theme="dark"] main {
+  background-color: #0b0f19 !important;
+}
+
+/* Global Background Classes Overrides */
+html.dark .bg-background,
+html.dark .bg-surface,
+html[data-theme="dark"] .bg-background,
+html[data-theme="dark"] .bg-surface {
+  background-color: #0b0f19 !important;
+}
+
+/* Container Surface Layers */
+html.dark .bg-surface-container-lowest,
+html.dark [class*="bg-surface-container-lowest"],
+html[data-theme="dark"] .bg-surface-container-lowest,
+html[data-theme="dark"] [class*="bg-surface-container-lowest"] {
+  background-color: #111827 !important;
+  color: #f1f5f9 !important;
+}
+
+html.dark .bg-surface-container-low,
+html.dark [class*="bg-surface-container-low"],
+html[data-theme="dark"] .bg-surface-container-low,
+html[data-theme="dark"] [class*="bg-surface-container-low"] {
+  background-color: #151c2c !important;
+  color: #f1f5f9 !important;
+}
+
+html.dark .bg-surface-container,
+html.dark [class*="bg-surface-container"]:not([class*="bg-surface-container-"]),
+html[data-theme="dark"] .bg-surface-container,
+html[data-theme="dark"] [class*="bg-surface-container"]:not([class*="bg-surface-container-"]) {
+  background-color: #1a2333 !important;
+  color: #f1f5f9 !important;
+}
+
+html.dark .bg-surface-container-high,
+html.dark [class*="bg-surface-container-high"],
+html[data-theme="dark"] .bg-surface-container-high,
+html[data-theme="dark"] [class*="bg-surface-container-high"] {
+  background-color: #1e293b !important;
+  color: #f1f5f9 !important;
+}
+
+html.dark .bg-surface-container-highest,
+html.dark [class*="bg-surface-container-highest"],
+html.dark .bg-surface-variant,
+html[data-theme="dark"] .bg-surface-container-highest,
+html[data-theme="dark"] [class*="bg-surface-container-highest"],
+html[data-theme="dark"] .bg-surface-variant {
+  background-color: #242f42 !important;
+  color: #f1f5f9 !important;
+}
+
+/* Secondary & Fixed Purple Badges in Dark Mode */
+html.dark .bg-secondary-container,
+html.dark [class*="bg-secondary-container"],
+html[data-theme="dark"] .bg-secondary-container,
+html[data-theme="dark"] [class*="bg-secondary-container"] {
+  background-color: #2e1065 !important;
+  color: #e9d5ff !important;
+}
+
+html.dark [class*="bg-primary-fixed"],
+html[data-theme="dark"] [class*="bg-primary-fixed"] {
+  background-color: #2e1065 !important;
+  color: #f3e8ff !important;
+}
+
+/* Fix Hero Gradients in Dark Mode */
+html.dark [class*="bg-gradient-to-br"],
+html.dark [class*="from-primary-fixed"],
+html[data-theme="dark"] [class*="bg-gradient-to-br"],
+html[data-theme="dark"] [class*="from-primary-fixed"] {
+  background-image: linear-gradient(135deg, #1e1b4b 0%, #151c2c 50%, #0b0f19 100%) !important;
+}
+
+/* Header & Navigation in Dark Mode */
+html.dark header,
+html[data-theme="dark"] header {
+  background-color: rgba(11, 15, 25, 0.94) !important;
+  border-bottom: 1px solid #1e293b !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Dropdown Menus in Header */
+html.dark .group-hover\:block,
+html[data-theme="dark"] .group-hover\:block {
+  background-color: #111827 !important;
+  border: 1px solid #283044 !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7) !important;
+}
+
+/* Footer in Dark Mode */
+html.dark footer,
+html[data-theme="dark"] footer {
+  background-color: #0b0f19 !important;
+  border-top: 1px solid #1e293b !important;
+}
+
+/* Sidebars & Asides in Dark Mode */
+html.dark aside,
+html[data-theme="dark"] aside {
+  background-color: #111827 !important;
+  border-color: #1e293b !important;
+}
+
+/* Text Colors in Dark Mode */
+html.dark .text-on-surface,
+html[data-theme="dark"] .text-on-surface {
+  color: #f1f5f9 !important;
+}
+
+html.dark .text-on-surface-variant,
+html[data-theme="dark"] .text-on-surface-variant {
+  color: #cbd5e1 !important;
+}
+
+html.dark .text-secondary,
+html[data-theme="dark"] .text-secondary {
+  color: #94a3b8 !important;
+}
+
+html.dark .text-primary,
+html[data-theme="dark"] .text-primary {
+  color: #a78bfa !important;
+}
+
+html.dark .text-on-secondary-fixed,
+html[data-theme="dark"] .text-on-secondary-fixed {
+  color: #f5f3ff !important;
+}
+
+/* Form Inputs, Selects & Textareas in Dark Mode */
+html.dark input,
+html.dark select,
+html.dark textarea,
+html[data-theme="dark"] input,
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea {
+  background-color: #151c2c !important;
+  color: #f1f5f9 !important;
+  border-color: #283044 !important;
+}
+
+html.dark input::placeholder,
+html.dark textarea::placeholder,
+html[data-theme="dark"] input::placeholder,
+html[data-theme="dark"] textarea::placeholder {
+  color: #64748b !important;
+}
+
+html.dark select option,
+html[data-theme="dark"] select option {
+  background-color: #151c2c !important;
+  color: #f1f5f9 !important;
+}
+
+html.dark input:focus,
+html.dark select:focus,
+html.dark textarea:focus,
+html[data-theme="dark"] input:focus,
+html[data-theme="dark"] select:focus,
+html[data-theme="dark"] textarea:focus {
+  border-color: #8b5cf6 !important;
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.25) !important;
+  outline: none;
+}
+
+/* Buttons in Dark Mode */
+html.dark button[class*="bg-surface-container"],
+html[data-theme="dark"] button[class*="bg-surface-container"] {
+  background-color: #1e293b !important;
+  color: #cbd5e1 !important;
+}
+
+html.dark button[class*="bg-surface-container"]:hover,
+html[data-theme="dark"] button[class*="bg-surface-container"]:hover {
+  background-color: #283044 !important;
+  color: #ffffff !important;
+}
+
+/* Cards & Elevated Panels in Dark Mode */
+html.dark .shadow-sm,
+html.dark .shadow-md,
+html.dark .shadow-xl,
+html[data-theme="dark"] .shadow-sm,
+html[data-theme="dark"] .shadow-md,
+html[data-theme="dark"] .shadow-xl {
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* Borders in Dark Mode */
+html.dark [class*="border-outline-variant"],
+html.dark [class*="border-surface-variant"],
+html.dark [class*="border-surface-container"],
+html[data-theme="dark"] [class*="border-outline-variant"],
+html[data-theme="dark"] [class*="border-surface-variant"],
+html[data-theme="dark"] [class*="border-surface-container"] {
+  border-color: #283044 !important;
+}
+
+/* Tables in Dark Mode */
+html.dark table thead,
+html[data-theme="dark"] table thead {
+  background-color: #151c2c !important;
+}
+
+html.dark table tbody tr,
+html[data-theme="dark"] table tbody tr {
+  border-color: #1e293b !important;
+}
+
+html.dark table tbody tr:hover,
+html[data-theme="dark"] table tbody tr:hover {
+  background-color: #1e293b !important;
+}
+
+/* Status Badges */
+.ci-dev-mock-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-family: 'Hanken Grotesk', sans-serif;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background-color: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+  user-select: none;
+}
+
+html.dark .ci-dev-mock-badge,
+html[data-theme="dark"] .ci-dev-mock-badge {
+  background-color: #451a03 !important;
+  color: #fde68a !important;
+  border-color: #78350f !important;
+}
+
+/* Smooth Transitions for Theme Swapping */
+body, header, aside, main, div, a, button, input {
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+/* ==========================================================================
+   Additional Dark Mode Coverage
+   ========================================================================== */
+
+/* Tertiary Container Badges */
+html.dark [class*="bg-tertiary-container"],
+html[data-theme="dark"] [class*="bg-tertiary-container"] {
+  background-color: #064e3b !important;
+  color: #6ee7b7 !important;
+}
+
+/* Error Container Badges */
+html.dark [class*="bg-error-container"],
+html[data-theme="dark"] [class*="bg-error-container"] {
+  background-color: #450a0a !important;
+  color: #fca5a5 !important;
+}
+
+/* On-tertiary-container text in dark mode */
+html.dark .text-on-tertiary-container,
+html[data-theme="dark"] .text-on-tertiary-container {
+  color: #6ee7b7 !important;
+}
+
+/* Tertiary text */
+html.dark .text-tertiary,
+html[data-theme="dark"] .text-tertiary {
+  color: #34d399 !important;
+}
+
+/* Error text */
+html.dark .text-error,
+html[data-theme="dark"] .text-error {
+  color: #f87171 !important;
+}
+
+/* On-error-container text */
+html.dark .text-on-error-container,
+html[data-theme="dark"] .text-on-error-container {
+  color: #fca5a5 !important;
+}
+
+/* Links & anchor hover states */
+html.dark a:hover,
+html[data-theme="dark"] a:hover {
+  color: #c4b5fd;
+}
+
+html.dark .hover\:text-primary:hover,
+html[data-theme="dark"] .hover\:text-primary:hover {
+  color: #c4b5fd !important;
+}
+
+/* Search bar in header */
+html.dark .bg-surface-container-low input,
+html[data-theme="dark"] .bg-surface-container-low input {
+  background-color: transparent !important;
+}
+
+/* Ring colors for dark mode */
+html.dark [class*="ring-primary-fixed"],
+html[data-theme="dark"] [class*="ring-primary-fixed"] {
+  --tw-ring-color: #7c3aed;
+}
+
+html.dark [class*="ring-primary"]:not([class*="ring-primary-fixed"]),
+html[data-theme="dark"] [class*="ring-primary"]:not([class*="ring-primary-fixed"]) {
+  --tw-ring-color: #a78bfa;
+}
+
+/* Hover background states on surface containers */
+html.dark .hover\:bg-surface-container-high:hover,
+html[data-theme="dark"] .hover\:bg-surface-container-high:hover {
+  background-color: #283044 !important;
+}
+
+html.dark .hover\:bg-surface-container:hover,
+html[data-theme="dark"] .hover\:bg-surface-container:hover {
+  background-color: #1e293b !important;
+}
+
+/* Dev mock banner in dark mode */
+html.dark .ci-dev-mock-banner,
+html[data-theme="dark"] .ci-dev-mock-banner {
+  background-color: #1e1b4b !important;
+  color: #c4b5fd !important;
+  border-color: #312e81 !important;
+}
+
+/* Backdrop blur header in dark mode */
+html.dark .bg-surface\/90,
+html[data-theme="dark"] .bg-surface\/90 {
+  background-color: rgba(11, 15, 25, 0.94) !important;
+}
+
+/* Primary-container button/hover in dark mode */
+html.dark .hover\:bg-primary-container:hover,
+html[data-theme="dark"] .hover\:bg-primary-container:hover {
+  background-color: #5b21b6 !important;
+  color: #f3e8ff !important;
+}
+
+/* Border left colors for drive stat cards */
+html.dark [class*="border-l-primary"],
+html[data-theme="dark"] [class*="border-l-primary"] {
+  border-left-color: #a78bfa !important;
+}
+
+html.dark [class*="border-l-secondary"],
+html[data-theme="dark"] [class*="border-l-secondary"] {
+  border-left-color: #818cf8 !important;
+}
+
+html.dark [class*="border-l-tertiary"],
+html[data-theme="dark"] [class*="border-l-tertiary"] {
+  border-left-color: #34d399 !important;
+}
+
+/* Border for card borders */
+html.dark .border-surface-container,
+html.dark [class*="border"][class*="surface-container"],
+html[data-theme="dark"] .border-surface-container,
+html[data-theme="dark"] [class*="border"][class*="surface-container"] {
+  border-color: #1e293b !important;
+}
+
+/* Primary background button (Apply buttons etc.) in dark mode */
+html.dark .bg-primary,
+html[data-theme="dark"] .bg-primary {
+  background-color: #7c3aed !important;
+}
+
+html.dark .text-on-primary,
+html[data-theme="dark"] .text-on-primary {
+  color: #ffffff !important;
+}
+
+/* Tertiary-fixed-dim for verified checkmark */
+html.dark [class*="bg-tertiary-fixed-dim"],
+html[data-theme="dark"] [class*="bg-tertiary-fixed-dim"] {
+  background-color: #059669 !important;
+}
+
+/* Surface-container-lowest ring in dark mode */
+html.dark [class*="ring-surface-container-lowest"],
+html[data-theme="dark"] [class*="ring-surface-container-lowest"] {
+  --tw-ring-color: #111827;
+}
+
+/* ==========================================================================
+   Profile Dropdown Menu — Layout & Alignment Fix (Bug 4)
+   Ensures every option occupies its own readable row, icons and labels align,
+   dropdown is never clipped, and functions smoothly across all screen sizes.
+   ========================================================================== */
+
+/* Dropdown container */
+.ci-profile-dropdown {
+  display: none;
+  flex-direction: column !important;
+  width: 288px !important;
+  max-width: calc(100vw - 32px) !important;
+  max-height: calc(100vh - 84px) !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+  box-sizing: border-box !important;
+  z-index: 9999 !important;
+}
+
+.ci-profile-dropdown:not(.hidden) {
+  display: flex !important;
+}
+
+/* User identity header inside dropdown */
+.ci-profile-dropdown .ci-profile-header {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 12px 16px !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+}
+
+/* Menu items list container */
+.ci-profile-dropdown .ci-menu-items {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 4px 0 !important;
+  box-sizing: border-box !important;
+}
+
+/* Each dropdown menu item — guaranteed single readable row */
+.ci-profile-dropdown .ci-dropdown-item {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 12px !important;
+  padding: 10px 16px !important;
+  width: 100% !important;
+  min-height: 44px !important;
+  box-sizing: border-box !important;
+  text-decoration: none !important;
+  font-size: 0.875rem !important;
+  line-height: 1.25rem !important;
+  cursor: pointer !important;
+  border-radius: 0 !important;
+  clear: both !important;
+  position: relative !important;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+/* Icons inside dropdown item */
+.ci-profile-dropdown .ci-dropdown-item .material-symbols-outlined {
+  font-size: 20px !important;
+  width: 20px !important;
+  height: 20px !important;
+  min-width: 20px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+}
+
+/* Labels inside dropdown item */
+.ci-profile-dropdown .ci-dropdown-item .ci-dropdown-label {
+  flex: 1 1 auto !important;
+  text-align: left !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  font-weight: 500 !important;
+}
+
+/* Item hover states */
+.ci-profile-dropdown .ci-dropdown-item:hover,
+.ci-profile-dropdown .ci-dropdown-item:focus {
+  background-color: var(--color-surface-container-high) !important;
+  outline: none !important;
+}
+
+/* Divider line in dropdown */
+.ci-profile-dropdown .ci-dropdown-divider {
+  width: 100% !important;
+  height: 1px !important;
+  margin: 4px 0 !important;
+  border: none !important;
+  border-top: 1px solid var(--color-outline-variant) !important;
+  opacity: 0.4;
+}
+
+/* Logout button specific fix */
+.ci-profile-dropdown .ci-logout-btn {
+  border: none !important;
+  background: transparent !important;
+  cursor: pointer !important;
+}
+
+.ci-profile-dropdown .ci-logout-btn:hover,
+.ci-profile-dropdown .ci-logout-btn:focus {
+  background-color: rgba(220, 38, 38, 0.1) !important;
+}
+
+/* Dark mode dropdown overrides */
+html.dark .ci-profile-dropdown,
+html[data-theme="dark"] .ci-profile-dropdown {
+  background-color: #111827 !important;
+  border-color: #283044 !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7) !important;
+}
+
+html.dark .ci-profile-dropdown .ci-dropdown-item:hover,
+html[data-theme="dark"] .ci-profile-dropdown .ci-dropdown-item:hover {
+  background-color: #1e293b !important;
+}
+

@@ -1,0 +1,340 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><meta content="web_dashboard" name="shell-type"><title>Campus Inn+</title><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;700;800&amp;family=Hanken+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {"surface-tint": "#7331df", "surface-dim": "#d2d9f4", "surface-container-high": "#e2e7ff", "secondary-container": "#e4e0f5", "on-primary-fixed-variant": "#5b00c5", "on-primary-container": "#dac5ff", "on-surface": "#131b2e", "on-tertiary": "#ffffff", "tertiary-container": "#006544", "on-secondary-container": "#646274", primary: "#5300b7", "on-error-container": "#93000a", "tertiary-fixed": "#6ffbbe", "surface-container-lowest": "#ffffff", "error-container": "#ffdad6", "inverse-on-surface": "#eef0ff", error: "#ba1a1a", "on-tertiary-fixed": "#002113", "on-surface-variant": "#4a4455", "primary-container": "#6d28d9", "on-primary-fixed": "#250059", "on-error": "#ffffff", "on-background": "#131b2e", "outline-variant": "#ccc3d7", surface: "#faf8ff", "surface-variant": "#dae2fd", "tertiary-fixed-dim": "#4edea3", outline: "#7b7486", "on-tertiary-fixed-variant": "#005236", "surface-bright": "#faf8ff", "secondary-fixed": "#e4e0f5", "inverse-surface": "#283044", "surface-container-highest": "#dae2fd", background: "#faf8ff", "primary-fixed-dim": "#d3bbff", secondary: "#5e5c6e", "secondary-fixed-dim": "#c7c4d8", "on-secondary-fixed": "#1b1a29", "on-tertiary-container": "#58e7ab", "surface-container": "#eaedff", tertiary: "#004b31", "surface-container-low": "#f2f3ff", "on-secondary": "#ffffff", "on-primary": "#ffffff", "inverse-primary": "#d3bbff", "on-secondary-fixed-variant": "#464555", "primary-fixed": "#ebddff"}, borderRadius: {DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px"}, spacing: {"gutter-mobile": "1rem", "space-lg": "1.5rem", "gutter-desktop": "2rem", gutter: "1.5rem", "margin-desktop": "3rem", "space-xs": "0.25rem", "space-md": "1rem", margin: "1.5rem", "space-sm": "0.5rem", "space-xl": "2.5rem", "margin-mobile": "1rem"}, fontFamily: {"display-lg-mobile": ["Bricolage Grotesque"], "body-sm": ["Hanken Grotesk"], "label-md": ["Hanken Grotesk"], "body-lg": ["Hanken Grotesk"], "headline-xl": ["Bricolage Grotesque"], "body-md": ["Hanken Grotesk"], "headline-md": ["Bricolage Grotesque"], "headline-sm": ["Bricolage Grotesque"], "display-lg": ["Bricolage Grotesque"], "body-xl": ["Hanken Grotesk"], "headline-xl-mobile": ["Bricolage Grotesque"], "headline-lg": ["Bricolage Grotesque"], "label-caps": ["Hanken Grotesk"], "label-lg": ["Hanken Grotesk"], headline: ["Bricolage Grotesque"], display: ["Bricolage Grotesque"], body: ["Hanken Grotesk"], label: ["Hanken Grotesk"]}, fontSize: {"display-lg-mobile": ["2.25rem", {lineHeight: "2.75rem", letterSpacing: "-0.025em", fontWeight: "800"}], "body-sm": ["0.75rem", {lineHeight: "1.125rem", fontWeight: "400"}], "label-md": ["0.75rem", {lineHeight: "1rem", letterSpacing: "0.02em", fontWeight: "600"}], "body-lg": ["1rem", {lineHeight: "1.5rem", fontWeight: "400"}], "headline-xl": ["2.5rem", {lineHeight: "3rem", letterSpacing: "-0.025em", fontWeight: "700"}], "body-md": ["0.875rem", {lineHeight: "1.375rem", fontWeight: "400"}], "headline-md": ["1.5rem", {lineHeight: "2rem", letterSpacing: "-0.015em", fontWeight: "600"}], "headline-sm": ["1.25rem", {lineHeight: "1.75rem", letterSpacing: "-0.01em", fontWeight: "600"}], "display-lg": ["3.5rem", {lineHeight: "4rem", letterSpacing: "-0.03em", fontWeight: "800"}], "body-xl": ["1.125rem", {lineHeight: "1.75rem", letterSpacing: "-0.005em", fontWeight: "400"}], "headline-xl-mobile": ["1.75rem", {lineHeight: "2.25rem", letterSpacing: "-0.02em", fontWeight: "700"}], "headline-lg": ["2rem", {lineHeight: "2.5rem", letterSpacing: "-0.02em", fontWeight: "700"}], "label-caps": ["0.6875rem", {lineHeight: "0.875rem", letterSpacing: "0.06em", fontWeight: "700"}], "label-lg": ["0.875rem", {lineHeight: "1.25rem", letterSpacing: "0.01em", fontWeight: "600"}]}}}};</script><link rel="stylesheet" href="css/theme.css"><script src="js/mock-data.js"></script>
+<script src="js/api.js"></script>
+<script src="js/shared.js"></script></head>
+<body class="bg-surface font-body-md text-body-md text-on-surface antialiased">
+<aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-low shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-50 flex flex-col justify-between">
+  <div class="flex flex-col">
+    <div class="h-16 px-space-md flex items-center gap-space-sm bg-surface-container">
+      <div class="w-9 h-9 rounded-lg bg-primary flex items-center justify-center text-on-primary font-headline-sm text-headline-sm font-bold">C</div>
+      <div class="flex flex-col">
+        <span class="font-headline-sm text-headline-sm font-bold text-on-surface tracking-tight leading-none">Campus Inn<span class="text-primary">+</span></span>
+        <span class="font-label-caps text-label-caps text-primary tracking-widest uppercase">Guilds & Events</span>
+      </div>
+    </div>
+    <div class="px-space-md py-space-sm">
+      <div class="bg-surface-container-high rounded-lg p-space-sm flex items-center gap-space-sm">
+        <span class="material-symbols-outlined text-primary text-[20px]">celebration</span>
+        <div class="flex flex-col min-w-0 flex-1">
+          <span class="font-label-caps text-label-caps text-on-surface-variant uppercase font-semibold">Campus Node</span>
+          <span class="font-label-md text-label-md text-on-surface truncate">MET BKC Cultural Council</span>
+        </div>
+        <span class="w-2 h-2 rounded-full bg-tertiary-fixed-dim"></span>
+      </div>
+    </div>
+    <div class="px-space-md mt-space-xs">
+      <span class="font-label-caps text-label-caps text-on-surface-variant tracking-wider uppercase px-space-xs block mb-space-xs">Guild Workspace</span>
+      <nav class="space-y-space-xs">
+        <a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-lg transition-colors bg-primary-container text-on-primary font-semibold" href="coordinator.html">
+          <span class="material-symbols-outlined text-[20px]">event_note</span>
+          <span class="font-label-lg text-label-lg">Event Operations</span>
+        </a>
+        <a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="events.html">
+          <span class="material-symbols-outlined text-[20px]">explore</span>
+          <span class="font-label-lg text-label-lg">Public Events Hub</span>
+        </a>
+        <a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="student.html">
+          <span class="material-symbols-outlined text-[20px]">groups</span>
+          <span class="font-label-lg text-label-lg">Student Volunteers</span>
+        </a>
+      </nav>
+    </div>
+  </div>
+  <div class="p-space-md bg-surface-container-low">
+    <div class="bg-surface-container rounded-lg p-space-sm flex items-center justify-between">
+      <div class="flex items-center gap-space-sm">
+        <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+          <span class="material-symbols-outlined text-on-primary text-[18px]">celebration</span>
+        </div>
+        <div class="flex flex-col min-w-0">
+          <span class="font-label-md text-label-md text-on-surface font-semibold truncate" data-bind="user-name">Karan Patel</span>
+          <span class="font-label-caps text-label-caps text-primary">Chief Coordinator</span>
+        </div>
+      </div>
+      <a class="text-on-surface-variant hover:text-error transition-colors p-space-xs flex items-center" data-path="logout" href="#">
+        <span class="material-symbols-outlined text-[18px]">logout</span>
+      </a>
+    </div>
+  </div>
+</aside>
+<div class="pl-72">
+  <header class="fixed top-0 left-72 right-0 h-16 bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 px-space-lg flex items-center justify-between">
+    <div class="flex items-center gap-space-md">
+      <a class="flex items-center gap-space-xs text-on-surface hover:text-primary transition-colors" href="index.html">
+        <span class="font-headline-sm text-headline-sm font-bold tracking-tight">Campus Inn+</span>
+      </a>
+      <span class="text-outline-variant font-body-sm text-body-sm">/</span>
+      <div class="flex items-center gap-space-xs bg-surface-container px-space-sm py-space-xs rounded-full">
+        <span class="material-symbols-outlined text-primary text-[16px]">celebration</span>
+        <span class="font-label-md text-label-md text-on-surface font-medium">MET BKC Youth & Hackathon Guild Hub</span>
+      </div>
+    </div>
+    <div class="flex items-center gap-space-sm">
+      <button aria-label="Toggle Theme" class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors" type="button">
+        <span class="material-symbols-outlined text-[20px]">light_mode</span>
+      </button>
+      <a href="events.html" class="px-3 py-1.5 rounded-lg bg-surface-container font-label-md font-semibold text-primary hover:bg-surface-variant transition-colors flex items-center gap-1">
+        <span class="material-symbols-outlined text-[16px]">festival</span> Live Events Hub
+      </a>
+    </div>
+  </header>
+  <main class="w-full pt-16 bg-surface px-space-lg">
+    <div class="flex flex-col w-full pb-space-xl mt-space-md">
+      <div class="relative bg-surface-container-lowest rounded-xl p-space-lg mb-space-lg shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-space-md">
+        <div>
+          <h1 class="font-headline-lg font-extrabold text-on-surface">Campus Clubs & Events Management Hub</h1>
+          <p class="font-body-md text-on-surface-variant mt-1 font-medium">Orchestrating 32 collegiate societies, MET TechFest 2026, and 24-Hour Inter-College Hackathons.</p>
+        </div>
+        <button onclick="CampusInn.Toast.success('Opening event builder modal for MET BKC.');" class="px-space-md py-space-sm bg-primary text-on-primary rounded-xl font-bold flex items-center gap-2">
+          <span class="material-symbols-outlined text-[18px]">add_circle</span> Launch New Event
+        </button>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-space-md mb-space-lg">
+        <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm border-l-4 border-l-primary">
+          <span class="font-label-caps text-secondary uppercase font-bold">Upcoming Flagships</span>
+          <div class="font-headline-xl text-headline-xl font-bold text-on-surface my-1">4 Events</div>
+          <span class="font-body-sm text-tertiary font-semibold">MET TechFest 2026 registration live</span>
+        </div>
+        <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm border-l-4 border-l-secondary">
+          <span class="font-label-caps text-secondary uppercase font-bold">Total Guild Members</span>
+          <div class="font-headline-xl text-headline-xl font-bold text-on-surface my-1">1,015+</div>
+          <span class="font-body-sm text-primary font-semibold">Across Robotics, FinTech, and Design</span>
+        </div>
+        <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm border-l-4 border-l-tertiary">
+          <span class="font-label-caps text-secondary uppercase font-bold">Hackathon Teams Registered</span>
+          <div class="font-headline-xl text-headline-xl font-bold text-tertiary my-1">86 Teams</div>
+          <span class="font-body-sm text-tertiary font-semibold">Lab 3 & 4 reserved for 24-hr sprint</span>
+        </div>
+      </div>
+
+      <!-- Dual Workspace: Event Operations & Hackathon Teams Verification -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg mb-space-xl">
+        <!-- Main Panel: 24-Hour Hackathon Teams Approvals Queue (7 cols) -->
+        <div class="lg:col-span-7 flex flex-col bg-surface-container-lowest rounded-xl shadow-sm p-space-lg">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm pb-space-md border-b border-surface-container">
+            <div>
+              <div class="flex items-center gap-space-xs">
+                <span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
+                <span class="font-label-caps text-label-caps text-primary uppercase font-bold tracking-wider">Inter-College Hackathon Desk</span>
+              </div>
+              <h2 class="font-headline-md text-headline-md text-on-surface font-bold mt-0.5">24-Hour Sprint Team Allocations</h2>
+            </div>
+            <span class="px-space-sm py-1 rounded-full bg-primary-fixed text-primary font-label-md text-label-md font-bold self-start sm:self-auto">86 Teams Total</span>
+          </div>
+
+          <p class="font-body-md text-body-md text-on-surface-variant my-space-sm font-medium">Lab 3 & 4 workstation allocation, hardware kit issues, and SPPU mentor signoffs for registered collegiate hackathon squads.</p>
+
+          <div class="space-y-space-sm mt-space-xs" id="hackathonTeamsList">
+            <div class="p-space-md rounded-xl bg-surface-container-low flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm hover:bg-surface-container transition-colors shadow-sm" data-team="ByteForce AI">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="font-label-lg font-bold text-on-surface">ByteForce AI</span>
+                  <span class="px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed text-[11px] font-bold">Approved</span>
+                </div>
+                <div class="font-body-sm text-secondary text-xs mt-0.5 font-medium">Lead: Priya Sharma (BE Comp) • 4 Members • Track: AI/ML</div>
+                <div class="font-body-sm text-on-surface text-xs mt-1 font-semibold flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[14px] text-primary">desktop_windows</span> Station: Lab 3 (A1–A4) • Hardware Kit Issued ✓
+                </div>
+              </div>
+              <div class="flex items-center gap-1.5 self-start sm:self-auto">
+                <button onclick="CampusInn.Toast.info('Problem statement: Automated Crop Disease Diagnosis for Maharashtra Agro Ecosystem')" class="px-2.5 py-1 rounded bg-surface-container-high text-on-surface text-xs font-semibold hover:bg-surface-dim">View Abstract</button>
+                <span class="text-xs font-bold text-tertiary px-2 py-1">Checked In ✓</span>
+              </div>
+            </div>
+
+            <div class="p-space-md rounded-xl bg-surface-container-low flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm hover:bg-surface-container transition-colors shadow-sm" data-team="NeuralSpartans">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="font-label-lg font-bold text-on-surface">NeuralSpartans</span>
+                  <span class="px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed text-[11px] font-bold">Approved</span>
+                </div>
+                <div class="font-body-sm text-secondary text-xs mt-0.5 font-medium">Lead: Rohan Mehta (BE Comp) • 4 Members • Track: Web3 & FinTech</div>
+                <div class="font-body-sm text-on-surface text-xs mt-1 font-semibold flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[14px] text-primary">desktop_windows</span> Station: Lab 3 (B1–B4) • Zero-Knowledge SPPU Verifier
+                </div>
+              </div>
+              <div class="flex items-center gap-1.5 self-start sm:self-auto">
+                <button onclick="CampusInn.Toast.info('Problem statement: Zero-Knowledge Credential Verifier for SPPU Degree Registry')" class="px-2.5 py-1 rounded bg-surface-container-high text-on-surface text-xs font-semibold hover:bg-surface-dim">View Abstract</button>
+                <span class="text-xs font-bold text-tertiary px-2 py-1">Checked In ✓</span>
+              </div>
+            </div>
+
+            <div class="p-space-md rounded-xl bg-surface-container-low flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm hover:bg-surface-container transition-colors shadow-sm" data-team="CyberKnights">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="font-label-lg font-bold text-on-surface">CyberKnights</span>
+                  <span class="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-fixed text-[11px] font-bold">Pending Allotment</span>
+                </div>
+                <div class="font-body-sm text-secondary text-xs mt-0.5 font-medium">Lead: Amit Verma (BE IT) • 3 Members • Track: Smart City & Civic IoT</div>
+                <div class="font-body-sm text-on-surface-variant text-xs mt-1">Proposal: Dynamic Public Bus Fleet Optimization for Nashik Municipal Corp</div>
+              </div>
+              <div class="flex items-center gap-1.5 self-start sm:self-auto">
+                <button data-action="allot-lab" data-team="CyberKnights" class="px-3 py-1.5 rounded-lg bg-primary text-on-primary text-xs font-bold hover:bg-primary-container shadow-sm flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[14px]">check</span> Allot Lab 4
+                </button>
+              </div>
+            </div>
+
+            <div class="p-space-md rounded-xl bg-surface-container-low flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm hover:bg-surface-container transition-colors shadow-sm" data-team="RoboVanguard">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="font-label-lg font-bold text-on-surface">RoboVanguard</span>
+                  <span class="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-fixed text-[11px] font-bold">Pending Allotment</span>
+                </div>
+                <div class="font-body-sm text-secondary text-xs mt-0.5 font-medium">Lead: Tanvi Patil (BE IT) • 4 Members • Track: Autonomous Robotics & Drones</div>
+                <div class="font-body-sm text-on-surface-variant text-xs mt-1">Proposal: Warehouse Payload Delivery Robotics with LiDAR SLAM</div>
+              </div>
+              <div class="flex items-center gap-1.5 self-start sm:self-auto">
+                <button data-action="allot-lab" data-team="RoboVanguard" class="px-3 py-1.5 rounded-lg bg-primary text-on-primary text-xs font-bold hover:bg-primary-container shadow-sm flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[14px]">check</span> Allot Lab 4
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar Panel: Flagship Events & Societies Roster (5 cols) -->
+        <div class="lg:col-span-5 space-y-space-lg">
+          <!-- Live Flagship Events Calendar Card -->
+          <div class="bg-surface-container-lowest rounded-xl shadow-sm p-space-md">
+            <div class="flex items-center justify-between pb-space-sm border-b border-surface-container">
+              <div>
+                <span class="font-label-caps text-label-caps text-primary uppercase font-bold tracking-wider">Academic Calendar</span>
+                <h3 class="font-headline-sm text-headline-sm font-bold text-on-surface mt-0.5">Flagship Conclaves</h3>
+              </div>
+              <a href="events.html" class="text-xs text-primary font-bold hover:underline">Events Hub →</a>
+            </div>
+            <div class="mt-space-md space-y-space-sm">
+              <div class="p-space-sm rounded-xl bg-surface-container-low flex items-center justify-between">
+                <div>
+                  <div class="font-label-md font-bold text-on-surface">MET TechFest 2026</div>
+                  <div class="text-xs text-secondary">18–20 Oct 2026 • 840 Registered</div>
+                </div>
+                <span class="px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed text-[11px] font-bold">Live Portal</span>
+              </div>
+              <div class="p-space-sm rounded-xl bg-surface-container-low flex items-center justify-between">
+                <div>
+                  <div class="font-label-md font-bold text-on-surface">24-Hour Sprint Hackathon</div>
+                  <div class="text-xs text-secondary">24 Oct 2026 • Lab 3 & 4</div>
+                </div>
+                <span class="px-2 py-0.5 rounded-full bg-primary-fixed text-primary text-[11px] font-bold">Lab Slotted</span>
+              </div>
+              <div class="p-space-sm rounded-xl bg-surface-container-low flex items-center justify-between">
+                <div>
+                  <div class="font-label-md font-bold text-on-surface">MET RoboWars National</div>
+                  <div class="text-xs text-secondary">29 Oct 2026 • Outdoor Arena</div>
+                </div>
+                <span class="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-fixed text-[11px] font-bold">Arena Prepped</span>
+              </div>
+              <div class="p-space-sm rounded-xl bg-surface-container-low flex items-center justify-between">
+                <div>
+                  <div class="font-label-md font-bold text-on-surface">MET Youth Cultural Conclave</div>
+                  <div class="text-xs text-secondary">02–04 Nov 2026 • Amphitheatre</div>
+                </div>
+                <span class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface text-[11px] font-bold">Stage Draft</span>
+              </div>
+            </div>
+            <button onclick="CampusInn.Toast.success('Schedule synchronized with MET BKC Campus Noticeboard & App Feed.');" class="w-full mt-space-md py-space-xs rounded-lg bg-surface-container-low text-primary font-label-md text-label-md font-bold hover:bg-surface-container transition-colors flex items-center justify-center gap-1">
+              <span class="material-symbols-outlined text-[16px]">sync</span> Broadcast to Student App
+            </button>
+          </div>
+
+          <!-- Student Clubs & Guilds Leadership -->
+          <div class="bg-surface-container-lowest rounded-xl shadow-sm p-space-md">
+            <div class="flex items-center justify-between pb-space-sm border-b border-surface-container">
+              <div>
+                <span class="font-label-caps text-label-caps text-secondary uppercase font-bold tracking-wider">Societies Registry</span>
+                <h3 class="font-headline-sm text-headline-sm font-bold text-on-surface mt-0.5">Campus Guild Leads</h3>
+              </div>
+              <span class="font-label-caps text-xs text-tertiary font-bold">32 Societies</span>
+            </div>
+            <div class="mt-space-md space-y-space-sm">
+              <div class="p-space-sm rounded-xl bg-surface-container-low flex items-center justify-between">
+                <div>
+                  <div class="font-label-md font-bold text-on-surface">MET Robotics & Automation Club</div>
+                  <div class="text-xs text-secondary">Lead: Aniket Gaikwad • 185 Active Volunteers</div>
+                </div>
+                <span class="material-symbols-outlined text-primary text-[20px]">precision_manufacturing</span>
+              </div>
+              <div class="p-space-sm rounded-xl bg-surface-container-low flex items-center justify-between">
+                <div>
+                  <div class="font-label-md font-bold text-on-surface">MET ACM Student Chapter</div>
+                  <div class="text-xs text-secondary">Lead: Priya Sharma • 240 Coders</div>
+                </div>
+                <span class="material-symbols-outlined text-primary text-[20px]">terminal</span>
+              </div>
+              <div class="p-space-sm rounded-xl bg-surface-container-low flex items-center justify-between">
+                <div>
+                  <div class="font-label-md font-bold text-on-surface">MET Cultural & Drama Guild</div>
+                  <div class="text-xs text-secondary">Lead: Karan Patel • 310 Performers</div>
+                </div>
+                <span class="material-symbols-outlined text-primary text-[20px]">theater_comedy</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // 1. Role Guard (Only Coordinator or Admin)
+  if (!CampusInn.Auth.requireAuth(['coordinator', 'admin'])) {
+    return;
+  }
+
+  // 2. Dev Mock Badge
+  const user = CampusInn.Auth.getUser();
+  if (user && user.isMock) {
+    const banner = document.querySelector('.relative.bg-surface-container-lowest h1');
+    if (banner && !document.getElementById('coord-mock-badge')) {
+      const badge = document.createElement('span');
+      badge.id = 'coord-mock-badge';
+      badge.className = 'ci-dev-mock-badge ml-3';
+      badge.innerHTML = '<span class="material-symbols-outlined text-[12px]">science</span> Dev Mock Records';
+      banner.appendChild(badge);
+    }
+  }
+
+  // 3. Event Builder action
+  const launchBtn = document.querySelector('button[onclick*="Launch New Event"]');
+  if (launchBtn) {
+    launchBtn.onclick = null;
+    launchBtn.addEventListener('click', () => {
+      CampusInn.Toast.info('MET TechFest 2026 Event Builder docket initiated. Navigating to Events Hub...');
+      setTimeout(() => { window.location.href = 'events.html'; }, 800);
+    });
+  }
+
+  // 4. Lab Allotment Actions for Hackathon Teams
+  document.querySelectorAll('button[data-action="allot-lab"]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const team = btn.getAttribute('data-team');
+      btn.disabled = true;
+      btn.textContent = 'Allotting...';
+
+      try {
+        if (window.CampusInn.API) {
+          await window.CampusInn.API.coordinator.approveTeam(team);
+        }
+        CampusInn.Toast.success(`Lab 4 workstations and hardware dev kit allotted for Team ${team}!`);
+        btn.parentElement.innerHTML = '<span class="text-xs font-bold text-tertiary px-2 py-1">Lab 4 Allotted ✓</span>';
+        const card = document.querySelector(`[data-team="${team}"]`);
+        if (card) {
+          const badge = card.querySelector('span.rounded-full');
+          if (badge) {
+            badge.className = 'px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed text-[11px] font-bold';
+            badge.textContent = 'Approved';
+          }
+        }
+      } catch (err) {
+        CampusInn.Toast.error(err.message || 'Action failed.');
+        btn.disabled = false;
+        btn.textContent = 'Allot Lab 4';
+      }
+    });
+  });
+});
+</script>
+</body></html>

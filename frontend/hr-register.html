@@ -1,0 +1,730 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><meta content="web_blank" name="shell-type"><title>Campus Inn+ • Company Registration Wizard</title><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=Hanken+Grotesk:ital,wght@0,300..900;1,300..900&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={"darkMode":"class","theme":{"extend":{"colors":{"surface-container-low":"#f2f3ff","error":"#ba1a1a","tertiary-container":"#006544","primary-fixed-dim":"#d3bbff","surface-container":"#eaedff","surface-container-lowest":"#ffffff","primary-container":"#6d28d9","error-container":"#ffdad6","on-tertiary-fixed-variant":"#005236","outline-variant":"#ccc3d7","tertiary":"#004b31","on-primary":"#ffffff","surface-variant":"#dae2fd","inverse-surface":"#283044","surface-tint":"#7331df","primary":"#5300b7","secondary-fixed":"#e4e0f5","on-secondary-fixed":"#1b1a29","on-primary-fixed-variant":"#5b00c5","on-secondary":"#ffffff","on-surface-variant":"#4a4455","surface":"#faf8ff","secondary-fixed-dim":"#c7c4d8","on-error":"#ffffff","tertiary-fixed-dim":"#4edea3","surface-dim":"#d2d9f4","surface-container-highest":"#dae2fd","on-tertiary-container":"#58e7ab","primary-fixed":"#ebddff","on-background":"#131b2e","outline":"#7b7486","inverse-on-surface":"#eef0ff","on-primary-container":"#dac5ff","surface-container-high":"#e2e7ff","on-tertiary":"#ffffff","secondary-container":"#e4e0f5","secondary":"#5e5c6e","tertiary-fixed":"#6ffbbe","on-secondary-container":"#646274","surface-bright":"#faf8ff","inverse-primary":"#d3bbff","on-surface":"#131b2e","on-tertiary-fixed":"#002113","background":"#faf8ff","on-primary-fixed":"#250059","on-secondary-fixed-variant":"#464555","on-error-container":"#93000a"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"gutter-mobile":"1rem","space-sm":"0.5rem","space-md":"1rem","space-xs":"0.25rem","space-lg":"1.5rem","gutter-desktop":"2rem","gutter":"1.5rem","margin-desktop":"3rem","margin":"1.5rem","space-xl":"2.5rem","margin-mobile":"1rem"},"fontFamily":{"label-md":["Hanken Grotesk"],"body-md":["Hanken Grotesk"],"headline-sm":["Bricolage Grotesque"],"body-xl":["Hanken Grotesk"],"label-lg":["Hanken Grotesk"],"headline-xl":["Bricolage Grotesque"],"display-lg-mobile":["Bricolage Grotesque"],"body-sm":["Hanken Grotesk"],"body-lg":["Hanken Grotesk"],"headline-md":["Bricolage Grotesque"],"headline-lg":["Bricolage Grotesque"],"display-lg":["Bricolage Grotesque"],"label-caps":["Hanken Grotesk"],"headline-xl-mobile":["Bricolage Grotesque"]},"fontSize":{"label-md":["0.75rem",{"lineHeight":"1rem","letterSpacing":"0.02em","fontWeight":"600"}],"body-md":["0.875rem",{"lineHeight":"1.375rem","fontWeight":"400"}],"headline-sm":["1.25rem",{"lineHeight":"1.75rem","letterSpacing":"-0.01em","fontWeight":"600"}],"body-xl":["1.125rem",{"lineHeight":"1.75rem","letterSpacing":"-0.005em","fontWeight":"400"}],"label-lg":["0.875rem",{"lineHeight":"1.25rem","letterSpacing":"0.01em","fontWeight":"600"}],"headline-xl":["2.5rem",{"lineHeight":"3rem","letterSpacing":"-0.025em","fontWeight":"700"}],"display-lg-mobile":["2.25rem",{"lineHeight":"2.75rem","letterSpacing":"-0.025em","fontWeight":"800"}],"body-sm":["0.75rem",{"lineHeight":"1.125rem","fontWeight":"400"}],"body-lg":["1rem",{"lineHeight":"1.5rem","fontWeight":"400"}],"headline-md":["1.5rem",{"lineHeight":"2rem","letterSpacing":"-0.015em","fontWeight":"600"}],"headline-lg":["2rem",{"lineHeight":"2.5rem","letterSpacing":"-0.02em","fontWeight":"700"}],"display-lg":["3.5rem",{"lineHeight":"4rem","letterSpacing":"-0.03em","fontWeight":"800"}],"label-caps":["0.6875rem",{"lineHeight":"0.875rem","letterSpacing":"0.06em","fontWeight":"700"}],"headline-xl-mobile":["1.75rem",{"lineHeight":"2.25rem","letterSpacing":"-0.02em","fontWeight":"700"}]}}}};</script><link rel="stylesheet" href="css/theme.css">
+<script src="js/mock-data.js"></script>
+<script src="js/api.js"></script>
+<script src="js/shared.js"></script>
+</head><body class="bg-background font-body-md text-on-surface antialiased"><main class="w-full min-h-screen bg-background flex flex-col justify-start items-center"><div class="flex flex-col w-full">
+<div class="w-full bg-surface-container-lowest shadow-sm px-6 py-4">
+<div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div class="flex items-center gap-4">
+<a data-path="home" href="index.html" class="flex items-center shrink-0" aria-label="Campus Inn+ Home"><img alt="Campus Inn+ Logo" class="h-10 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1Vf7o906NO_q9oQd1FlxYnOheLogJdekuf1OlrltZ2LSvyhi6eGbAULdPdjy44FJ_kCFyc5mWDfS35NKD0RW97rdOVwng8Gpkvh7_XOS_0rnox3QrQzdY-hinoj7EgikfKmi2e_P8b1BXYd2FBqsgV8yBLG3QrQKkmNjuozBaY9pPlLEfDc-A1bsuX9i0QMiuMR0dxIjQk_Jt12AeDrJNjG4dJ1OpZIceBETIMJ-6No10yxND6HfW6yMw"></a>
+<div class="h-8 w-px bg-surface-container"></div>
+<div>
+<span class="font-label-caps text-label-caps text-primary tracking-wider uppercase block">Corporate Recruitment Portal</span>
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold">Company Registration Wizard</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-low text-secondary font-label-md text-label-md">
+<span class="material-symbols-outlined text-sm text-tertiary">lock</span> Session ID: CIN-2026-CORP-WIZARD
+</span>
+<a href="companies.html" class="px-3.5 py-1.5 rounded-lg bg-surface-container text-on-surface font-label-md text-label-md hover:bg-surface-container-high transition-colors">
+  Exit to Companies
+</a>
+</div>
+</div>
+</div>
+
+<!-- Workflow Progress Header (Starts strictly at 0% / Step 1) -->
+<div class="w-full bg-surface-container-low px-4 sm:px-6 py-6 border-b border-outline-variant/30">
+<div class="max-w-7xl mx-auto">
+<div class="flex items-center justify-between mb-4">
+<div>
+<p class="font-label-caps text-label-caps uppercase text-secondary font-bold">Workflow Progress</p>
+<p class="font-headline-sm text-headline-sm text-on-surface font-semibold" id="workflowSubtitle">Stage 1: Recruiter Account & Authorization</p>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-headline-md text-headline-md text-primary font-bold text-2xl" id="wizardProgressPct">0%</span>
+<span class="font-label-md text-label-md text-on-surface-variant font-medium">Complete</span>
+</div>
+</div>
+
+<!-- 5 Progress Step Chips -->
+<div class="grid grid-cols-2 md:grid-cols-5 gap-2 sm:gap-3" id="stepIndicators">
+  <!-- Step 1 Indicator -->
+  <div class="step-chip flex flex-col gap-1.5 p-3 rounded-lg bg-primary-fixed shadow-md border border-primary/30" data-step="1">
+    <div class="flex items-center justify-between">
+      <span class="step-badge w-6 h-6 rounded-full bg-primary text-on-primary flex items-center justify-center font-label-md text-xs font-bold">1</span>
+      <span class="step-tag font-label-caps text-label-caps text-primary font-bold">CURRENT</span>
+    </div>
+    <span class="font-label-md text-label-md text-on-surface font-medium truncate">1. Account Info</span>
+    <div class="step-bar w-full bg-primary h-1 rounded-full"></div>
+  </div>
+
+  <!-- Step 2 Indicator -->
+  <div class="step-chip flex flex-col gap-1.5 p-3 rounded-lg bg-surface-container-lowest opacity-75 shadow-sm" data-step="2">
+    <div class="flex items-center justify-between">
+      <span class="step-badge w-6 h-6 rounded-full bg-surface-container-high text-secondary flex items-center justify-center font-label-md text-xs font-bold">2</span>
+      <span class="step-tag font-label-caps text-label-caps text-secondary font-medium">NEXT</span>
+    </div>
+    <span class="font-label-md text-label-md text-on-surface font-medium truncate">2. Company Info</span>
+    <div class="step-bar w-full bg-surface-container-high h-1 rounded-full"></div>
+  </div>
+
+  <!-- Step 3 Indicator -->
+  <div class="step-chip flex flex-col gap-1.5 p-3 rounded-lg bg-surface-container-lowest opacity-75 shadow-sm" data-step="3">
+    <div class="flex items-center justify-between">
+      <span class="step-badge w-6 h-6 rounded-full bg-surface-container-high text-secondary flex items-center justify-center font-label-md text-xs font-bold">3</span>
+      <span class="step-tag font-label-caps text-label-caps text-secondary font-medium">UPCOMING</span>
+    </div>
+    <span class="font-label-md text-label-md text-on-surface font-medium truncate">3. Verification</span>
+    <div class="step-bar w-full bg-surface-container-high h-1 rounded-full"></div>
+  </div>
+
+  <!-- Step 4 Indicator -->
+  <div class="step-chip flex flex-col gap-1.5 p-3 rounded-lg bg-surface-container-lowest opacity-75 shadow-sm" data-step="4">
+    <div class="flex items-center justify-between">
+      <span class="step-badge w-6 h-6 rounded-full bg-surface-container-high text-secondary flex items-center justify-center font-label-md text-xs font-bold">4</span>
+      <span class="step-tag font-label-caps text-label-caps text-secondary font-medium">UPCOMING</span>
+    </div>
+    <span class="font-label-md text-label-md text-on-surface font-medium truncate">4. Campus Match</span>
+    <div class="step-bar w-full bg-surface-container-high h-1 rounded-full"></div>
+  </div>
+
+  <!-- Step 5 Indicator -->
+  <div class="step-chip flex flex-col gap-1.5 p-3 rounded-lg bg-surface-container-lowest opacity-75 shadow-sm" data-step="5">
+    <div class="flex items-center justify-between">
+      <span class="step-badge w-6 h-6 rounded-full bg-surface-container-high text-secondary flex items-center justify-center font-label-md text-xs font-bold">5</span>
+      <span class="step-tag font-label-caps text-label-caps text-secondary font-medium">FINAL</span>
+    </div>
+    <span class="font-label-md text-label-md text-on-surface font-medium truncate">5. Review & Submit</span>
+    <div class="step-bar w-full bg-surface-container-high h-1 rounded-full"></div>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- Main Wizard Form Area -->
+<div class="w-full px-4 sm:px-6 py-8">
+<div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<div class="lg:col-span-8 flex flex-col gap-6">
+
+<!-- STEP 1: ACCOUNT INFORMATION -->
+<div id="stepContainer1" class="wizard-step-panel bg-surface-container-lowest rounded-xl p-6 md:p-8 shadow-sm">
+  <div class="pb-6 border-b border-surface-container">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-fixed text-primary font-label-caps text-label-caps font-bold mb-2">
+      <span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+      STAGE 1 OF 5
+    </div>
+    <h1 class="font-headline-lg text-headline-lg text-on-surface">Recruiter Account Information</h1>
+    <p class="font-body-lg text-body-lg text-on-surface-variant mt-1">
+      Create your authorized enterprise recruiter account. Official credentials are required to post campus placement drives and access student rosters.
+    </p>
+  </div>
+
+  <form id="formStep1" class="flex flex-col gap-5 mt-6" onsubmit="event.preventDefault();">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label class="block font-label-md text-label-md text-on-surface font-semibold mb-1">Recruiter Full Name *</label>
+        <input id="recruiterName" type="text" class="w-full px-4 py-3 bg-surface-container-low rounded-lg font-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20" placeholder="e.g. Rajesh Khurana" required>
+      </div>
+      <div>
+        <label class="block font-label-md text-label-md text-on-surface font-semibold mb-1">Official Work Email *</label>
+        <input id="recruiterEmail" type="email" class="w-full px-4 py-3 bg-surface-container-low rounded-lg font-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20" placeholder="e.g. rajesh.k@tcs.com" required>
+        <p class="text-xs text-secondary mt-1">Please use corporate email for institutional verification</p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label class="block font-label-md text-label-md text-on-surface font-semibold mb-1">Corporate Designation *</label>
+        <input id="recruiterTitle" type="text" class="w-full px-4 py-3 bg-surface-container-low rounded-lg font-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20" placeholder="e.g. Lead Campus Talent Acquisition" required>
+      </div>
+      <div>
+        <label class="block font-label-md text-label-md text-on-surface font-semibold mb-1">Official Contact Phone *</label>
+        <input id="recruiterPhone" type="tel" class="w-full px-4 py-3 bg-surface-container-low rounded-lg font-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20" placeholder="e.g. +91 98230 45678" required>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label class="block font-label-md text-label-md text-on-surface font-semibold mb-1">Password *</label>
+        <input id="recruiterPassword" type="password" class="w-full px-4 py-3 bg-surface-container-low rounded-lg font-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20" placeholder="Min. 8 characters" required>
+      </div>
+      <div>
+        <label class="block font-label-md text-label-md text-on-surface font-semibold mb-1">Confirm Password *</label>
+        <input id="recruiterPasswordConfirm" type="password" class="w-full px-4 py-3 bg-surface-container-low rounded-lg font-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20" placeholder="Re-enter password" required>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-end gap-3 pt-6 border-t border-surface-container">
+      <button type="button" id="btnNext1" class="px-7 py-3 rounded-lg bg-primary text-on-primary font-label-lg font-bold hover:bg-primary-container transition-all flex items-center gap-2 shadow-md">
+        Next: Company Info (Step 2)
+        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- STEP 2: COMPANY INFORMATION -->
+<div id="stepContainer2" class="wizard-step-panel bg-surface-container-lowest rounded-xl p-6 md:p-8 shadow-sm hidden">
+  <div class="pb-6 border-b border-surface-container">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-fixed text-primary font-label-caps text-label-caps font-bold mb-2">
+      STAGE 2 OF 5
+    </div>
+    <h1 class="font-headline-lg text-headline-lg text-on-surface">Corporate Entity Information</h1>
+    <p class="font-body-lg text-body-lg text-on-surface-variant mt-1">
+      Provide organizational profile details. This information will appear on campus placement job profiles and the partner directory.
+    </p>
+  </div>
+
+  <form id="formStep2" class="flex flex-col gap-5 mt-6" onsubmit="event.preventDefault();">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label class="block font-label-md text-label-md text-on-surface font-semibold mb-1">Company Legal Name *</label>
+        <input id="companyName" type="text" class="w-full px-4 py-3 bg-surface-container-low rounded-lg font-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20" placeholder="e.g. Tata Consultancy Services Ltd." required>
+      </div>
+      <div>
+        <label class="block font-label-md text-label-md text-on-surface font-semibold mb-1">Corporate Website *</label>
+        <input id="companyWebsite" type="url" class="w-full px-4 py-3 bg-surface-container-low rounded-lg font-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20" placeholder="https://www.tcs.com" required>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label class="block font-label-md text-label-md text-on-surface font-semibold mb-1">Industry Domain *</label>
+        <select id="companyIndustry" class="w-full px-4 py-3 bg-surface-container-low rounded-lg font-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer">
+          <option value="IT Services & Consulting">IT Services & Consulting</option>
+          <option value="Software Product & SaaS">Software Product & SaaS</option>
+          <option value="Banking, Financial Services & Insurance (BFSI)">BFSI & Fintech</option>
+          <option value="Engineering & Manufacturing">Engineering & Manufacturing</option>
+          <option value="Pharmaceuticals & Healthcare">Pharmaceuticals & Healthcare</option>
+          <option value="Core Engineering / Automation">Core Engineering / Automation</option>
+        </select>
+      </div>
+      <div>
+        <label class="block font-label-md text-label-md text-on-surface font-semibold mb-1">Global Employee Headcount *</label>
+        <select id="companySize" class="w-full px-4 py-3 bg-surface-container-low rounded-lg font-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer">
+          <option value="1-50 (Seed / Early Stage)">1-50 (Startup)</option>
+          <option value="51-500 (Scaleup / Mid-Market)">51-500 (Scaleup)</option>
+          <option value="501-5000 (Large Enterprise)">501-5,000 (Large Enterprise)</option>
+          <option value="5000+ (Multinational Corporation)" selected>5,000+ (MNC)</option>
+        </select>
+      </div>
+    </div>
+
+    <div>
+      <label class="block font-label-md text-label-md text-on-surface font-semibold mb-1">Headquarters / Regional Office Location *</label>
+      <input id="companyLocation" type="text" class="w-full px-4 py-3 bg-surface-container-low rounded-lg font-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20" placeholder="e.g. Mumbai / Pune, Maharashtra" required>
+    </div>
+
+    <div>
+      <label class="block font-label-md text-label-md text-on-surface font-semibold mb-1">Company Description & Mission</label>
+      <textarea id="companyDescription" rows="3" class="w-full px-4 py-3 bg-surface-container-low rounded-lg font-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20" placeholder="Brief outline of company focus, core engineering stacks, and campus hiring goals..."></textarea>
+    </div>
+
+    <div class="flex items-center justify-between gap-3 pt-6 border-t border-surface-container">
+      <button type="button" id="btnBack2" class="px-6 py-3 rounded-lg bg-surface-container text-on-surface font-label-lg font-semibold hover:bg-surface-container-high transition-all flex items-center gap-2">
+        <span class="material-symbols-outlined text-sm">arrow_back</span> Back
+      </button>
+      <button type="button" id="btnNext2" class="px-7 py-3 rounded-lg bg-primary text-on-primary font-label-lg font-bold hover:bg-primary-container transition-all flex items-center gap-2 shadow-md">
+        Next: Verification (Step 3)
+        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- STEP 3: VERIFICATION -->
+<div id="stepContainer3" class="wizard-step-panel bg-surface-container-lowest rounded-xl p-6 md:p-8 shadow-sm hidden">
+  <div class="pb-6 border-b border-surface-container">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-fixed text-primary font-label-caps text-label-caps font-bold mb-2">
+      STAGE 3 OF 5
+    </div>
+    <h1 class="font-headline-lg text-headline-lg text-on-surface">Corporate Verification & Accreditation</h1>
+    <p class="font-body-lg text-body-lg text-on-surface-variant mt-1">
+      Institutional placement cells verify corporate entities to protect students from unaccredited drives. Please provide statutory registration details.
+    </p>
+  </div>
+
+  <form id="formStep3" class="flex flex-col gap-5 mt-6" onsubmit="event.preventDefault();">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label class="block font-label-md text-label-md text-on-surface font-semibold mb-1">MCA Corporate Identification Number (CIN) / Registration ID *</label>
+        <input id="companyCin" type="text" class="w-full px-4 py-3 bg-surface-container-low rounded-lg font-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20" placeholder="e.g. L22210MH1995PLC084781" required>
+      </div>
+      <div>
+        <label class="block font-label-md text-label-md text-on-surface font-semibold mb-1">Authorized Liaison Representative Name *</label>
+        <input id="authorizedRep" type="text" class="w-full px-4 py-3 bg-surface-container-low rounded-lg font-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20" placeholder="e.g. Dr. Alok Mehta, VP Human Resources" required>
+      </div>
+    </div>
+
+    <div class="p-4 rounded-xl bg-surface-container-low border border-outline-variant/30 flex items-start gap-3">
+      <span class="material-symbols-outlined text-primary text-2xl shrink-0 mt-0.5">verified_user</span>
+      <div>
+        <h4 class="font-headline-sm text-base font-bold text-on-surface">Corporate Governance & Safety Guarantee</h4>
+        <p class="font-body-sm text-on-surface-variant mt-1">
+          By submitting this registration, you certify that all recruitment communications, assessment tests, and campus interviews comply with MET Bhujbal Knowledge City TPO fair-practice guidelines and AICTE hiring mandates.
+        </p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <input type="checkbox" id="checkCompliance" class="w-4 h-4 accent-primary rounded cursor-pointer" checked required>
+      <label for="checkCompliance" class="font-body-sm text-on-surface font-medium cursor-pointer">
+        I acknowledge and affirm authorization to initiate campus hiring on behalf of this corporate entity.
+      </label>
+    </div>
+
+    <div class="flex items-center justify-between gap-3 pt-6 border-t border-surface-container">
+      <button type="button" id="btnBack3" class="px-6 py-3 rounded-lg bg-surface-container text-on-surface font-label-lg font-semibold hover:bg-surface-container-high transition-all flex items-center gap-2">
+        <span class="material-symbols-outlined text-sm">arrow_back</span> Back
+      </button>
+      <button type="button" id="btnNext3" class="px-7 py-3 rounded-lg bg-primary text-on-primary font-label-lg font-bold hover:bg-primary-container transition-all flex items-center gap-2 shadow-md">
+        Next: Campus Preferences (Step 4)
+        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- STEP 4: CAMPUS RECRUITMENT PREFERENCES -->
+<div id="stepContainer4" class="wizard-step-panel bg-surface-container-lowest rounded-xl p-6 md:p-8 shadow-sm hidden">
+  <div class="pb-6 border-b border-surface-container">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-fixed text-primary font-label-caps text-label-caps font-bold mb-2">
+      STAGE 4 OF 5
+    </div>
+    <h1 class="font-headline-lg text-headline-lg text-on-surface">Campus Match & Recruitment Preferences</h1>
+    <p class="font-body-lg text-body-lg text-on-surface-variant mt-1">
+      Define target student profiles, departments, and drive format to filter candidate pipelines.
+    </p>
+  </div>
+
+  <form id="formStep4" class="flex flex-col gap-6 mt-6" onsubmit="event.preventDefault();">
+    <div>
+      <label class="block font-label-md text-label-md text-on-surface font-semibold mb-2">Preferred Job Roles & Domains (Multi-Select)</label>
+      <div class="flex flex-wrap gap-2" id="jobRoleChips">
+        <button type="button" class="job-chip px-4 py-2 rounded-full bg-primary text-on-primary font-label-md font-bold shadow-sm flex items-center gap-1.5" data-role="Software Engineer">
+          <span>Software Engineer</span><span class="material-symbols-outlined text-sm">check</span>
+        </button>
+        <button type="button" class="job-chip px-4 py-2 rounded-full bg-primary text-on-primary font-label-md font-bold shadow-sm flex items-center gap-1.5" data-role="Full Stack Web">
+          <span>Full Stack Web</span><span class="material-symbols-outlined text-sm">check</span>
+        </button>
+        <button type="button" class="job-chip px-4 py-2 rounded-full bg-surface-container-low text-on-surface font-label-md font-medium hover:bg-surface-container flex items-center gap-1.5" data-role="Data Analyst / ML">
+          <span>Data Analyst / ML</span><span class="material-symbols-outlined text-sm opacity-50">add</span>
+        </button>
+        <button type="button" class="job-chip px-4 py-2 rounded-full bg-surface-container-low text-on-surface font-label-md font-medium hover:bg-surface-container flex items-center gap-1.5" data-role="Cloud Associate">
+          <span>Cloud Associate</span><span class="material-symbols-outlined text-sm opacity-50">add</span>
+        </button>
+        <button type="button" class="job-chip px-4 py-2 rounded-full bg-surface-container-low text-on-surface font-label-md font-medium hover:bg-surface-container flex items-center gap-1.5" data-role="DevOps Engineer">
+          <span>DevOps Engineer</span><span class="material-symbols-outlined text-sm opacity-50">add</span>
+        </button>
+      </div>
+    </div>
+
+    <div>
+      <label class="block font-label-md text-label-md text-on-surface font-semibold mb-2">Target Academic Departments</label>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+        <label class="flex items-center gap-2.5 p-3 rounded-lg bg-surface-container-low cursor-pointer">
+          <input type="checkbox" checked class="dept-check w-4 h-4 accent-primary rounded">
+          <span class="text-body-sm font-medium">Computer Science & Engg</span>
+        </label>
+        <label class="flex items-center gap-2.5 p-3 rounded-lg bg-surface-container-low cursor-pointer">
+          <input type="checkbox" checked class="dept-check w-4 h-4 accent-primary rounded">
+          <span class="text-body-sm font-medium">Information Technology</span>
+        </label>
+        <label class="flex items-center gap-2.5 p-3 rounded-lg bg-surface-container-low cursor-pointer">
+          <input type="checkbox" checked class="dept-check w-4 h-4 accent-primary rounded">
+          <span class="text-body-sm font-medium">AI & Data Science</span>
+        </label>
+        <label class="flex items-center gap-2.5 p-3 rounded-lg bg-surface-container-low cursor-pointer">
+          <input type="checkbox" class="dept-check w-4 h-4 accent-primary rounded">
+          <span class="text-body-sm font-medium">Electronics & Telecom (E&TC)</span>
+        </label>
+        <label class="flex items-center gap-2.5 p-3 rounded-lg bg-surface-container-low cursor-pointer">
+          <input type="checkbox" class="dept-check w-4 h-4 accent-primary rounded">
+          <span class="text-body-sm font-medium">Mechanical Engineering</span>
+        </label>
+        <label class="flex items-center gap-2.5 p-3 rounded-lg bg-surface-container-low cursor-pointer">
+          <input type="checkbox" class="dept-check w-4 h-4 accent-primary rounded">
+          <span class="text-body-sm font-medium">Management (MBA)</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label class="block font-label-md text-label-md text-on-surface font-semibold mb-1">Expected Intake Volume</label>
+        <select id="intakeVolume" class="w-full px-4 py-3 bg-surface-container-low rounded-lg font-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20">
+          <option value="1-5">1 - 5 hires (Specialized)</option>
+          <option value="5-15" selected>5 - 15 hires</option>
+          <option value="15-30">15 - 30 hires (Cohort)</option>
+          <option value="30+">30+ Mass Hiring</option>
+        </select>
+      </div>
+      <div>
+        <label class="block font-label-md text-label-md text-on-surface font-semibold mb-1">Assessment Architecture</label>
+        <select id="driveMode" class="w-full px-4 py-3 bg-surface-container-low rounded-lg font-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20">
+          <option value="Hybrid Execution" selected>Hybrid (Online Tests + On-Campus Interviews)</option>
+          <option value="Virtual Drive">Fully Virtual / Remote</option>
+          <option value="On-Campus Drive">Full On-Campus Auditorium Drive</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-between gap-3 pt-6 border-t border-surface-container">
+      <button type="button" id="btnBack4" class="px-6 py-3 rounded-lg bg-surface-container text-on-surface font-label-lg font-semibold hover:bg-surface-container-high transition-all flex items-center gap-2">
+        <span class="material-symbols-outlined text-sm">arrow_back</span> Back
+      </button>
+      <button type="button" id="btnNext4" class="px-7 py-3 rounded-lg bg-primary text-on-primary font-label-lg font-bold hover:bg-primary-container transition-all flex items-center gap-2 shadow-md">
+        Review & Submit (Step 5)
+        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- STEP 5: REVIEW & FINAL SUBMIT -->
+<div id="stepContainer5" class="wizard-step-panel bg-surface-container-lowest rounded-xl p-6 md:p-8 shadow-sm hidden">
+  <div class="pb-6 border-b border-surface-container">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-tertiary-container text-on-tertiary-container font-label-caps text-label-caps font-bold mb-2">
+      FINAL REVIEW
+    </div>
+    <h1 class="font-headline-lg text-headline-lg text-on-surface">Confirm Corporate Registration</h1>
+    <p class="font-body-lg text-body-lg text-on-surface-variant mt-1">
+      Please verify your entered details before dispatching to the Central Training & Placement Office (TPO).
+    </p>
+  </div>
+
+  <div class="space-y-4 my-6">
+    <div class="p-4 rounded-xl bg-surface-container-low border border-outline-variant/30">
+      <h3 class="font-label-caps uppercase text-secondary font-bold mb-2">Recruiter & Account Summary</h3>
+      <div class="grid grid-cols-2 gap-2 text-body-sm">
+        <div><span class="text-secondary">Name:</span> <strong id="summaryRecruiterName">-</strong></div>
+        <div><span class="text-secondary">Email:</span> <strong id="summaryRecruiterEmail">-</strong></div>
+        <div><span class="text-secondary">Title:</span> <strong id="summaryRecruiterTitle">-</strong></div>
+        <div><span class="text-secondary">Phone:</span> <strong id="summaryRecruiterPhone">-</strong></div>
+      </div>
+    </div>
+
+    <div class="p-4 rounded-xl bg-surface-container-low border border-outline-variant/30">
+      <h3 class="font-label-caps uppercase text-secondary font-bold mb-2">Company Information</h3>
+      <div class="grid grid-cols-2 gap-2 text-body-sm">
+        <div><span class="text-secondary">Company:</span> <strong id="summaryCompanyName">-</strong></div>
+        <div><span class="text-secondary">Website:</span> <strong id="summaryCompanyWebsite">-</strong></div>
+        <div><span class="text-secondary">Industry:</span> <strong id="summaryCompanyIndustry">-</strong></div>
+        <div><span class="text-secondary">Scale:</span> <strong id="summaryCompanySize">-</strong></div>
+        <div class="col-span-2"><span class="text-secondary">CIN:</span> <strong id="summaryCompanyCin">-</strong></div>
+      </div>
+    </div>
+
+    <div class="p-4 rounded-xl bg-primary-fixed/30 border border-primary/20">
+      <div class="flex items-center gap-2 text-primary font-bold text-sm mb-1">
+        <span class="material-symbols-outlined text-lg">info</span>
+        Next Steps Post-Submission
+      </div>
+      <p class="text-xs text-on-surface-variant leading-relaxed">
+        Upon submission, the TPO Office (MET BKC) conducts MCA domain verification. You will be redirected to the Hiring Builder where you can configure JD compensation grids and drive rounds.
+      </p>
+    </div>
+  </div>
+
+  <div class="flex items-center justify-between gap-3 pt-6 border-t border-surface-container">
+    <button type="button" id="btnBack5" class="px-6 py-3 rounded-lg bg-surface-container text-on-surface font-label-lg font-semibold hover:bg-surface-container-high transition-all flex items-center gap-2">
+      <span class="material-symbols-outlined text-sm">arrow_back</span> Back
+    </button>
+    <button type="button" id="btnSubmitFinal" class="px-8 py-3 rounded-lg bg-primary text-on-primary font-label-lg font-bold hover:bg-primary-container transition-all flex items-center gap-2 shadow-md">
+      <span class="material-symbols-outlined text-sm">send</span>
+      Submit Registration to TPO Office
+    </button>
+  </div>
+</div>
+
+</div>
+
+<!-- Right Side Info Panel -->
+<div class="lg:col-span-4 flex flex-col gap-6">
+  <div class="bg-surface-container-lowest rounded-xl p-6 shadow-sm">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="w-10 h-10 rounded-xl bg-primary-fixed text-primary flex items-center justify-center font-bold">
+        <span class="material-symbols-outlined text-xl">corporate_fare</span>
+      </div>
+      <div>
+        <h3 class="font-headline-sm text-base font-bold text-on-surface">MET Campus Placement Cell</h3>
+        <p class="font-body-sm text-secondary">Accredited Partner Onboarding</p>
+      </div>
+    </div>
+    <ul class="space-y-3 text-body-sm">
+      <li class="flex items-start gap-2">
+        <span class="material-symbols-outlined text-primary text-lg mt-0.5">check_circle</span>
+        <span>Access over 4,120 verified B.Tech, M.Tech, MCA & MBA candidate profiles</span>
+      </li>
+      <li class="flex items-start gap-2">
+        <span class="material-symbols-outlined text-primary text-lg mt-0.5">check_circle</span>
+        <span>Dedicated campus interview boardrooms & high-speed coding testing labs</span>
+      </li>
+      <li class="flex items-start gap-2">
+        <span class="material-symbols-outlined text-primary text-lg mt-0.5">check_circle</span>
+        <span>Direct coordination with Head of Training & Placement Dr. P. Sharma</span>
+      </li>
+    </ul>
+  </div>
+
+  <div class="bg-surface-container-lowest rounded-xl p-6 shadow-sm flex items-center gap-4">
+    <div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center shrink-0">
+      <span class="material-symbols-outlined text-primary text-2xl">support_agent</span>
+    </div>
+    <div>
+      <p class="font-label-lg text-label-lg text-on-surface font-semibold">TPO Help Desk</p>
+      <p class="font-body-sm text-secondary">+91 253 230 3515 • Nashik</p>
+      <a href="about.html#contact" class="font-body-sm text-primary font-medium hover:underline">Contact Placement Officer</a>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+</div></main>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // Wizard State - STRICTLY STARTS AT STEP 1 (0%)
+  let currentStep = 1;
+  const totalSteps = 5;
+
+  const pctDisplay = document.getElementById('wizardProgressPct');
+  const subtitle = document.getElementById('workflowSubtitle');
+  const stepChips = document.querySelectorAll('.step-chip');
+
+  const subtitles = {
+    1: 'Stage 1: Recruiter Account & Authorization',
+    2: 'Stage 2: Corporate Entity Profile',
+    3: 'Stage 3: Corporate Verification & Accreditation',
+    4: 'Stage 4: Campus Match & Preferences',
+    5: 'Stage 5: Review & Final Submission'
+  };
+
+  const progressPercentages = {
+    1: '0%',
+    2: '25%',
+    3: '50%',
+    4: '75%',
+    5: '100%'
+  };
+
+  function updateWizardUI() {
+    // Hide all step panels
+    for (let i = 1; i <= totalSteps; i++) {
+      const panel = document.getElementById(`stepContainer${i}`);
+      if (panel) {
+        if (i === currentStep) {
+          panel.classList.remove('hidden');
+        } else {
+          panel.classList.add('hidden');
+        }
+      }
+    }
+
+    // Update Percentage & Subtitle
+    if (pctDisplay) pctDisplay.textContent = progressPercentages[currentStep] || '0%';
+    if (subtitle) subtitle.textContent = subtitles[currentStep] || '';
+
+    // Update Step Indicators
+    stepChips.forEach(chip => {
+      const stepNum = parseInt(chip.dataset.step, 10);
+      const badge = chip.querySelector('.step-badge');
+      const tag = chip.querySelector('.step-tag');
+      const bar = chip.querySelector('.step-bar');
+
+      if (stepNum < currentStep) {
+        // Completed step
+        chip.className = 'step-chip flex flex-col gap-1.5 p-3 rounded-lg bg-surface-container-lowest shadow-sm';
+        if (badge) {
+          badge.className = 'step-badge w-6 h-6 rounded-full bg-tertiary text-on-tertiary flex items-center justify-center font-label-md text-xs font-bold';
+          badge.innerHTML = '<span class="material-symbols-outlined text-sm font-bold">check</span>';
+        }
+        if (tag) {
+          tag.className = 'step-tag font-label-caps text-label-caps text-tertiary font-bold';
+          tag.textContent = 'VERIFIED';
+        }
+        if (bar) bar.className = 'step-bar w-full bg-tertiary h-1 rounded-full';
+      } else if (stepNum === currentStep) {
+        // Current step
+        chip.className = 'step-chip flex flex-col gap-1.5 p-3 rounded-lg bg-primary-fixed shadow-md border border-primary/30';
+        if (badge) {
+          badge.className = 'step-badge w-6 h-6 rounded-full bg-primary text-on-primary flex items-center justify-center font-label-md text-xs font-bold';
+          badge.textContent = stepNum;
+        }
+        if (tag) {
+          tag.className = 'step-tag font-label-caps text-label-caps text-primary font-bold animate-pulse';
+          tag.textContent = 'CURRENT';
+        }
+        if (bar) bar.className = 'step-bar w-full bg-primary h-1 rounded-full';
+      } else {
+        // Upcoming step
+        chip.className = 'step-chip flex flex-col gap-1.5 p-3 rounded-lg bg-surface-container-lowest opacity-75 shadow-sm';
+        if (badge) {
+          badge.className = 'step-badge w-6 h-6 rounded-full bg-surface-container-high text-secondary flex items-center justify-center font-label-md text-xs font-bold';
+          badge.textContent = stepNum;
+        }
+        if (tag) {
+          tag.className = 'step-tag font-label-caps text-label-caps text-secondary font-medium';
+          tag.textContent = stepNum === 5 ? 'FINAL' : 'NEXT';
+        }
+        if (bar) bar.className = 'step-bar w-full bg-surface-container-high h-1 rounded-full';
+      }
+    });
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Interactive Job Role Chips
+  const chipContainer = document.getElementById('jobRoleChips');
+  if (chipContainer) {
+    chipContainer.addEventListener('click', (e) => {
+      const btn = e.target.closest('.job-chip');
+      if (!btn) return;
+      const icon = btn.querySelector('.material-symbols-outlined');
+      const isSelected = btn.classList.contains('bg-primary');
+      if (isSelected) {
+        btn.classList.remove('bg-primary', 'text-on-primary', 'shadow-sm');
+        btn.classList.add('bg-surface-container-low', 'text-on-surface');
+        if (icon) {
+          icon.textContent = 'add';
+          icon.classList.add('opacity-50');
+        }
+      } else {
+        btn.classList.remove('bg-surface-container-low', 'text-on-surface');
+        btn.classList.add('bg-primary', 'text-on-primary', 'shadow-sm');
+        if (icon) {
+          icon.textContent = 'check';
+          icon.classList.remove('opacity-50');
+        }
+      }
+    });
+  }
+
+  // STEP 1 VALIDATION & PROCEED
+  document.getElementById('btnNext1')?.addEventListener('click', () => {
+    const name = document.getElementById('recruiterName')?.value.trim();
+    const email = document.getElementById('recruiterEmail')?.value.trim();
+    const title = document.getElementById('recruiterTitle')?.value.trim();
+    const phone = document.getElementById('recruiterPhone')?.value.trim();
+    const pass = document.getElementById('recruiterPassword')?.value;
+    const confirm = document.getElementById('recruiterPasswordConfirm')?.value;
+
+    if (!name || !email || !title || !phone || !pass) {
+      CampusInn.Toast.error('Please fill in all required recruiter account details.');
+      return;
+    }
+    if (pass.length < 8) {
+      CampusInn.Toast.error('Password must be at least 8 characters.');
+      return;
+    }
+    if (pass !== confirm) {
+      CampusInn.Toast.error('Passwords do not match.');
+      return;
+    }
+
+    currentStep = 2;
+    updateWizardUI();
+  });
+
+  // STEP 2 VALIDATION & PROCEED
+  document.getElementById('btnBack2')?.addEventListener('click', () => {
+    currentStep = 1;
+    updateWizardUI();
+  });
+
+  document.getElementById('btnNext2')?.addEventListener('click', () => {
+    const compName = document.getElementById('companyName')?.value.trim();
+    const website = document.getElementById('companyWebsite')?.value.trim();
+    const location = document.getElementById('companyLocation')?.value.trim();
+
+    if (!compName || !website || !location) {
+      CampusInn.Toast.error('Please complete company name, website, and office location.');
+      return;
+    }
+
+    currentStep = 3;
+    updateWizardUI();
+  });
+
+  // STEP 3 VALIDATION & PROCEED
+  document.getElementById('btnBack3')?.addEventListener('click', () => {
+    currentStep = 2;
+    updateWizardUI();
+  });
+
+  document.getElementById('btnNext3')?.addEventListener('click', () => {
+    const cin = document.getElementById('companyCin')?.value.trim();
+    const rep = document.getElementById('authorizedRep')?.value.trim();
+    const check = document.getElementById('checkCompliance')?.checked;
+
+    if (!cin || !rep) {
+      CampusInn.Toast.error('Please enter Corporate Identification Number (CIN) and authorized liaison representative.');
+      return;
+    }
+    if (!check) {
+      CampusInn.Toast.error('Please accept the campus fair practice governance acknowledgement.');
+      return;
+    }
+
+    currentStep = 4;
+    updateWizardUI();
+  });
+
+  // STEP 4 VALIDATION & PROCEED
+  document.getElementById('btnBack4')?.addEventListener('click', () => {
+    currentStep = 3;
+    updateWizardUI();
+  });
+
+  document.getElementById('btnNext4')?.addEventListener('click', () => {
+    // Populate summary for Step 5
+    document.getElementById('summaryRecruiterName').textContent = document.getElementById('recruiterName')?.value || '-';
+    document.getElementById('summaryRecruiterEmail').textContent = document.getElementById('recruiterEmail')?.value || '-';
+    document.getElementById('summaryRecruiterTitle').textContent = document.getElementById('recruiterTitle')?.value || '-';
+    document.getElementById('summaryRecruiterPhone').textContent = document.getElementById('recruiterPhone')?.value || '-';
+
+    document.getElementById('summaryCompanyName').textContent = document.getElementById('companyName')?.value || '-';
+    document.getElementById('summaryCompanyWebsite').textContent = document.getElementById('companyWebsite')?.value || '-';
+    document.getElementById('summaryCompanyIndustry').textContent = document.getElementById('companyIndustry')?.value || '-';
+    document.getElementById('summaryCompanySize').textContent = document.getElementById('companySize')?.value || '-';
+    document.getElementById('summaryCompanyCin').textContent = document.getElementById('companyCin')?.value || '-';
+
+    currentStep = 5;
+    updateWizardUI();
+  });
+
+  // STEP 5 BACK & FINAL SUBMISSION
+  document.getElementById('btnBack5')?.addEventListener('click', () => {
+    currentStep = 4;
+    updateWizardUI();
+  });
+
+  document.getElementById('btnSubmitFinal')?.addEventListener('click', async () => {
+    const btn = document.getElementById('btnSubmitFinal');
+    btn.disabled = true;
+    btn.textContent = 'Submitting to TPO Office...';
+
+    const payload = {
+      recruiterName: document.getElementById('recruiterName')?.value.trim(),
+      recruiterEmail: document.getElementById('recruiterEmail')?.value.trim(),
+      companyName: document.getElementById('companyName')?.value.trim(),
+      website: document.getElementById('companyWebsite')?.value.trim(),
+      industry: document.getElementById('companyIndustry')?.value,
+      cin: document.getElementById('companyCin')?.value.trim(),
+      intake: document.getElementById('intakeVolume')?.value,
+      driveMode: document.getElementById('driveMode')?.value
+    };
+
+    try {
+      if (window.CampusInnAPI && window.CampusInnAPI.recruiter) {
+        await window.CampusInnAPI.recruiter.registerCompany(payload);
+      }
+      CampusInn.Toast.success(`Registration successfully submitted for ${payload.companyName}! Assigned to TPO accreditation desk.`);
+      setTimeout(() => {
+        window.location.href = 'hiring-builder.html';
+      }, 1200);
+    } catch (err) {
+      CampusInn.Toast.error(err.message || 'Submission failed. Please check your connection.');
+      btn.disabled = false;
+      btn.textContent = 'Submit Registration to TPO Office';
+    }
+  });
+
+  // Initialize UI at step 1
+  updateWizardUI();
+});
+</script>
+</body></html>

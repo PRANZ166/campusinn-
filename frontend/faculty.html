@@ -1,0 +1,364 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><meta content="web_dashboard" name="shell-type"><title>Campus Inn+</title><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;700;800&amp;family=Hanken+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {"surface-tint": "#7331df", "surface-dim": "#d2d9f4", "surface-container-high": "#e2e7ff", "secondary-container": "#e4e0f5", "on-primary-fixed-variant": "#5b00c5", "on-primary-container": "#dac5ff", "on-surface": "#131b2e", "on-tertiary": "#ffffff", "tertiary-container": "#006544", "on-secondary-container": "#646274", primary: "#5300b7", "on-error-container": "#93000a", "tertiary-fixed": "#6ffbbe", "surface-container-lowest": "#ffffff", "error-container": "#ffdad6", "inverse-on-surface": "#eef0ff", error: "#ba1a1a", "on-tertiary-fixed": "#002113", "on-surface-variant": "#4a4455", "primary-container": "#6d28d9", "on-primary-fixed": "#250059", "on-error": "#ffffff", "on-background": "#131b2e", "outline-variant": "#ccc3d7", surface: "#faf8ff", "surface-variant": "#dae2fd", "tertiary-fixed-dim": "#4edea3", outline: "#7b7486", "on-tertiary-fixed-variant": "#005236", "surface-bright": "#faf8ff", "secondary-fixed": "#e4e0f5", "inverse-surface": "#283044", "surface-container-highest": "#dae2fd", background: "#faf8ff", "primary-fixed-dim": "#d3bbff", secondary: "#5e5c6e", "secondary-fixed-dim": "#c7c4d8", "on-secondary-fixed": "#1b1a29", "on-tertiary-container": "#58e7ab", "surface-container": "#eaedff", tertiary: "#004b31", "surface-container-low": "#f2f3ff", "on-secondary": "#ffffff", "on-primary": "#ffffff", "inverse-primary": "#d3bbff", "on-secondary-fixed-variant": "#464555", "primary-fixed": "#ebddff"}, borderRadius: {DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px"}, spacing: {"gutter-mobile": "1rem", "space-lg": "1.5rem", "gutter-desktop": "2rem", gutter: "1.5rem", "margin-desktop": "3rem", "space-xs": "0.25rem", "space-md": "1rem", margin: "1.5rem", "space-sm": "0.5rem", "space-xl": "2.5rem", "margin-mobile": "1rem"}, fontFamily: {"display-lg-mobile": ["Bricolage Grotesque"], "body-sm": ["Hanken Grotesk"], "label-md": ["Hanken Grotesk"], "body-lg": ["Hanken Grotesk"], "headline-xl": ["Bricolage Grotesque"], "body-md": ["Hanken Grotesk"], "headline-md": ["Bricolage Grotesque"], "headline-sm": ["Bricolage Grotesque"], "display-lg": ["Bricolage Grotesque"], "body-xl": ["Hanken Grotesk"], "headline-xl-mobile": ["Bricolage Grotesque"], "headline-lg": ["Bricolage Grotesque"], "label-caps": ["Hanken Grotesk"], "label-lg": ["Hanken Grotesk"], headline: ["Bricolage Grotesque"], display: ["Bricolage Grotesque"], body: ["Hanken Grotesk"], label: ["Hanken Grotesk"]}, fontSize: {"display-lg-mobile": ["2.25rem", {lineHeight: "2.75rem", letterSpacing: "-0.025em", fontWeight: "800"}], "body-sm": ["0.75rem", {lineHeight: "1.125rem", fontWeight: "400"}], "label-md": ["0.75rem", {lineHeight: "1rem", letterSpacing: "0.02em", fontWeight: "600"}], "body-lg": ["1rem", {lineHeight: "1.5rem", fontWeight: "400"}], "headline-xl": ["2.5rem", {lineHeight: "3rem", letterSpacing: "-0.025em", fontWeight: "700"}], "body-md": ["0.875rem", {lineHeight: "1.375rem", fontWeight: "400"}], "headline-md": ["1.5rem", {lineHeight: "2rem", letterSpacing: "-0.015em", fontWeight: "600"}], "headline-sm": ["1.25rem", {lineHeight: "1.75rem", letterSpacing: "-0.01em", fontWeight: "600"}], "display-lg": ["3.5rem", {lineHeight: "4rem", letterSpacing: "-0.03em", fontWeight: "800"}], "body-xl": ["1.125rem", {lineHeight: "1.75rem", letterSpacing: "-0.005em", fontWeight: "400"}], "headline-xl-mobile": ["1.75rem", {lineHeight: "2.25rem", letterSpacing: "-0.02em", fontWeight: "700"}], "headline-lg": ["2rem", {lineHeight: "2.5rem", letterSpacing: "-0.02em", fontWeight: "700"}], "label-caps": ["0.6875rem", {lineHeight: "0.875rem", letterSpacing: "0.06em", fontWeight: "700"}], "label-lg": ["0.875rem", {lineHeight: "1.25rem", letterSpacing: "0.01em", fontWeight: "600"}]}}}};</script><link rel="stylesheet" href="css/theme.css"><script src="js/mock-data.js"></script>
+<script src="js/api.js"></script>
+<script src="js/shared.js"></script></head>
+<body class="bg-surface font-body-md text-body-md text-on-surface antialiased">
+<aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-low shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-50 flex flex-col justify-between">
+  <div class="flex flex-col">
+    <div class="h-16 px-space-md flex items-center gap-space-sm bg-surface-container">
+      <div class="w-9 h-9 rounded-lg bg-primary flex items-center justify-center text-on-primary font-headline-sm text-headline-sm font-bold">C</div>
+      <div class="flex flex-col">
+        <span class="font-headline-sm text-headline-sm font-bold text-on-surface tracking-tight leading-none">Campus Inn<span class="text-primary">+</span></span>
+        <span class="font-label-caps text-label-caps text-primary tracking-widest uppercase">Faculty Desk</span>
+      </div>
+    </div>
+    <div class="px-space-md py-space-sm">
+      <div class="bg-surface-container-high rounded-lg p-space-sm flex items-center gap-space-sm">
+        <span class="material-symbols-outlined text-primary text-[20px]">badge</span>
+        <div class="flex flex-col min-w-0 flex-1">
+          <span class="font-label-caps text-label-caps text-on-surface-variant uppercase font-semibold">Department</span>
+          <span class="font-label-md text-label-md text-on-surface truncate">Computer Engineering & IT</span>
+        </div>
+        <span class="w-2 h-2 rounded-full bg-tertiary-fixed-dim"></span>
+      </div>
+    </div>
+    <div class="px-space-md mt-space-xs">
+      <span class="font-label-caps text-label-caps text-on-surface-variant tracking-wider uppercase px-space-xs block mb-space-xs">Academic Modules</span>
+      <nav class="space-y-space-xs">
+        <a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-lg transition-colors bg-primary-container text-on-primary font-semibold" href="faculty.html">
+          <span class="material-symbols-outlined text-[20px]">assignment</span>
+          <span class="font-label-lg text-label-lg">Course Batches</span>
+        </a>
+        <a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="student.html">
+          <span class="material-symbols-outlined text-[20px]">school</span>
+          <span class="font-label-lg text-label-lg">Mentored Mentees</span>
+        </a>
+        <a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="placement.html">
+          <span class="material-symbols-outlined text-[20px]">verified</span>
+          <span class="font-label-lg text-label-lg">Placement NOC Signoffs</span>
+        </a>
+        <a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="events.html">
+          <span class="material-symbols-outlined text-[20px]">lightbulb</span>
+          <span class="font-label-lg text-label-lg">Hackathon Mentorship</span>
+        </a>
+      </nav>
+    </div>
+  </div>
+  <div class="p-space-md bg-surface-container-low">
+    <div class="bg-surface-container rounded-lg p-space-sm flex items-center justify-between">
+      <div class="flex items-center gap-space-sm">
+        <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+          <span class="material-symbols-outlined text-on-primary text-[18px]">person</span>
+        </div>
+        <div class="flex flex-col min-w-0">
+          <span class="font-label-md text-label-md text-on-surface font-semibold truncate" data-bind="user-name">Prof. R. Deshmukh</span>
+          <span class="font-label-caps text-label-caps text-primary">Associate Professor</span>
+        </div>
+      </div>
+      <a class="text-on-surface-variant hover:text-error transition-colors p-space-xs flex items-center" data-path="logout" href="#">
+        <span class="material-symbols-outlined text-[18px]">logout</span>
+      </a>
+    </div>
+  </div>
+</aside>
+<div class="pl-72">
+  <header class="fixed top-0 left-72 right-0 h-16 bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 px-space-lg flex items-center justify-between">
+    <div class="flex items-center gap-space-md">
+      <a class="flex items-center gap-space-xs text-on-surface hover:text-primary transition-colors" href="index.html">
+        <span class="font-headline-sm text-headline-sm font-bold tracking-tight">Campus Inn+</span>
+      </a>
+      <span class="text-outline-variant font-body-sm text-body-sm">/</span>
+      <div class="flex items-center gap-space-xs bg-surface-container px-space-sm py-space-xs rounded-full">
+        <span class="material-symbols-outlined text-primary text-[16px]">domain</span>
+        <span class="font-label-md text-label-md text-on-surface font-medium">MET Institute of Engineering, Nashik</span>
+      </div>
+    </div>
+    <div class="flex items-center gap-space-sm">
+      <button aria-label="Toggle Theme" class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors" type="button">
+        <span class="material-symbols-outlined text-[20px]">light_mode</span>
+      </button>
+      <a href="index.html" class="px-3 py-1.5 rounded-lg bg-surface-container font-label-md font-semibold text-primary hover:bg-surface-variant transition-colors flex items-center gap-1">
+        <span class="material-symbols-outlined text-[16px]">public</span> Public Site
+      </a>
+    </div>
+  </header>
+  <main class="w-full pt-16 bg-surface px-space-lg">
+    <div class="flex flex-col w-full pb-space-xl mt-space-md">
+      <div class="relative bg-surface-container-lowest rounded-xl p-space-lg mb-space-lg shadow-sm">
+        <h1 class="font-headline-lg font-extrabold text-on-surface">Faculty Academic & Mentorship Dashboard</h1>
+        <p class="font-body-md text-on-surface-variant mt-1 font-medium">Course: Advanced Data Structures & Cloud Computing (BE CSE Semester 7 & MCA Semester 3)</p>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-space-md mb-space-lg">
+        <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm border-l-4 border-l-primary">
+          <span class="font-label-caps text-secondary uppercase font-bold">Assigned Mentees</span>
+          <div class="font-headline-xl text-headline-xl font-bold text-on-surface my-1">64</div>
+          <span class="font-body-sm text-tertiary font-semibold">All eligible for Phase 1 drives</span>
+        </div>
+        <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm border-l-4 border-l-tertiary">
+          <span class="font-label-caps text-secondary uppercase font-bold">NOC Approval Requests</span>
+          <div class="font-headline-xl text-headline-xl font-bold text-tertiary my-1">3</div>
+          <span class="font-body-sm text-primary font-semibold">Google & PhonePe Drive Attendance</span>
+        </div>
+        <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm border-l-4 border-l-secondary">
+          <span class="font-label-caps text-secondary uppercase font-bold">Class Attendance Avg</span>
+          <div class="font-headline-xl text-headline-xl font-bold text-on-surface my-1">88.5%</div>
+          <span class="font-body-sm text-secondary font-semibold">Exceeds 75% SPPU Mandatory Quota</span>
+        </div>
+      </div>
+      <!-- Mentee Approvals Action List & Capstone Review -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg mb-space-xl">
+        <!-- Main: Assigned Mentee Academic & Career Directory (8 cols) -->
+        <div class="lg:col-span-8 flex flex-col bg-surface-container-lowest rounded-xl shadow-sm p-space-lg">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm pb-space-md border-b border-surface-container">
+            <div>
+              <div class="flex items-center gap-space-xs">
+                <span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
+                <span class="font-label-caps text-label-caps text-primary uppercase font-bold tracking-wider">Academic Mentorship Cohort</span>
+              </div>
+              <h2 class="font-headline-md text-headline-md text-on-surface font-bold mt-0.5">Assigned Mentees Directory</h2>
+            </div>
+            <!-- Search -->
+            <div class="flex items-center bg-surface-container-low px-3 py-1.5 rounded-lg text-on-surface-variant">
+              <span class="material-symbols-outlined text-[18px] mr-1.5 text-primary">search</span>
+              <input id="menteeSearchInput" type="text" placeholder="Search mentee name or roll..." class="bg-transparent text-on-surface text-body-sm focus:outline-none w-40 sm:w-56 font-medium">
+            </div>
+          </div>
+
+          <div class="overflow-x-auto mt-space-md">
+            <table class="w-full text-left font-body-md text-body-md" id="menteeTable">
+              <thead>
+                <tr class="bg-surface-container-low text-on-surface font-label-caps uppercase tracking-wider">
+                  <th class="py-space-sm px-space-md rounded-l-lg font-bold">Mentee Student</th>
+                  <th class="py-space-sm px-space-md font-bold">Program & CGPA</th>
+                  <th class="py-space-sm px-space-md font-bold">Attendance</th>
+                  <th class="py-space-sm px-space-md font-bold">Drive Readiness</th>
+                  <th class="py-space-sm px-space-md rounded-r-lg text-right font-bold">Mentorship Action</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-surface-container" id="menteeTableBody">
+                <tr class="hover:bg-surface-container-low/50 transition-colors">
+                  <td class="py-space-md px-space-md font-bold text-on-surface">
+                    <div class="flex items-center gap-space-sm">
+                      <div class="w-9 h-9 rounded-full bg-primary-fixed text-primary font-bold flex items-center justify-center shrink-0">PS</div>
+                      <div>
+                        <span class="block font-bold text-on-surface">Priya Sharma</span>
+                        <span class="font-body-sm text-secondary font-medium text-[12px]">2021CS8401 • BE Computer</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-space-md px-space-md">
+                    <span class="font-bold text-on-surface">8.84 CGPA</span>
+                    <span class="block text-[11px] text-tertiary font-bold">Zero Backlogs</span>
+                  </td>
+                  <td class="py-space-md px-space-md">
+                    <span class="font-bold text-tertiary">92%</span>
+                    <span class="block text-[11px] text-on-surface-variant font-medium">SPPU Verified</span>
+                  </td>
+                  <td class="py-space-md px-space-md">
+                    <span class="px-2 py-0.5 rounded-full bg-primary-fixed text-primary font-label-caps text-xs font-bold">PhonePe Interview</span>
+                  </td>
+                  <td class="py-space-md px-space-md text-right">
+                    <button onclick="CampusInn.Toast.success('Mentorship progress feedback signed for Priya Sharma.')" class="px-2.5 py-1 rounded bg-surface-container-high text-on-surface font-label-md text-xs font-semibold hover:bg-surface-container">Sign Feedback</button>
+                  </td>
+                </tr>
+
+                <tr class="hover:bg-surface-container-low/50 transition-colors">
+                  <td class="py-space-md px-space-md font-bold text-on-surface">
+                    <div class="flex items-center gap-space-sm">
+                      <div class="w-9 h-9 rounded-full bg-secondary-container text-on-secondary-fixed font-bold flex items-center justify-center shrink-0">RM</div>
+                      <div>
+                        <span class="block font-bold text-on-surface">Rohan Mehta</span>
+                        <span class="font-body-sm text-secondary font-medium text-[12px]">2021CS8435 • BE Computer</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-space-md px-space-md">
+                    <span class="font-bold text-on-surface">9.15 CGPA</span>
+                    <span class="block text-[11px] text-tertiary font-bold">Zero Backlogs</span>
+                  </td>
+                  <td class="py-space-md px-space-md">
+                    <span class="font-bold text-tertiary">94%</span>
+                    <span class="block text-[11px] text-on-surface-variant font-medium">SPPU Verified</span>
+                  </td>
+                  <td class="py-space-md px-space-md">
+                    <span class="px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-caps text-xs font-bold">Microsoft IDC Slotted</span>
+                  </td>
+                  <td class="py-space-md px-space-md text-right">
+                    <button onclick="CampusInn.Toast.success('Mentorship progress feedback signed for Rohan Mehta.')" class="px-2.5 py-1 rounded bg-surface-container-high text-on-surface font-label-md text-xs font-semibold hover:bg-surface-container">Sign Feedback</button>
+                  </td>
+                </tr>
+
+                <tr class="hover:bg-surface-container-low/50 transition-colors">
+                  <td class="py-space-md px-space-md font-bold text-on-surface">
+                    <div class="flex items-center gap-space-sm">
+                      <div class="w-9 h-9 rounded-full bg-secondary-container text-on-secondary-fixed font-bold flex items-center justify-center shrink-0">NK</div>
+                      <div>
+                        <span class="block font-bold text-on-surface">Neha Kulkarni</span>
+                        <span class="font-body-sm text-secondary font-medium text-[12px]">2021CS8419 • BE Computer</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-space-md px-space-md">
+                    <span class="font-bold text-on-surface">8.45 CGPA</span>
+                    <span class="block text-[11px] text-tertiary font-bold">Zero Backlogs</span>
+                  </td>
+                  <td class="py-space-md px-space-md">
+                    <span class="font-bold text-tertiary">89%</span>
+                    <span class="block text-[11px] text-on-surface-variant font-medium">SPPU Verified</span>
+                  </td>
+                  <td class="py-space-md px-space-md">
+                    <span class="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-fixed font-label-caps text-xs font-bold">Google Cloud Assessment</span>
+                  </td>
+                  <td class="py-space-md px-space-md text-right">
+                    <button onclick="CampusInn.Toast.success('Mentorship progress feedback signed for Neha Kulkarni.')" class="px-2.5 py-1 rounded bg-surface-container-high text-on-surface font-label-md text-xs font-semibold hover:bg-surface-container">Sign Feedback</button>
+                  </td>
+                </tr>
+
+                <tr class="hover:bg-surface-container-low/50 transition-colors">
+                  <td class="py-space-md px-space-md font-bold text-on-surface">
+                    <div class="flex items-center gap-space-sm">
+                      <div class="w-9 h-9 rounded-full bg-secondary-container text-on-secondary-fixed font-bold flex items-center justify-center shrink-0">AV</div>
+                      <div>
+                        <span class="block font-bold text-on-surface">Amit Verma</span>
+                        <span class="font-body-sm text-secondary font-medium text-[12px]">2021IT8422 • BE IT</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-space-md px-space-md">
+                    <span class="font-bold text-on-surface">8.12 CGPA</span>
+                    <span class="block text-[11px] text-tertiary font-bold">Zero Backlogs</span>
+                  </td>
+                  <td class="py-space-md px-space-md">
+                    <span class="font-bold text-tertiary">86%</span>
+                    <span class="block text-[11px] text-on-surface-variant font-medium">SPPU Verified</span>
+                  </td>
+                  <td class="py-space-md px-space-md">
+                    <span class="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-fixed font-label-caps text-xs font-bold">Zomato Ltd Drive</span>
+                  </td>
+                  <td class="py-space-md px-space-md text-right">
+                    <button onclick="CampusInn.Toast.success('Mentorship progress feedback signed for Amit Verma.')" class="px-2.5 py-1 rounded bg-surface-container-high text-on-surface font-label-md text-xs font-semibold hover:bg-surface-container">Sign Feedback</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Sidebar: Pending Placement NOCs & Capstone Mentorship (4 cols) -->
+        <div class="lg:col-span-4 space-y-space-lg">
+          <!-- Pending NOC Approvals Card -->
+          <div class="bg-surface-container-lowest rounded-xl shadow-sm p-space-md">
+            <div class="flex items-center justify-between pb-space-sm border-b border-surface-container">
+              <div>
+                <span class="font-label-caps text-label-caps text-error uppercase font-bold tracking-wider">Urgent Clearance</span>
+                <h3 class="font-headline-sm text-headline-sm font-bold text-on-surface mt-0.5">Pending Drive NOCs</h3>
+              </div>
+              <span class="w-2.5 h-2.5 rounded-full bg-error animate-pulse"></span>
+            </div>
+            <div class="mt-space-md space-y-space-sm">
+              <div class="p-space-sm rounded-xl bg-surface-container-low flex flex-col gap-2">
+                <div>
+                  <div class="font-label-md font-bold text-on-surface">Priya Sharma • BE CSE (2021CS8401)</div>
+                  <div class="font-body-sm text-secondary text-xs">PhonePe Tech Rd 1 — Tomorrow 10:30 AM</div>
+                </div>
+                <button data-action="grant-noc" data-student="Priya Sharma" class="w-full py-1.5 rounded-lg bg-primary text-on-primary font-bold font-label-md text-xs hover:bg-primary-container shadow-sm">Grant Placement NOC</button>
+              </div>
+
+              <div class="p-space-sm rounded-xl bg-surface-container-low flex flex-col gap-2">
+                <div>
+                  <div class="font-label-md font-bold text-on-surface">Amit Verma • BE IT (2021IT8422)</div>
+                  <div class="font-body-sm text-secondary text-xs">Zomato Ltd Hackathon Drive — Friday 2:00 PM</div>
+                </div>
+                <button data-action="grant-noc" data-student="Amit Verma" class="w-full py-1.5 rounded-lg bg-primary text-on-primary font-bold font-label-md text-xs hover:bg-primary-container shadow-sm">Grant Placement NOC</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Capstone Projects Card -->
+          <div class="bg-surface-container-lowest rounded-xl shadow-sm p-space-md">
+            <div class="flex items-center justify-between pb-space-sm border-b border-surface-container">
+              <div>
+                <span class="font-label-caps text-label-caps text-secondary uppercase font-bold tracking-wider">Final Year Projects</span>
+                <h3 class="font-headline-sm text-headline-sm font-bold text-on-surface mt-0.5">Capstone Reviews</h3>
+              </div>
+              <span class="font-label-caps text-xs text-primary font-bold">SPPU Syllabus</span>
+            </div>
+            <div class="mt-space-md space-y-space-sm">
+              <div class="p-space-sm rounded-xl bg-surface-container-low flex items-center justify-between">
+                <div>
+                  <div class="font-label-md font-bold text-on-surface">Distributed Cache Engine</div>
+                  <div class="text-xs text-secondary">Priya Sharma, Rohan Mehta • CSE</div>
+                </div>
+                <span class="px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed text-[11px] font-bold">Passed</span>
+              </div>
+              <div class="p-space-sm rounded-xl bg-surface-container-low flex items-center justify-between">
+                <div>
+                  <div class="font-label-md font-bold text-on-surface">SPPU Blockchain Credential</div>
+                  <div class="text-xs text-secondary">Tanvi Patil • IT</div>
+                </div>
+                <span class="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-fixed text-[11px] font-bold">Midterm OK</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // 1. Role Guard (Only Faculty or Admin)
+  if (!CampusInn.Auth.requireAuth(['faculty', 'admin'])) {
+    return;
+  }
+
+  // 2. Dev Mock Badge
+  const user = CampusInn.Auth.getUser();
+  if (user && user.isMock) {
+    const banner = document.querySelector('.relative.bg-surface-container-lowest h1');
+    if (banner && !document.getElementById('fac-mock-badge')) {
+      const badge = document.createElement('span');
+      badge.id = 'fac-mock-badge';
+      badge.className = 'ci-dev-mock-badge ml-3';
+      badge.innerHTML = '<span class="material-symbols-outlined text-[12px]">science</span> Dev Mock Records';
+      banner.appendChild(badge);
+    }
+  }
+
+  // 3. Mentee Search Filter
+  const searchInput = document.getElementById('menteeSearchInput');
+  const rows = document.querySelectorAll('#menteeTableBody tr');
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase().trim();
+      rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = (!q || text.includes(q)) ? '' : 'none';
+      });
+    });
+  }
+
+  // 4. Wire NOC Grant Actions
+  document.querySelectorAll('button[data-action="grant-noc"]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const student = btn.getAttribute('data-student');
+      btn.disabled = true;
+      btn.textContent = 'Granting...';
+
+      try {
+        if (window.CampusInn.API) {
+          await window.CampusInn.API.faculty.grantNoc(student);
+        }
+        CampusInn.Toast.success(`Academic NOC granted for ${student}! TPO Desk notified.`);
+        btn.textContent = 'Approved ✓';
+        btn.className = 'w-full py-1.5 rounded-lg bg-secondary-container text-on-secondary-fixed font-bold font-label-md text-xs';
+      } catch (err) {
+        CampusInn.Toast.error(err.message || 'Action failed.');
+        btn.disabled = false;
+        btn.textContent = 'Grant Placement NOC';
+      }
+    });
+  });
+});
+</script>
+</body></html>

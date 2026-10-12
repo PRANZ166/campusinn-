@@ -1,0 +1,1928 @@
+<!DOCTYPE html><html lang="en" style=""><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><meta content="web_standard" name="shell-type"><title>Campus Inn+</title><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=Hanken+Grotesk:ital,wght@0,300..900;1,300..900&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={"darkMode":"class","theme":{"extend":{"colors":{"surface-container-low":"#f2f3ff","error":"#ba1a1a","tertiary-container":"#006544","primary-fixed-dim":"#d3bbff","surface-container":"#eaedff","surface-container-lowest":"#ffffff","primary-container":"#6d28d9","error-container":"#ffdad6","on-tertiary-fixed-variant":"#005236","outline-variant":"#ccc3d7","tertiary":"#004b31","on-primary":"#ffffff","surface-variant":"#dae2fd","inverse-surface":"#283044","surface-tint":"#7331df","primary":"#5300b7","secondary-fixed":"#e4e0f5","on-secondary-fixed":"#1b1a29","on-primary-fixed-variant":"#5b00c5","on-secondary":"#ffffff","on-surface-variant":"#4a4455","surface":"#faf8ff","secondary-fixed-dim":"#c7c4d8","on-error":"#ffffff","tertiary-fixed-dim":"#4edea3","surface-dim":"#d2d9f4","surface-container-highest":"#dae2fd","on-tertiary-container":"#58e7ab","primary-fixed":"#ebddff","on-background":"#131b2e","outline":"#7b7486","inverse-on-surface":"#eef0ff","on-primary-container":"#dac5ff","surface-container-high":"#e2e7ff","on-tertiary":"#ffffff","secondary-container":"#e4e0f5","secondary":"#5e5c6e","tertiary-fixed":"#6ffbbe","on-secondary-container":"#646274","surface-bright":"#faf8ff","inverse-primary":"#d3bbff","on-surface":"#131b2e","on-tertiary-fixed":"#002113","background":"#faf8ff","on-primary-fixed":"#250059","on-secondary-fixed-variant":"#464555","on-error-container":"#93000a"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"gutter-mobile":"1rem","space-sm":"0.5rem","space-md":"1rem","space-xs":"0.25rem","space-lg":"1.5rem","gutter-desktop":"2rem","gutter":"1.5rem","margin-desktop":"3rem","margin":"1.5rem","space-xl":"2.5rem","margin-mobile":"1rem"},"fontFamily":{"label-md":["Hanken Grotesk"],"body-md":["Hanken Grotesk"],"headline-sm":["Bricolage Grotesque"],"body-xl":["Hanken Grotesk"],"label-lg":["Hanken Grotesk"],"headline-xl":["Bricolage Grotesque"],"display-lg-mobile":["Bricolage Grotesque"],"body-sm":["Hanken Grotesk"],"body-lg":["Hanken Grotesk"],"headline-md":["Bricolage Grotesque"],"headline-lg":["Bricolage Grotesque"],"display-lg":["Bricolage Grotesque"],"label-caps":["Hanken Grotesk"],"headline-xl-mobile":["Bricolage Grotesque"]},"fontSize":{"label-md":["0.75rem",{"lineHeight":"1rem","letterSpacing":"0.02em","fontWeight":"600"}],"body-md":["0.875rem",{"lineHeight":"1.375rem","fontWeight":"400"}],"headline-sm":["1.25rem",{"lineHeight":"1.75rem","letterSpacing":"-0.01em","fontWeight":"600"}],"body-xl":["1.125rem",{"lineHeight":"1.75rem","letterSpacing":"-0.005em","fontWeight":"400"}],"label-lg":["0.875rem",{"lineHeight":"1.25rem","letterSpacing":"0.01em","fontWeight":"600"}],"headline-xl":["2.5rem",{"lineHeight":"3rem","letterSpacing":"-0.025em","fontWeight":"700"}],"display-lg-mobile":["2.25rem",{"lineHeight":"2.75rem","letterSpacing":"-0.025em","fontWeight":"800"}],"body-sm":["0.75rem",{"lineHeight":"1.125rem","fontWeight":"400"}],"body-lg":["1rem",{"lineHeight":"1.5rem","fontWeight":"400"}],"headline-md":["1.5rem",{"lineHeight":"2rem","letterSpacing":"-0.015em","fontWeight":"600"}],"headline-lg":["2rem",{"lineHeight":"2.5rem","letterSpacing":"-0.02em","fontWeight":"700"}],"display-lg":["3.5rem",{"lineHeight":"4rem","letterSpacing":"-0.03em","fontWeight":"800"}],"label-caps":["0.6875rem",{"lineHeight":"0.875rem","letterSpacing":"0.06em","fontWeight":"700"}],"headline-xl-mobile":["1.75rem",{"lineHeight":"2.25rem","letterSpacing":"-0.02em","fontWeight":"700"}]}}}};</script><link rel="stylesheet" href="css/theme.css">
+<script src="js/mock-data.js"></script>
+<script src="js/api.js"></script>
+<script src="js/shared.js"></script>
+</head><body class="bg-background font-body-md text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 max-w-[1440px] mx-auto px-margin-mobile lg:px-margin-desktop flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-sm shrink-0"><a class="flex items-center shrink-0" data-path="home" href="index.html" aria-label="Campus Inn+ Home"><img alt="Campus Inn+ Brand Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1Vf7o906NO_q9oQd1FlxYnOheLogJdekuf1OlrltZ2LSvyhi6eGbAULdPdjy44FJ_kCFyc5mWDfS35NKD0RW97rdOVwng8Gpkvh7_XOS_0rnox3QrQzdY-hinoj7EgikfKmi2e_P8b1BXYd2FBqsgV8yBLG3QrQKkmNjuozBaY9pPlLEfDc-A1bsuX9i0QMiuMR0dxIjQk_Jt12AeDrJNjG4dJ1OpZIceBETIMJ-6No10yxND6HfW6yMw"></a></div><nav class="hidden lg:flex items-center gap-space-sm" data-active-classes="bg-secondary-container text-on-secondary-fixed font-bold rounded-lg px-3 py-1.5"><a class="px-3 py-1.5 font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors" data-path="home" href="index.html">Home</a><a class="px-3 py-1.5 font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors" data-path="events" href="events.html">Events</a><a class="px-3 py-1.5 font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors" data-path="placements" href="index.html#placements">Placements</a><a class="px-3 py-1.5 font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors" data-path="companies" href="companies.html">Companies</a><a class="px-3 py-1.5 font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors" data-path="about" href="about.html">About</a><div class="relative group"><button class="flex items-center gap-space-xs px-3 py-1.5 font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors" type="button">Portals <span class="material-symbols-outlined text-[18px]">expand_more</span></button><div class="absolute top-full left-0 mt-1 hidden group-hover:block w-48 bg-surface-container-lowest shadow-[0_4px_12px_-2px_rgba(109,40,217,0.08)] rounded-xl p-space-xs z-50"><a class="block px-space-md py-space-sm font-body-sm text-body-sm text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface rounded-lg transition-colors" data-path="student-portal" href="student.html">Student Portal</a><a class="block px-space-md py-space-sm font-body-sm text-body-sm text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface rounded-lg transition-colors" data-path="admin-portal" href="admin.html">Admin Console</a><a class="block px-space-md py-space-sm font-body-sm text-body-sm text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface rounded-lg transition-colors" data-path="recruiter-portal" href="company.html">Recruiter Hub</a></div></div></nav><div class="flex items-center gap-space-sm shrink-0"><div class="hidden sm:flex items-center bg-surface-container-low px-3 py-1.5 rounded-lg text-on-surface-variant"><span class="material-symbols-outlined text-[18px] mr-2">search</span><input class="bg-transparent text-on-surface placeholder:text-outline text-body-sm font-body-sm focus:outline-none w-28 lg:w-40" placeholder="Search campus..." type="text"></div><button aria-label="Toggle Theme" class="p-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-lg transition-colors flex items-center justify-center" type="button"><span class="material-symbols-outlined text-[20px]">light_mode</span></button><div class="relative"><button aria-label="Notifications" class="p-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high rounded-lg transition-colors flex items-center justify-center" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full"></span></button></div><a class="hidden md:inline-flex px-3 py-1.5 font-label-lg text-label-lg text-on-surface-variant hover:text-primary transition-colors" data-path="login" href="login.html">Login</a><a class="inline-flex items-center justify-center px-4 py-2 font-label-lg text-label-lg bg-primary text-on-primary hover:bg-primary-container hover:text-on-primary-container rounded-lg shadow-[0_1px_3px_0_rgba(15,23,42,0.04),0_4px_12px_-2px_rgba(109,40,217,0.05)] transition-all" data-path="join-campus" href="login.html">Join Campus</a><div class="relative shrink-0 ml-1 ci-profile-menu-container"><button id="ci-profile-btn" type="button" class="ci-profile-btn flex items-center justify-center rounded-full p-0.5 focus:outline-none focus:ring-2 focus:ring-primary transition-all cursor-pointer" aria-label="Account menu" aria-haspopup="menu" aria-expanded="false" aria-controls="ci-profile-dropdown" data-path="user-profile"><div class="w-8 h-8 rounded-full bg-surface-container-high text-on-surface-variant ring-1 ring-outline-variant flex items-center justify-center hover:bg-surface-variant hover:text-on-surface transition-colors select-none"><span class="material-symbols-outlined text-[20px]">account_circle</span></div></button><div id="ci-profile-dropdown" role="menu" aria-labelledby="ci-profile-btn" class="ci-profile-dropdown hidden fixed sm:absolute right-4 sm:right-0 top-16 sm:top-[calc(100%+8px)] w-72 max-w-[calc(100vw-32px)] bg-surface-container-lowest rounded-2xl shadow-2xl border border-outline-variant/30 py-2 z-[9999] overflow-hidden backdrop-blur-md"></div></div></div></div></header><main class="w-full pt-16 bg-background min-h-screen"><div class="flex flex-col w-full">
+<!-- Top Banner & Breadcrumb Header -->
+<div class="w-full bg-surface-container-low/70 py-space-lg px-margin-mobile lg:px-margin-desktop">
+<div class="max-w-[1440px] mx-auto flex flex-col gap-space-md">
+<!-- Meta Navigation Path -->
+<div class="flex flex-wrap items-center justify-between gap-space-sm text-body-sm font-body-sm text-secondary">
+<div class="flex items-center gap-2">
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Home</a>
+<span class="material-symbols-outlined text-[14px] text-outline">chevron_right</span>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Events &amp; Competitions</a>
+<span class="material-symbols-outlined text-[14px] text-outline">chevron_right</span>
+<span class="text-primary font-semibold">MET Bhujbal Knowledge City, Nashik</span>
+</div>
+<div class="inline-flex items-center gap-1.5 px-3 py-1 bg-surface-container-high rounded-full text-label-caps font-label-caps text-primary tracking-wider uppercase">
+<span class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span>
+          MET Campus Engagement Suite • Live Event Desk
+        </div>
+</div>
+<!-- Header Title & Direct CTAs -->
+<div class="flex flex-col lg:flex-row lg:items-end justify-between gap-space-lg pt-space-xs">
+<div class="max-w-3xl">
+<h1 class="font-display-lg text-display-lg text-on-surface tracking-tight mb-2 font-semibold">
+            Discover What's Happening
+          </h1>
+<p class="font-body-xl text-body-xl text-on-surface-variant">
+            Find campus festivals, department freshers, hackathons, technical workshops, cultural celebrations, and intercollege competitions across MET Bhujbal Knowledge City, Adgaon, Nashik.
+          </p>
+</div>
+<div class="flex flex-wrap sm:flex-nowrap items-center gap-space-sm shrink-0">
+<button id="btnOpenProposalModal" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-surface-container-lowest text-primary font-label-lg text-label-lg shadow-sm hover:shadow-md hover:bg-surface-bright transition-all" type="button">
+<span class="material-symbols-outlined text-[20px]">add_circle</span>
+            Submit Event Proposal
+          </button>
+<a id="btnMyEvents" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary text-on-primary font-label-lg text-label-lg shadow-sm hover:bg-primary-container hover:text-on-primary-container transition-all" href="#registered-events">
+<span class="material-symbols-outlined text-[20px]">confirmation_number</span>
+            My Registered Events (<span id="topMyEventsCount">2</span>)
+          </a>
+</div>
+</div>
+</div>
+</div>
+<!-- Unified Search & Category Controls -->
+<div class="w-full bg-surface-container-lowest shadow-[0_1px_3px_0_rgba(15,23,42,0.04)] py-space-md px-margin-mobile lg:px-margin-desktop sticky top-16 z-30">
+<div class="max-w-[1440px] mx-auto flex flex-col gap-space-md">
+<!-- Search Input + Filter Selectors -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-sm items-center">
+<!-- Search bar with shortcut hint -->
+<div class="lg:col-span-5 relative">
+<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
+<input class="w-full pl-10 pr-12 py-2.5 bg-surface-container-low rounded-lg text-body-md font-body-md text-on-surface placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Search events, competitions, hackathons, or organizing departments..." type="text">
+<kbd class="hidden sm:inline-flex absolute right-3 top-1/2 -translate-y-1/2 px-1.5 py-0.5 text-[11px] font-mono text-outline bg-surface-container-highest rounded">
+            /
+          </kbd>
+</div>
+<!-- Filter Dropdowns -->
+<div class="lg:col-span-7 flex flex-wrap sm:flex-nowrap items-center gap-space-xs">
+<div class="relative w-full sm:w-1/4">
+<select aria-label="Filter by Institute" class="w-full appearance-none px-3 py-2.5 pr-8 bg-surface-container-low rounded-lg font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer">
+<option>All Institutes</option>
+<option>MET Institute of Engineering (IOE)</option>
+<option>MET Institute of Management (IOM)</option>
+<option>MET Institute of Pharmacy (IOP)</option>
+<option>MET Institute of Technology (IOT)</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-outline pointer-events-none text-[18px]">expand_more</span>
+</div>
+<div class="relative w-full sm:w-1/4">
+<select aria-label="Filter by Event Format" class="w-full appearance-none px-3 py-2.5 pr-8 bg-surface-container-low rounded-lg font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer">
+<option>Any Format</option>
+<option>On-Campus (Physical)</option>
+<option>Hybrid</option>
+<option>Virtual / Online</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-outline pointer-events-none text-[18px]">expand_more</span>
+</div>
+<div class="relative w-full sm:w-1/4">
+<select aria-label="Filter by Event Timing" class="w-full appearance-none px-3 py-2.5 pr-8 bg-surface-container-low rounded-lg font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer">
+<option>Upcoming (Next 30 Days)</option>
+<option>This Weekend</option>
+<option>Ongoing Now</option>
+<option>Semester Calendar</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-outline pointer-events-none text-[18px]">expand_more</span>
+</div>
+<div class="relative w-full sm:w-1/4">
+<select aria-label="Filter by Access Type" class="w-full appearance-none px-3 py-2.5 pr-8 bg-surface-container-low rounded-lg font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer">
+<option>All Access Types</option>
+<option>Free / Open Entry</option>
+<option>Roll ID Verification</option>
+<option>Delegates / Ticketed</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-outline pointer-events-none text-[18px]">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Horizontal Category Filter Pills -->
+<div class="flex items-center gap-space-xs overflow-x-auto pb-1 scrollbar-none"><button class="shrink-0 px-4 py-1.5 rounded-full bg-primary text-on-primary font-semibold text-label-md shadow-sm transition-all">All Events (34)</button><button class="shrink-0 px-4 py-1.5 rounded-full bg-surface-container text-on-surface hover:bg-surface-container-high font-semibold text-label-md transition-colors">MET Campus Life (8)</button><button class="shrink-0 px-4 py-1.5 rounded-full bg-surface-container text-on-surface hover:bg-surface-container-high font-semibold text-label-md transition-colors">Department Freshers (6)</button><button class="shrink-0 px-4 py-1.5 rounded-full bg-surface-container text-on-surface hover:bg-surface-container-high font-semibold text-label-md transition-colors">Hackathons &amp; Dev (9)</button><button class="shrink-0 px-4 py-1.5 rounded-full bg-surface-container text-on-surface hover:bg-surface-container-high font-semibold text-label-md transition-colors">Competitions &amp; Challenges (7)</button><button class="shrink-0 px-4 py-1.5 rounded-full bg-surface-container text-on-surface hover:bg-surface-container-high font-semibold text-label-md transition-colors">Sports &amp; Fitness (4)</button><button class="shrink-0 px-4 py-1.5 rounded-full bg-surface-container text-on-surface hover:bg-surface-container-high font-semibold text-label-md transition-colors">Workshops (5)</button></div>
+</div>
+</div>
+<!-- Main Canvas Content Area -->
+<div class="max-w-[1440px] mx-auto w-full px-margin-mobile lg:px-margin-desktop py-space-xl flex flex-col gap-space-xl">
+<!-- HERO SPOTLIGHT: Featured Showcase Grid (Two Columns) -->
+<section class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[24px]">local_fire_department</span>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Curated Campus Headliners</h2>
+</div>
+<span class="font-body-sm text-body-sm text-secondary">Verified Institutional Hub Previews</span>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-space-lg">
+<!-- Hero Card 1: MET UTSAV 2026 -->
+<article class="flex flex-col bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0_4px_12px_-2px_rgba(109,40,217,0.05)] transition-all hover:shadow-[0_12px_24px_-4px_rgba(109,40,217,0.1)] group">
+<div class="relative w-full h-64 sm:h-80 overflow-hidden bg-surface-container">
+<img alt="MET UTSAV youth cultural extravaganza live stage performance" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAQS1Be5d3ac1ZyVCKziH1RmKBRJmzBCtnouqDss8du_oeFlBM96lXMBwOJon7Zufai-I7pAlWp2ebkSsAlLC2oFb-_L0mNSCd2N20udB4C0G0YWWuDTxs0WBS-uLth92dYe-GT_Veupf0wglOQf9Om-OnhCIi6g2rK2H7M5cYEQmuOTKx3PGdg_E96rY6Wn-khVzOlW7OXr2rwfH6KJC4v5SX6YxZvcZz4VF58cPBF8ie4FMKe-fE">
+<div class="absolute inset-0 bg-gradient-to-t from-on-background/80 via-on-background/20 to-transparent"></div>
+<div class="absolute top-4 left-4 right-4 flex items-start justify-between gap-2">
+<span class="px-3 py-1 bg-surface-container-lowest/90 backdrop-blur-md rounded-full font-label-caps text-label-caps text-primary uppercase shadow-sm">
+                Annual Flagship Festival • MET BKC
+              </span>
+<span class="px-2.5 py-0.5 bg-error-container text-on-error-container rounded-md font-label-caps text-label-caps uppercase">
+                [SAMPLE EVENT PREVIEW - OFFICIAL DATES TBA]
+              </span>
+</div>
+<div class="absolute bottom-4 left-4 right-4 text-surface-container-lowest">
+<div class="flex items-center gap-2 mb-1 text-tertiary-fixed font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px]">calendar_month</span>
+                24 - 26 Feb 2026 • 3-Day Gala
+              </div>
+<h3 class="font-headline-xl text-headline-xl leading-tight drop-shadow-sm font-semibold">
+                MET UTSAV 2027</h3>
+</div>
+</div>
+<div class="p-space-lg flex flex-col flex-1 justify-between gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-body-sm font-body-sm text-secondary">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-primary">location_on</span>
+                  Main Open Amphitheatre &amp; Central Lawns
+                </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-tertiary">how_to_reg</span>
+                  Registration Closes: 18 Feb 2026
+                </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant pt-1">
+                The grand collegiate extravaganza bringing together all constituent institutes of Bhujbal Knowledge City. Featuring Kalarang Folk Showcases, Battle of the Bands, Street Theatre, Celebrity Performances, and the crowning Annual Pageant.
+              </p>
+</div>
+<div class="pt-space-sm flex flex-wrap sm:flex-nowrap items-center gap-space-sm">
+<button id="btnRegisterUtsav" class="w-full sm:w-auto flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-on-primary font-label-lg text-label-lg hover:bg-primary-container hover:text-on-primary-container transition-colors shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px]">group_add</span>
+                Register Solo / Crew
+              </button>
+<button class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-secondary-fixed text-on-secondary-fixed font-label-lg text-label-lg hover:bg-secondary-fixed-dim transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">schedule</span>
+                View Full Tracks &amp; Slots
+              </button>
+</div>
+</div>
+</article>
+<!-- Hero Card 2: HackBKC 36-Hr Hackathon -->
+<article class="flex flex-col bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0_4px_12px_-2px_rgba(109,40,217,0.05)] transition-all hover:shadow-[0_12px_24px_-4px_rgba(109,40,217,0.1)] group">
+<div class="relative w-full h-64 sm:h-80 overflow-hidden bg-surface-container">
+<img alt="Engineering students collaborating on laptops during HackBKC hackathon" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfwkleAdnHa4st8bThPgCxsQo9OdXYcH9lZRqhF0-E19rjRwnTbUDfDljzyWr35DiSmYNDfttGZVCx_FWONJqixVuZ8V3_g0FL1ocpZesIBohX4acm-BP-czWJxiEuZt2-WFq7q3SzhY3F0zRYx7zAwxemIyz3dUL4TXy5EVfIZyHmNHzvVvTDJqymcDmW2lwJf9AbjQOAuy1J-5DvpKS4zB9bK3dL9dRSRdhrN7RVDuBYr7mG_IM">
+<div class="absolute inset-0 bg-gradient-to-t from-on-background/80 via-on-background/20 to-transparent"></div>
+<div class="absolute top-4 left-4 right-4 flex items-start justify-between gap-2">
+<span class="px-3 py-1 bg-surface-container-lowest/90 backdrop-blur-md rounded-full font-label-caps text-label-caps text-primary uppercase shadow-sm">
+                National Developer Initiative • AI &amp; Web3
+              </span>
+<span class="px-2.5 py-0.5 bg-error-container text-on-error-container rounded-md font-label-caps text-label-caps uppercase">Dates tba</span>
+</div>
+<div class="absolute bottom-4 left-4 right-4 text-surface-container-lowest">
+<div class="flex items-center gap-2 mb-1 text-tertiary-fixed font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px]">schedule</span>
+                12 - 13 March 2026 • 36-Hour Continuous Sprint
+              </div>
+<h3 class="font-headline-xl text-headline-xl leading-tight drop-shadow-sm font-semibold">
+                HackBKC 2026: Intercollege Hackathon
+              </h3>
+</div>
+</div>
+<div class="p-space-lg flex flex-col flex-1 justify-between gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-body-sm font-body-sm text-secondary">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-primary">terminal</span>
+                  Advanced Computing Labs, IOE
+                </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-tertiary">payments</span>
+                  ₹2,50,000 Total Prize Pool
+                </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant pt-1">
+                36 hours of non-stop product engineering across Generative AI, Decentralized Compute, IoT Mobility, and Agritech. Co-mentored by technical architects with on-spot placement interview clearances for finalist teams.
+              </p>
+</div>
+<div class="pt-space-sm flex flex-wrap sm:flex-nowrap items-center gap-space-sm">
+<button id="btnHackathonTeam" class="w-full sm:w-auto flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-on-primary font-label-lg text-label-lg hover:bg-primary-container hover:text-on-primary-container transition-colors shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px]">person_add</span>
+                Form / Join Team
+              </button>
+<button id="btnHackathonProblems" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-secondary-fixed text-on-secondary-fixed font-label-lg text-label-lg hover:bg-secondary-fixed-dim transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">code_blocks</span>
+                Problem Statements
+              </button>
+</div>
+</div>
+</article>
+</div>
+</section>
+<!-- SECTION 1: MET Campus Life & Signature Gatherings -->
+<section class="flex flex-col gap-space-md">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-2">
+<div>
+<span class="font-label-caps text-label-caps text-primary uppercase tracking-widest">Collegiate Traditions</span>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">MET Campus Life &amp; Signature Gatherings</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">
+            Experience the creative traditions, cultural galas, and vibrant community spirit across all faculties of MET Nashik.
+          </p>
+</div>
+<a class="inline-flex items-center gap-1 font-label-lg text-label-lg text-primary hover:underline" href="#">
+          View All Campus Traditions <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+<!-- Card A: Kalarang -->
+<div class="flex flex-col bg-surface-container-lowest rounded-xl p-space-md shadow-sm hover:shadow-md transition-shadow">
+<div class="w-full h-44 rounded-lg bg-surface-container overflow-hidden relative mb-space-sm">
+<img class="w-full h-full object-cover" data-alt="Students performing traditional Marathi classical music and folk theater on an auditorium stage lit with rich amber and purple spotlights, with sitar and tabla players seated gracefully." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYZokvlyzO7bdTpykvXaFEc5OF9xu3Rh3ZHkuTWbu1FU9ZeJD-aGGHo7_ZomN7qycd2mLRjGKuOpDg0Qz1dFW_xFd3HN7-LbKZjcRfSItxNw-AoXEPfXdpnkjFMSEdlDWPWSEE5oFmESeXm4vmmwaQKpfCEOlU0kL4DpaG_w5Mh9uwqgOrpTBqVqiLs4NKOFL5dlvgj3mc8ckV8xiQbJ6rsY4RGamn4ovZuJYdLFQ9l-s79FB1QHQ">
+<span class="absolute top-2 left-2 px-2.5 py-0.5 bg-surface-container-lowest/90 backdrop-blur rounded-full text-label-caps font-label-caps text-primary uppercase">
+              Cultural Guild
+            </span>
+</div>
+<div class="flex flex-col flex-1 justify-between gap-space-sm">
+<div>
+<div class="flex items-center justify-between text-body-sm font-body-sm text-secondary mb-1">
+<span class="">MET Auditorium</span>
+<span class="font-semibold text-primary">06 Feb 2026</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1 font-semibold">
+                Kalarang 2026: Classical &amp; Folk Arts Fiesta
+              </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
+                Classical jugalbandi, Marathi drama showcase, natyasangeet recital, and regional folk arts championships organized by the MET Cultural Council.
+              </p>
+</div>
+<div class="pt-2 flex items-center justify-between">
+<span class="px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed text-label-caps font-label-caps">
+                Open Entry
+              </span>
+<button class="inline-flex items-center gap-1 text-primary font-label-lg text-label-lg hover:underline">
+                Explore Lineup <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Card B: TechNovation 2026 -->
+<div class="flex flex-col bg-surface-container-lowest rounded-xl p-space-md shadow-sm hover:shadow-md transition-shadow">
+<div class="w-full h-44 rounded-lg bg-surface-container overflow-hidden relative mb-space-sm">
+<img class="w-full h-full object-cover" data-alt="Futuristic engineering arena where students test custom carbon fiber combat robots and autonomous drones navigating illuminated obstacle courses under industrial lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDGqBisCAMO00hH7FD0_9itXrGwcjYp5k9hLypjS1C21TC48zSLvLh0WVg_-j9zj8NT9DDK9rOPqLEujRxKIMaYhZifCFpQjbpRBLTNBRuTi6tZnqAsCrDCvysbY242Z4bBHUvJD2L7WUlan4i721LiiVNCPGRuwq3X5QcL-UWxMSqVlXm1g8E_KsySOyld8r0v3nT6FIfATXgnCwrEjPm7t8g9xKgLUAu7W3ReUfSnHfQ2HqoDm3c">
+<span class="absolute top-2 left-2 px-2.5 py-0.5 bg-surface-container-lowest/90 backdrop-blur rounded-full text-label-caps font-label-caps text-primary uppercase">
+              IOE Technical Council
+            </span>
+</div>
+<div class="flex flex-col flex-1 justify-between gap-space-sm">
+<div>
+<div class="flex items-center justify-between text-body-sm font-body-sm text-secondary mb-1">
+<span class="">Engineering Quad</span>
+<span class="font-semibold text-primary">19 - 20 Jan 2026</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1 font-semibold">
+                IOE TechNovation 2026: Project Expo
+              </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
+                Flagship engineering conclave comprising live RoboWars battles, indoor Drone Racing derbies, and patent-ready Capstone exhibits.
+              </p>
+</div>
+<div class="pt-2 flex items-center justify-between">
+<span class="px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed text-label-caps font-label-caps">
+                Team Registration
+              </span>
+<button id="btnOpenTechFest" class="inline-flex items-center gap-1 text-primary font-label-lg text-label-lg hover:underline" type="button">
+                View Arenas <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Card C: Chanakya Business Conclave -->
+<div class="flex flex-col bg-surface-container-lowest rounded-xl p-space-md shadow-sm hover:shadow-md transition-shadow">
+<div class="w-full h-44 rounded-lg bg-surface-container overflow-hidden relative mb-space-sm">
+<img class="w-full h-full object-cover" data-alt="Modern amphitheater business forum with MBA students dressed in professional business attire pitching case studies in front of an expansive presentation screen displaying market analytics." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8kXsq5RUn1lxw3W_-Y-k2nUlTzBXXx0HD7jsQaS2VxdGQoVYNCxlF46ohEwO6jMj1KRaIRRmEuWNltuueIrz52ITM96fdOi6LHDb6CaRUmS3aaGyzuuWt8LlkR-_wp4RjDpwMGckusowh1B23yIsgtAWaba8KmHsQNjCEdcTAvG3G3mpMx8kfa6XR4LNyUhzVX5EiDIlZ0MTe-3YK-ZmDRa3TBV6hPLEduI2dFHESSmG8lbXJ56U">
+<span class="absolute top-2 left-2 px-2.5 py-0.5 bg-surface-container-lowest/90 backdrop-blur rounded-full text-label-caps font-label-caps text-primary uppercase">
+              MET Institute of Management
+            </span>
+</div>
+<div class="flex flex-col flex-1 justify-between gap-space-sm">
+<div>
+<div class="flex items-center justify-between text-body-sm font-body-sm text-secondary mb-1">
+<span class="">Management Seminar Hall</span>
+<span class="font-semibold text-primary">15 Feb 2026</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1 font-semibold">
+                Chanakya National Business Conclave
+              </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
+                Simulated real-time Mock Stock trading, corporate restructuring case debates, and high-energy Ad-Mad pitches judged by corporate industry executives.
+              </p>
+</div>
+<div class="pt-2 flex items-center justify-between">
+<span class="px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed text-label-caps font-label-caps">
+                Cohort Verified
+              </span>
+<button class="inline-flex items-center gap-1 text-primary font-label-lg text-label-lg hover:underline">
+                Rulebook &amp; Case <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 2: Department Freshers 2025-26 -->
+<section class="flex flex-col gap-space-md bg-surface-container-low/60 rounded-xl p-space-lg">
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-sm">
+<div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[22px]">celebration</span>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Department Freshers 2025-26</h2>
+</div>
+<p class="font-body-sm text-body-sm text-secondary pt-0.5">
+            Authorized departmental orientation and welcome celebrations for newly inducted students. All registrations verified via student enrollment numbers.
+          </p>
+</div>
+<div class="inline-flex items-center gap-2 px-3 py-1 bg-surface-container-lowest rounded-lg text-label-md font-label-md text-on-surface-variant">
+<span class="material-symbols-outlined text-tertiary text-[18px]">verified_user</span>
+          Strict Roll ID Access
+        </div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-space-md">
+<!-- Freshers 1: BCA & MCA -->
+<div class="flex flex-col justify-between bg-surface-container-lowest rounded-xl p-space-md shadow-sm hover:shadow-md transition-shadow">
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="px-2 py-0.5 rounded bg-primary-fixed text-on-primary-fixed font-label-caps text-label-caps uppercase">
+                BCA &amp; MCA
+              </span>
+<span class="text-tertiary font-label-md text-label-md">Free Batch Entry</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1 font-semibold">
+              Genesis 2025
+            </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-space-sm">
+              MET Amphitheatre &amp; Tech Lounge • 14 Nov, 3:30 PM onwards
+            </p>
+<div class="p-2.5 bg-surface-container-low rounded-lg flex flex-col gap-1 text-body-sm font-body-sm text-on-surface mb-space-sm">
+<span class="text-secondary text-[12px]">Dress Code / Theme</span>
+<span class="font-medium">Cyber Retro &amp; Monochrome</span>
+</div>
+</div>
+<button class="btn-freshers-reg w-full py-2 bg-primary text-on-primary rounded-lg font-label-lg text-label-lg hover:bg-primary-container hover:text-on-primary-container transition-colors" data-freshers-dept="BCA & MCA" data-freshers-title="Genesis 2025: BCA & MCA Induction" type="button">
+            Register Attendance
+          </button>
+</div>
+<!-- Freshers 2: B.Tech Computer & IT -->
+<div class="flex flex-col justify-between bg-surface-container-lowest rounded-xl p-space-md shadow-sm hover:shadow-md transition-shadow">
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="px-2 py-0.5 rounded bg-primary-fixed text-on-primary-fixed font-label-caps text-label-caps uppercase">
+                B.Tech Comp &amp; IT
+              </span>
+<span class="text-tertiary font-label-md text-label-md">Free Batch Entry</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1 font-semibold">
+              Init 2025: Engineering Induction
+            </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-space-sm">
+              IOE Main Auditorium • 18 Nov, 2:00 PM onwards
+            </p>
+<div class="p-2.5 bg-surface-container-low rounded-lg flex flex-col gap-1 text-body-sm font-body-sm text-on-surface mb-space-sm">
+<span class="text-secondary text-[12px]">Dress Code / Theme</span>
+<span class="font-medium">Royal Navy &amp; Formal Elegance</span>
+</div>
+</div>
+<button class="btn-freshers-reg w-full py-2 bg-primary text-on-primary rounded-lg font-label-lg text-label-lg hover:bg-primary-container hover:text-on-primary-container transition-colors" data-freshers-dept="Computer Engineering" data-freshers-title="Init 2025: Engineering Induction" type="button">
+            Register Attendance
+          </button>
+</div>
+<!-- Freshers 3: BBA & MBA -->
+<div class="flex flex-col justify-between bg-surface-container-lowest rounded-xl p-space-md shadow-sm hover:shadow-md transition-shadow">
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="px-2 py-0.5 rounded bg-primary-fixed text-on-primary-fixed font-label-caps text-label-caps uppercase">
+                BBA &amp; MBA
+              </span>
+<span class="text-tertiary font-label-md text-label-md">Free Batch Entry</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1 font-semibold">
+              Prarambh 2025: Management Social
+            </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-space-sm">
+              MET Banquet Hall • 20 Nov, 5:00 PM onwards
+            </p>
+<div class="p-2.5 bg-surface-container-low rounded-lg flex flex-col gap-1 text-body-sm font-body-sm text-on-surface mb-space-sm">
+<span class="text-secondary text-[12px]">Dress Code / Theme</span>
+<span class="font-medium">Traditional Western / Black Tie</span>
+</div>
+</div>
+<button class="btn-freshers-reg w-full py-2 bg-primary text-on-primary rounded-lg font-label-lg text-label-lg hover:bg-primary-container hover:text-on-primary-container transition-colors" data-freshers-dept="Management (MBA)" data-freshers-title="Prarambh 2025: Management Social" type="button">
+            Register Attendance
+          </button>
+</div>
+<!-- Freshers 4: B.Pharm & M.Pharm -->
+<div class="flex flex-col justify-between bg-surface-container-lowest rounded-xl p-space-md shadow-sm hover:shadow-md transition-shadow">
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="px-2 py-0.5 rounded bg-primary-fixed text-on-primary-fixed font-label-caps text-label-caps uppercase">
+                B.Pharm &amp; M.Pharm
+              </span>
+<span class="text-tertiary font-label-md text-label-md">Free Batch Entry</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1 font-semibold">
+              PharmaFiesta 2025
+            </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-space-sm">
+              Pharmacy Quadrangle • 22 Nov, 3:00 PM onwards
+            </p>
+<div class="p-2.5 bg-surface-container-low rounded-lg flex flex-col gap-1 text-body-sm font-body-sm text-on-surface mb-space-sm">
+<span class="text-secondary text-[12px]">Dress Code / Theme</span>
+<span class="font-medium">Pastel Palette &amp; Ethnic Fusion</span>
+</div>
+</div>
+<button class="btn-freshers-reg w-full py-2 bg-primary text-on-primary rounded-lg font-label-lg text-label-lg hover:bg-primary-container hover:text-on-primary-container transition-colors" data-freshers-dept="Pharmacy" data-freshers-title="PharmaFiesta 2025: Pharmacy Orientation" type="button">
+            Register Attendance
+          </button>
+</div>
+</div>
+</section>
+<!-- SECTION 3: Hackathons & Developer Events -->
+<section class="flex flex-col gap-space-md">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-2">
+<div>
+<span class="font-label-caps text-label-caps text-primary uppercase tracking-widest">Developer Ecosystem</span>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Hackathons &amp; Developer Sprints</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">
+            National coding marathons, Google Developer Community meetups, and open-source sprint sessions hosted at MET BKC.
+          </p>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">terminal</span>
+<span class="font-label-md text-label-md text-on-surface-variant">Campus Inn+ CodeJudge Live</span>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-space-md">
+<!-- Dev Card 1: GDG DevFest Extended -->
+<div class="flex flex-col justify-between bg-surface-container-lowest rounded-xl p-space-lg shadow-sm hover:shadow-md transition-shadow">
+<div>
+<div class="flex flex-wrap items-center justify-between gap-1 mb-space-sm">
+<span class="px-2.5 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-caps text-label-caps uppercase">
+                Community Run • Hosted at MET BKC
+              </span>
+<span class="px-2 py-0.5 bg-error-container text-on-error-container rounded font-label-caps text-label-caps">
+                [SAMPLE EVENT - PENDING ORGANIZER CONFIRMATION]
+              </span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-2 font-semibold">
+              Google Developer Groups (GDG) Nashik: DevFest Extended
+            </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-space-md">
+              A comprehensive full-day technology gathering focusing on Android 15 internals, Gemini 1.5 Pro multimodal tool calling, Cloud Run, and cross-platform Flutter patterns.
+            </p>
+<div class="flex flex-col gap-1.5 text-body-sm font-body-sm text-secondary mb-space-md">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-primary">calendar_month</span>
+<span class="">05 April 2026 • 09:30 AM – 06:00 PM</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-primary">location_on</span>
+<span class="">Seminar Hall 1 &amp; Innovation Labs, MET</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-space-xs pt-space-xs">
+<button class="flex-1 py-2 rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high font-label-md text-label-md transition-colors">
+              External GDG Listing
+            </button>
+<button class="px-3 py-2 rounded-lg bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container hover:text-on-primary-container transition-colors" title="Set Calendar Alert">
+<span class="material-symbols-outlined text-[18px]">notifications_active</span>
+</button>
+</div>
+</div>
+<!-- Dev Card 2: CodeSprint 12-Hour -->
+<div class="flex flex-col justify-between bg-surface-container-lowest rounded-xl p-space-lg shadow-sm hover:shadow-md transition-shadow">
+<div>
+<div class="flex items-center justify-between mb-space-sm">
+<span class="px-2.5 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-caps text-label-caps uppercase">
+                Competitive DSA Sprint
+              </span>
+<span class="text-tertiary font-label-md text-label-md">₹50,000 Cash Pool</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-2 font-semibold">
+              CodeSprint: 12-Hour Speed Debugging &amp; DSA Marathon
+            </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-space-md">
+              High-intensity timed algorithmic challenges, code golf, and real-time bug eradication powered by the Campus Inn+ test engine. High scorers receive Direct PPI interview calls.
+            </p>
+<div class="flex flex-col gap-1.5 text-body-sm font-body-sm text-secondary mb-space-md">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-primary">calendar_month</span>
+<span class="">28 Nov 2025 • 08:00 AM – 08:00 PM</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-primary">computer</span>
+<span class="">Online / Central Computer Center</span>
+</div>
+</div>
+</div>
+<button class="w-full py-2.5 rounded-lg bg-primary text-on-primary font-label-lg text-label-lg hover:bg-primary-container hover:text-on-primary-container transition-colors">
+            Register for Contest
+          </button>
+</div>
+<!-- Dev Card 3: Agentic AI Hackathon -->
+<div class="flex flex-col justify-between bg-surface-container-lowest rounded-xl p-space-lg shadow-sm hover:shadow-md transition-shadow">
+<div>
+<div class="flex items-center justify-between mb-space-sm">
+<span class="px-2.5 py-0.5 rounded-full bg-surface-container-high text-primary font-label-caps text-label-caps uppercase">
+                AI &amp; Data Science Dept
+              </span>
+<span class="text-primary font-label-md text-label-md">API Credits Sponsored</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-2 font-semibold">
+              Agentic AI Hackathon: Autonomous LLM Workflows
+            </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-space-md">
+              Build autonomous agents capable of tool usage, multi-agent debates, and zero-shot reasoning. Supported with cloud credits for Gemini &amp; Claude Developer platforms.
+            </p>
+<div class="flex flex-col gap-1.5 text-body-sm font-body-sm text-secondary mb-space-md">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-primary">calendar_month</span>
+<span class="">05 - 06 Dec 2025 • 24 Hours</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-primary">psychology</span>
+<span class="">IOE AI Research Lab</span>
+</div>
+</div>
+</div>
+<button class="w-full py-2.5 rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high font-label-lg text-label-lg transition-colors">
+            Apply with Project Abstract
+          </button>
+</div>
+</div>
+</section>
+<!-- SECTION 4: Competitions & Challenges -->
+<section class="flex flex-col gap-space-md">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-sm">
+<div>
+<span class="font-label-caps text-label-caps text-primary uppercase tracking-widest">Co-Curricular Arena</span>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Competitions &amp; Challenges</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">
+            Technical face-offs, equity pitches, esports championships, and creative showdowns across departments.
+          </p>
+</div>
+<!-- Category Toggles -->
+<div class="flex flex-wrap items-center gap-1.5 p-1 bg-surface-container rounded-lg">
+<button class="px-3 py-1 rounded bg-surface-container-lowest text-primary font-label-md text-label-md shadow-sm">
+            Technical
+          </button>
+<button class="px-3 py-1 rounded text-on-surface-variant hover:text-on-surface font-label-md text-label-md">
+            Business &amp; Finance
+          </button>
+<button class="px-3 py-1 rounded text-on-surface-variant hover:text-on-surface font-label-md text-label-md">
+            Sports &amp; Esports
+          </button>
+<button class="px-3 py-1 rounded text-on-surface-variant hover:text-on-surface font-label-md text-label-md">
+            Creative &amp; Design
+          </button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-md">
+<!-- Challenge 1 -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow">
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="material-symbols-outlined text-primary text-[20px]">smart_toy</span>
+<span class="text-label-caps font-label-caps text-secondary uppercase">Robotics Club</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1 font-semibold">
+              RoboSoccer &amp; Drone Obstacle Derby
+            </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-space-sm">
+              Custom-built manual and autonomous RC bots navigating caged obstacle turfs in timed knockout rounds.
+            </p>
+</div>
+<div class="pt-2 flex items-center justify-between text-body-sm font-body-sm">
+<span class="text-tertiary font-semibold">Prize: ₹30,000</span>
+<button class="text-primary font-label-md text-label-md hover:underline">Enroll Bot</button>
+</div>
+</div>
+<!-- Challenge 2 -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow">
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="material-symbols-outlined text-primary text-[20px]">trending_up</span>
+<span class="text-label-caps font-label-caps text-secondary uppercase">Finance Society</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1 font-semibold">
+              MET FinBeat: Algo Trading &amp; Equity Pitch
+            </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-space-sm">
+              Backtesting quantitative models on historical Indian equity ticks, concluded by a live jury pitch.
+            </p>
+</div>
+<div class="pt-2 flex items-center justify-between text-body-sm font-body-sm">
+<span class="text-tertiary font-semibold">Prize: ₹20,000</span>
+<button class="text-primary font-label-md text-label-md hover:underline">Download Data</button>
+</div>
+</div>
+<!-- Challenge 3 -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow">
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="material-symbols-outlined text-primary text-[20px]">sports_cricket</span>
+<span class="text-label-caps font-label-caps text-secondary uppercase">MET Sports Council</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1 font-semibold">
+              Inter-Department Cricket &amp; Badminton Cup
+            </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-space-sm">
+              League knockout tournament played on the Bhujbal Knowledge City central sports complex grounds.
+            </p>
+</div>
+<div class="pt-2 flex items-center justify-between text-body-sm font-body-sm">
+<span class="text-secondary font-medium">Trophies + Medals</span>
+<button class="text-primary font-label-md text-label-md hover:underline">Fixtures</button>
+</div>
+</div>
+<!-- Challenge 4 -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow">
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="material-symbols-outlined text-primary text-[20px]">palette</span>
+<span class="text-label-caps font-label-caps text-secondary uppercase">Design Guild</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1 font-semibold">
+              PixelCraft: UI/UX &amp; Web Redesign Sprint
+            </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-space-sm">
+              6-hour design sprint solving public civic transit interfaces for Nashik Municipal Smart City initiatives.
+            </p>
+</div>
+<div class="pt-2 flex items-center justify-between text-body-sm font-body-sm">
+<span class="text-tertiary font-semibold">Prize: ₹15,000</span>
+<button class="text-primary font-label-md text-label-md hover:underline">Figma Kit</button>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION: My Registered Events (Dynamic) -->
+<section id="registered-events" class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm scroll-mt-24 flex flex-col gap-space-md">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm border-b border-surface-container pb-space-sm">
+    <div class="flex items-center gap-2">
+      <span class="w-10 h-10 rounded-xl bg-primary-fixed text-primary flex items-center justify-center font-bold">
+        <span class="material-symbols-outlined text-2xl">confirmation_number</span>
+      </span>
+      <div>
+        <h2 class="font-headline-lg text-headline-lg text-on-surface">My Registered Events</h2>
+        <p class="font-body-sm text-secondary">Verified student registrations, team rosters, and digital QR entry passes.</p>
+      </div>
+    </div>
+    <span id="registeredEventsBadge" class="px-3 py-1 rounded-full bg-primary/10 text-primary font-bold text-xs">2 Events Active</span>
+  </div>
+
+  <div id="registeredEventsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-space-md">
+    <!-- Populated dynamically via JS -->
+  </div>
+</section>
+
+</div>
+</div>
+
+<!-- MODAL 1: Hackathon Problem Statements -->
+<div id="hackathonProblemsModal" class="fixed inset-0 bg-inverse-surface/60 backdrop-blur-sm z-[9999] hidden flex items-center justify-center p-4">
+  <div class="bg-surface-container-lowest rounded-2xl max-w-3xl w-full p-6 md:p-8 shadow-2xl border border-outline-variant/30 max-h-[90vh] overflow-y-auto">
+    <div class="flex items-center justify-between pb-4 border-b border-surface-container">
+      <div class="flex items-center gap-2.5">
+        <span class="w-10 h-10 rounded-xl bg-primary-fixed text-primary flex items-center justify-center font-bold">
+          <span class="material-symbols-outlined text-2xl">terminal</span>
+        </span>
+        <div>
+          <h2 class="font-headline-md text-headline-md text-on-surface font-bold">Hackathon Problem Statements</h2>
+          <p class="text-xs text-secondary">National Hackathon 2025 • MET Bhujbal Knowledge City</p>
+        </div>
+      </div>
+      <button type="button" class="close-modal-btn w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-secondary hover:text-on-surface" data-target="hackathonProblemsModal">
+        <span class="material-symbols-outlined text-sm">close</span>
+      </button>
+    </div>
+
+    <div class="py-4 space-y-3" id="problemStatementsList">
+      <!-- 8 Example Problem Statements with measurable objectives -->
+      <div class="p-4 rounded-xl bg-surface-container-low border border-outline-variant/30 flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary-fixed text-primary uppercase">Track 1: AI for Education</span>
+          <span class="text-xs font-mono text-secondary">PS-AI-01</span>
+        </div>
+        <h4 class="font-headline-sm text-base font-bold text-on-surface">Intelligent Multimodal Doubt Clarification &amp; Adaptive Learning System</h4>
+        <p class="text-xs text-on-surface-variant leading-relaxed">
+          Develop an offline-capable, multimodal tutoring agent capable of analyzing student textbook diagrams, handwriting, and voice prompts to deliver personalized step-by-step Socratic explanations without hallucinating solutions.
+        </p>
+        <div class="pt-2 flex items-center justify-between">
+          <span class="text-xs text-secondary font-medium">Objective: &lt;1.5s latency, &gt;92% accuracy on SPPU curriculum tests</span>
+          <button type="button" class="btn-select-problem px-3 py-1.5 rounded-lg bg-primary text-on-primary text-xs font-bold hover:bg-primary-container" data-ps="PS-AI-01: Multimodal Doubt Clarification">Select Track</button>
+        </div>
+      </div>
+
+      <div class="p-4 rounded-xl bg-surface-container-low border border-outline-variant/30 flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary-fixed text-primary uppercase">Track 2: Smart Campus Management</span>
+          <span class="text-xs font-mono text-secondary">PS-IOT-02</span>
+        </div>
+        <h4 class="font-headline-sm text-base font-bold text-on-surface">Dynamic Classroom Energy &amp; Resource Allocation via Sensor Mesh</h4>
+        <p class="text-xs text-on-surface-variant leading-relaxed">
+          Design an edge-computing IoT sensor platform that dynamically monitors auditorium, lab, and classroom occupancy to automate HVAC and power grids while providing instant room booking clash avoidance.
+        </p>
+        <div class="pt-2 flex items-center justify-between">
+          <span class="text-xs text-secondary font-medium">Objective: 28% verified energy reduction across campus blocks</span>
+          <button type="button" class="btn-select-problem px-3 py-1.5 rounded-lg bg-primary text-on-primary text-xs font-bold hover:bg-primary-container" data-ps="PS-IOT-02: Smart Campus Energy &amp; Space">Select Track</button>
+        </div>
+      </div>
+
+      <div class="p-4 rounded-xl bg-surface-container-low border border-outline-variant/30 flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary-fixed text-primary uppercase">Track 3: Sustainable Agriculture</span>
+          <span class="text-xs font-mono text-secondary">PS-AGRI-03</span>
+        </div>
+        <h4 class="font-headline-sm text-base font-bold text-on-surface">Early Crop Blight &amp; Soil Moisture Telemetry for Grape Farmers</h4>
+        <p class="text-xs text-on-surface-variant leading-relaxed">
+          Create a mobile-first computer vision model tailored for Nashik vineyard farmers that detects fungal infections on leaves from smartphone cameras and recommends organic treatment protocols in Marathi.
+        </p>
+        <div class="pt-2 flex items-center justify-between">
+          <span class="text-xs text-secondary font-medium">Objective: On-device inference under 100ms with multilingual audio output</span>
+          <button type="button" class="btn-select-problem px-3 py-1.5 rounded-lg bg-primary text-on-primary text-xs font-bold hover:bg-primary-container" data-ps="PS-AGRI-03: Crop Blight &amp; Soil Telemetry">Select Track</button>
+        </div>
+      </div>
+
+      <div class="p-4 rounded-xl bg-surface-container-low border border-outline-variant/30 flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary-fixed text-primary uppercase">Track 4: Healthcare Accessibility</span>
+          <span class="text-xs font-mono text-secondary">PS-HEALTH-04</span>
+        </div>
+        <h4 class="font-headline-sm text-base font-bold text-on-surface">Rural Tele-Triage &amp; Critical Drug Cold-Chain Inventory Tracker</h4>
+        <p class="text-xs text-on-surface-variant leading-relaxed">
+          Build a decentralized dispatch protocol linking primary health centers (PHCs) with district hospitals, tracking temperature-sensitive anti-venom and vaccine supplies with automated expiry alerts.
+        </p>
+        <div class="pt-2 flex items-center justify-between">
+          <span class="text-xs text-secondary font-medium">Objective: Zero critical stockouts and GPS-verified shipment audit log</span>
+          <button type="button" class="btn-select-problem px-3 py-1.5 rounded-lg bg-primary text-on-primary text-xs font-bold hover:bg-primary-container" data-ps="PS-HEALTH-04: Rural Tele-Triage &amp; Cold-Chain">Select Track</button>
+        </div>
+      </div>
+
+      <div class="p-4 rounded-xl bg-surface-container-low border border-outline-variant/30 flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary-fixed text-primary uppercase">Track 5: Environmental Monitoring</span>
+          <span class="text-xs font-mono text-secondary">PS-ENV-05</span>
+        </div>
+        <h4 class="font-headline-sm text-base font-bold text-on-surface">Godavari River Dissolved Oxygen &amp; Industrial Effluent Sensor Grid</h4>
+        <p class="text-xs text-on-surface-variant leading-relaxed">
+          Deploy an open telemetry pipeline aggregating water turbidity, pH, and dissolved oxygen sensors along industrial riverbanks with an automated civic whistleblowing dashboard.
+        </p>
+        <div class="pt-2 flex items-center justify-between">
+          <span class="text-xs text-secondary font-medium">Objective: Public real-time API with instant civic alert thresholds</span>
+          <button type="button" class="btn-select-problem px-3 py-1.5 rounded-lg bg-primary text-on-primary text-xs font-bold hover:bg-primary-container" data-ps="PS-ENV-05: Godavari River Sensor Grid">Select Track</button>
+        </div>
+      </div>
+
+      <div class="p-4 rounded-xl bg-surface-container-low border border-outline-variant/30 flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary-fixed text-primary uppercase">Track 6: Financial Literacy</span>
+          <span class="text-xs font-mono text-secondary">PS-FIN-06</span>
+        </div>
+        <h4 class="font-headline-sm text-base font-bold text-on-surface">Gamified Micro-Savings &amp; Credit Literacy for Collegiate Youth</h4>
+        <p class="text-xs text-on-surface-variant leading-relaxed">
+          Interactive simulation engine that teaches students compound interest, student loan debt management, and UPI scam detection through bite-sized interactive roleplay modules.
+        </p>
+        <div class="pt-2 flex items-center justify-between">
+          <span class="text-xs text-secondary font-medium">Objective: Verified improvement in financial safety score</span>
+          <button type="button" class="btn-select-problem px-3 py-1.5 rounded-lg bg-primary text-on-primary text-xs font-bold hover:bg-primary-container" data-ps="PS-FIN-06: Gamified Micro-Savings">Select Track</button>
+        </div>
+      </div>
+
+      <div class="p-4 rounded-xl bg-surface-container-low border border-outline-variant/30 flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary-fixed text-primary uppercase">Track 7: Accessibility Technology</span>
+          <span class="text-xs font-mono text-secondary">PS-A11Y-07</span>
+        </div>
+        <h4 class="font-headline-sm text-base font-bold text-on-surface">Voice &amp; Gesture Accessible Campus Portal for Visually Impaired Students</h4>
+        <p class="text-xs text-on-surface-variant leading-relaxed">
+          Create a screen-reader optimized navigation companion providing auditory beacons and haptic cues to guide visually impaired students across college hallways, classrooms, and exam halls.
+        </p>
+        <div class="pt-2 flex items-center justify-between">
+          <span class="text-xs text-secondary font-medium">Objective: Full WCAG 2.2 AAA adherence and voice-first operation</span>
+          <button type="button" class="btn-select-problem px-3 py-1.5 rounded-lg bg-primary text-on-primary text-xs font-bold hover:bg-primary-container" data-ps="PS-A11Y-07: Voice &amp; Gesture Accessibility">Select Track</button>
+        </div>
+      </div>
+
+      <div class="p-4 rounded-xl bg-surface-container-low border border-outline-variant/30 flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary-fixed text-primary uppercase">Track 8: Campus Safety</span>
+          <span class="text-xs font-mono text-secondary">PS-SAFE-08</span>
+        </div>
+        <h4 class="font-headline-sm text-base font-bold text-on-surface">Geofenced Campus Emergency SOS &amp; Safe Transit Corridor Beacon</h4>
+        <p class="text-xs text-on-surface-variant leading-relaxed">
+          Build a zero-latency student emergency network triggering real-time campus security alerts, automated video snapshots, and safe walking route telemetry during late-night library and hostel commutes.
+        </p>
+        <div class="pt-2 flex items-center justify-between">
+          <span class="text-xs text-secondary font-medium">Objective: Sub-3 second emergency guard dispatch trigger</span>
+          <button type="button" class="btn-select-problem px-3 py-1.5 rounded-lg bg-primary text-on-primary text-xs font-bold hover:bg-primary-container" data-ps="PS-SAFE-08: Campus Emergency Beacon">Select Track</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="pt-3 border-t border-surface-container flex justify-end">
+      <button type="button" class="close-modal-btn px-5 py-2.5 rounded-lg bg-surface-container text-on-surface font-label-md font-semibold hover:bg-surface-container-high" data-target="hackathonProblemsModal">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL 2: Hackathon Team Creation & Joining -->
+<div id="hackathonTeamModal" class="fixed inset-0 bg-inverse-surface/60 backdrop-blur-sm z-[9999] hidden flex items-center justify-center p-4">
+  <div class="bg-surface-container-lowest rounded-2xl max-w-xl w-full p-6 md:p-8 shadow-2xl border border-outline-variant/30 max-h-[90vh] overflow-y-auto">
+    <div class="flex items-center justify-between pb-4 border-b border-surface-container">
+      <div class="flex items-center gap-2">
+        <span class="w-10 h-10 rounded-xl bg-primary-fixed text-primary flex items-center justify-center font-bold">
+          <span class="material-symbols-outlined text-2xl">groups</span>
+        </span>
+        <div>
+          <h2 class="font-headline-sm text-base font-bold text-on-surface">Hackathon Team Formation</h2>
+          <p class="text-xs text-secondary">Smart Campus National Hackathon 2025</p>
+        </div>
+      </div>
+      <button type="button" class="close-modal-btn w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-secondary hover:text-on-surface" data-target="hackathonTeamModal">
+        <span class="material-symbols-outlined text-sm">close</span>
+      </button>
+    </div>
+
+    <!-- Mode Selector: Create Team vs Join Team -->
+    <div class="flex p-1 bg-surface-container rounded-lg my-4">
+      <button type="button" id="tabCreateTeam" class="flex-1 py-2 text-center text-xs font-bold rounded bg-primary text-on-primary shadow-sm transition-all">Create New Team</button>
+      <button type="button" id="tabJoinTeam" class="flex-1 py-2 text-center text-xs font-bold rounded text-secondary hover:text-on-surface transition-all">Join Existing Team</button>
+    </div>
+
+    <!-- Create Team Form -->
+    <form id="formCreateTeam" class="space-y-4">
+      <div>
+        <label class="block text-xs font-semibold text-on-surface mb-1">Team Name *</label>
+        <input type="text" id="htTeamName" placeholder="e.g. CyberKnights IOE" class="w-full px-3.5 py-2.5 bg-surface-container-low rounded-lg text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20" required>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-semibold text-on-surface mb-1">Team Leader (You) *</label>
+          <input type="text" id="htLeaderName" class="w-full px-3.5 py-2.5 bg-surface-container rounded-lg text-sm text-on-surface font-semibold" readonly>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-on-surface mb-1">Leader Roll No *</label>
+          <input type="text" id="htLeaderRoll" class="w-full px-3.5 py-2.5 bg-surface-container rounded-lg text-sm text-on-surface font-mono" readonly>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-on-surface mb-1">Select Problem Statement *</label>
+        <select id="htProblemSelect" class="w-full px-3.5 py-2.5 bg-surface-container-low rounded-lg text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer">
+          <option value="PS-AI-01: Multimodal Doubt Clarification">Track 1: AI for Education (PS-AI-01)</option>
+          <option value="PS-IOT-02: Smart Campus Energy & Space" selected>Track 2: Smart Campus Management (PS-IOT-02)</option>
+          <option value="PS-AGRI-03: Crop Blight & Soil Telemetry">Track 3: Sustainable Agriculture (PS-AGRI-03)</option>
+          <option value="PS-HEALTH-04: Rural Tele-Triage & Cold-Chain">Track 4: Healthcare Accessibility (PS-HEALTH-04)</option>
+          <option value="PS-ENV-05: Godavari River Sensor Grid">Track 5: Environmental Monitoring (PS-ENV-05)</option>
+          <option value="PS-FIN-06: Gamified Micro-Savings">Track 6: Financial Literacy (PS-FIN-06)</option>
+          <option value="PS-A11Y-07: Voice & Gesture Accessibility">Track 7: Accessibility Technology (PS-A11Y-07)</option>
+          <option value="PS-SAFE-08: Campus Emergency Beacon">Track 8: Campus Safety (PS-SAFE-08)</option>
+        </select>
+      </div>
+
+      <div class="space-y-2">
+        <label class="block text-xs font-semibold text-on-surface">Team Roster Members (Min: 2, Max: 4)</label>
+        <div class="grid grid-cols-2 gap-2">
+          <input type="text" id="htMember2" placeholder="Member 2 Name &amp; Roll" class="px-3.5 py-2 bg-surface-container-low rounded-lg text-xs" required>
+          <input type="text" id="htMember3" placeholder="Member 3 Name &amp; Roll (Optional)" class="px-3.5 py-2 bg-surface-container-low rounded-lg text-xs">
+        </div>
+        <input type="text" id="htMember4" placeholder="Member 4 Name &amp; Roll (Optional)" class="w-full px-3.5 py-2 bg-surface-container-low rounded-lg text-xs">
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-semibold text-on-surface mb-1">Contact Email *</label>
+          <input type="email" id="htContactEmail" placeholder="team@campus.edu.in" class="w-full px-3.5 py-2 bg-surface-container-low rounded-lg text-xs" required>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-on-surface mb-1">Phone Number *</label>
+          <input type="tel" id="htContactPhone" placeholder="+91 98000 12345" class="w-full px-3.5 py-2 bg-surface-container-low rounded-lg text-xs" required>
+        </div>
+      </div>
+
+      <div class="pt-3 border-t border-surface-container flex items-center justify-end gap-2">
+        <button type="button" class="close-modal-btn px-4 py-2 rounded-lg bg-surface-container text-xs font-semibold" data-target="hackathonTeamModal">Cancel</button>
+        <button type="submit" class="px-5 py-2 rounded-lg bg-primary text-on-primary text-xs font-bold hover:bg-primary-container shadow-sm flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-sm">how_to_reg</span> Register Team &amp; Issue E-Pass
+        </button>
+      </div>
+    </form>
+
+    <!-- Join Team Form (Initially Hidden) -->
+    <form id="formJoinTeam" class="space-y-4 hidden">
+      <div class="p-4 rounded-xl bg-surface-container-low border border-outline-variant/30 space-y-3">
+        <p class="text-xs text-on-surface-variant">Enter the unique 6-character Team Access Code provided by your Hackathon Team Leader:</p>
+        <div>
+          <label class="block text-xs font-semibold text-on-surface mb-1">Team Access Code *</label>
+          <input type="text" id="htJoinCode" placeholder="e.g. MET-CK-99" class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg text-sm font-mono uppercase tracking-wider text-primary font-bold" required>
+        </div>
+      </div>
+
+      <div class="p-3 rounded-lg bg-primary-fixed/20 text-xs text-on-surface-variant">
+        <strong>Verified Student Check:</strong> Upon joining, your roll number and department will be attached to the official lab allocation roster.
+      </div>
+
+      <div class="pt-3 border-t border-surface-container flex items-center justify-end gap-2">
+        <button type="button" class="close-modal-btn px-4 py-2 rounded-lg bg-surface-container text-xs font-semibold" data-target="hackathonTeamModal">Cancel</button>
+        <button type="submit" class="px-5 py-2 rounded-lg bg-primary text-on-primary text-xs font-bold hover:bg-primary-container shadow-sm flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-sm">group_add</span> Join Team &amp; Generate Pass
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL 3: MET Utsav Registration (Solo & Team Options) -->
+<div id="metUtsavModal" class="fixed inset-0 bg-inverse-surface/60 backdrop-blur-sm z-[9999] hidden flex items-center justify-center p-4">
+  <div class="bg-surface-container-lowest rounded-2xl max-w-lg w-full p-6 md:p-8 shadow-2xl border border-outline-variant/30 max-h-[90vh] overflow-y-auto">
+    <div class="flex items-center justify-between pb-4 border-b border-surface-container">
+      <div class="flex items-center gap-2">
+        <span class="w-10 h-10 rounded-xl bg-primary-fixed text-primary flex items-center justify-center font-bold">
+          <span class="material-symbols-outlined text-2xl">celebration</span>
+        </span>
+        <div>
+          <h2 class="font-headline-sm text-base font-bold text-on-surface">MET Utsav 2026 Registration</h2>
+          <p class="text-xs text-secondary">The Cultural &amp; Innovation Renaissance</p>
+        </div>
+      </div>
+      <button type="button" class="close-modal-btn w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-secondary hover:text-on-surface" data-target="metUtsavModal">
+        <span class="material-symbols-outlined text-sm">close</span>
+      </button>
+    </div>
+
+    <form id="formMetUtsav" class="space-y-4 my-4">
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-semibold text-on-surface mb-1">Student Name *</label>
+          <input type="text" id="utsavStudentName" class="w-full px-3 py-2 bg-surface-container rounded-lg text-xs text-on-surface font-semibold" readonly>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-on-surface mb-1">Roll Number *</label>
+          <input type="text" id="utsavRollNumber" class="w-full px-3 py-2 bg-surface-container rounded-lg text-xs text-on-surface font-mono" readonly>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-semibold text-on-surface mb-1">Institute *</label>
+          <select id="utsavInstitute" class="w-full px-3 py-2 bg-surface-container-low rounded-lg text-xs text-on-surface">
+            <option value="MET IOE" selected>MET Institute of Engineering (IOE)</option>
+            <option value="MET IOM">MET Institute of Management (IOM)</option>
+            <option value="MET IOP">MET Institute of Pharmacy (IOP)</option>
+            <option value="MET IOT">MET Institute of Technology (IOT)</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-on-surface mb-1">Department *</label>
+          <input type="text" id="utsavDepartment" class="w-full px-3 py-2 bg-surface-container rounded-lg text-xs text-on-surface font-medium" readonly>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-on-surface mb-1">Selected Activity / Competition *</label>
+        <select id="utsavActivity" class="w-full px-3.5 py-2.5 bg-surface-container-low rounded-lg text-xs text-on-surface font-medium">
+          <option value="Battle of Bands (Rock &amp; Fusion)">Battle of Bands (Rock &amp; Fusion)</option>
+          <option value="Classical Folk Theater (Marathi Drama)">Classical Folk Theater (Marathi Drama)</option>
+          <option value="Western Solo &amp; Group Dance">Western Solo &amp; Group Dance</option>
+          <option value="Fine Arts, Charcoal &amp; Pottery Expo">Fine Arts, Charcoal &amp; Pottery Expo</option>
+          <option value="Campus Innovators Pitch Mixer">Campus Innovators Pitch Mixer</option>
+          <option value="General Delegate &amp; Concert Attendance Pass">General Delegate &amp; Concert Attendance Pass</option>
+        </select>
+      </div>
+
+      <!-- Participation Type: Solo vs Team -->
+      <div class="p-3 rounded-lg bg-surface-container-low space-y-2">
+        <label class="block text-xs font-semibold text-on-surface">Participation Mode</label>
+        <div class="flex items-center gap-4 text-xs">
+          <label class="flex items-center gap-1.5 cursor-pointer">
+            <input type="radio" name="utsavMode" value="solo" checked class="accent-primary" id="modeSolo">
+            <span class="font-medium">Solo Performer / General Pass</span>
+          </label>
+          <label class="flex items-center gap-1.5 cursor-pointer">
+            <input type="radio" name="utsavMode" value="team" class="accent-primary" id="modeTeam">
+            <span class="font-medium">Register as Team / Band</span>
+          </label>
+        </div>
+
+        <div id="utsavTeamFields" class="space-y-2 pt-2 hidden border-t border-surface-container">
+          <input type="text" id="utsavTeamName" placeholder="Band / Team Name (e.g. Swarashish Fusion)" class="w-full px-3 py-2 bg-surface-container-lowest rounded-lg text-xs">
+          <input type="text" id="utsavTeamMembers" placeholder="Co-Performers (Names &amp; Roll Numbers)" class="w-full px-3 py-2 bg-surface-container-lowest rounded-lg text-xs">
+        </div>
+      </div>
+
+      <div class="pt-3 border-t border-surface-container flex items-center justify-end gap-2">
+        <button type="button" class="close-modal-btn px-4 py-2 rounded-lg bg-surface-container text-xs font-semibold" data-target="metUtsavModal">Cancel</button>
+        <button type="submit" class="px-5 py-2.5 rounded-lg bg-primary text-on-primary text-xs font-bold hover:bg-primary-container shadow-sm flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-sm">confirmation_number</span> Confirm Registration &amp; Issue E-Pass
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL 4: Department Freshers Strict Eligibility & Attendance -->
+<div id="freshersModal" class="fixed inset-0 bg-inverse-surface/60 backdrop-blur-sm z-[9999] hidden flex items-center justify-center p-4">
+  <div class="bg-surface-container-lowest rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-outline-variant/30">
+    <div class="flex items-center justify-between pb-4 border-b border-surface-container">
+      <div class="flex items-center gap-2">
+        <span class="w-10 h-10 rounded-xl bg-primary-fixed text-primary flex items-center justify-center font-bold">
+          <span class="material-symbols-outlined text-2xl">school</span>
+        </span>
+        <div>
+          <h2 class="font-headline-sm text-base font-bold text-on-surface" id="freshersModalTitle">Department Induction</h2>
+          <p class="text-xs text-secondary" id="freshersTargetDeptDisplay">Target Department Verification</p>
+        </div>
+      </div>
+      <button type="button" class="close-modal-btn w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-secondary hover:text-on-surface" data-target="freshersModal">
+        <span class="material-symbols-outlined text-sm">close</span>
+      </button>
+    </div>
+
+    <form id="formFreshersReg" class="space-y-4 my-4">
+      <div class="p-3.5 rounded-xl bg-surface-container-low border border-outline-variant/30">
+        <span class="font-label-caps text-xs text-secondary uppercase font-bold block mb-1">Institutional Eligibility Check</span>
+        <p class="text-xs text-on-surface leading-relaxed">
+          Only students enrolled in <strong id="freshersEligibleDeptName" class="text-primary font-bold">Computer &amp; IT</strong> are authorized to attend this departmental gathering.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-semibold text-on-surface mb-1">Your Roll Number *</label>
+          <input type="text" id="freshersRollNumber" class="w-full px-3 py-2 bg-surface-container rounded-lg text-xs font-mono text-on-surface" readonly>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-on-surface mb-1">Your Registered Department *</label>
+          <input type="text" id="freshersStudentDept" class="w-full px-3 py-2 bg-surface-container rounded-lg text-xs font-semibold text-on-surface" readonly>
+        </div>
+      </div>
+
+      <div id="freshersEligibilityAlert" class="hidden p-3 rounded-lg text-xs leading-relaxed"></div>
+
+      <div class="pt-3 border-t border-surface-container flex items-center justify-end gap-2">
+        <button type="button" class="close-modal-btn px-4 py-2 rounded-lg bg-surface-container text-xs font-semibold" data-target="freshersModal">Cancel</button>
+        <button type="submit" id="btnVerifyFreshers" class="px-5 py-2.5 rounded-lg bg-primary text-on-primary text-xs font-bold hover:bg-primary-container shadow-sm flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-sm">verified</span> Verify &amp; Register Attendance
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL 5: MET TechFest 2026 (Gen AI Enrollment & Team Options) -->
+<div id="techfestModal" class="fixed inset-0 bg-inverse-surface/60 backdrop-blur-sm z-[9999] hidden flex items-center justify-center p-4">
+  <div class="bg-surface-container-lowest rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-outline-variant/30">
+    <div class="flex items-center justify-between pb-4 border-b border-surface-container">
+      <div class="flex items-center gap-2">
+        <span class="w-10 h-10 rounded-xl bg-primary-fixed text-primary flex items-center justify-center font-bold">
+          <span class="material-symbols-outlined text-2xl">rocket_launch</span>
+        </span>
+        <div>
+          <h2 class="font-headline-sm text-base font-bold text-on-surface">MET TechFest 2026 Expo</h2>
+          <p class="text-xs text-secondary">Maharashtra State Engineering Conclave</p>
+        </div>
+      </div>
+      <button type="button" class="close-modal-btn w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-secondary hover:text-on-surface" data-target="techfestModal">
+        <span class="material-symbols-outlined text-sm">close</span>
+      </button>
+    </div>
+
+    <div class="space-y-3.5 my-4">
+      <div class="p-4 rounded-xl bg-primary-fixed/25 border border-primary/30 flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary text-on-primary uppercase">Specialized Track</span>
+          <span class="text-xs text-tertiary font-bold">Sponsored Cloud Credits</span>
+        </div>
+        <h4 class="font-headline-sm text-base font-bold text-on-surface">Generative AI &amp; Autonomous Agents Hackathon</h4>
+        <p class="text-xs text-on-surface-variant leading-relaxed">
+          Build tool-calling multi-agent AI systems using Gemini and Claude APIs. Includes compute credits and mentorship from leading AI research fellows.
+        </p>
+        <button type="button" id="btnEnrollGenAi" class="mt-2 w-full py-2.5 rounded-lg bg-primary text-on-primary font-label-md text-xs font-bold hover:bg-primary-container transition-all flex items-center justify-center gap-1.5 shadow-sm">
+          <span class="material-symbols-outlined text-sm">psychology</span> Enroll in Generative AI Sprint
+        </button>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <button type="button" id="btnTechFestCreateTeam" class="p-3.5 rounded-xl bg-surface-container-low hover:bg-surface-container text-left border border-outline-variant/30 transition-all flex flex-col justify-between">
+          <span class="material-symbols-outlined text-primary text-2xl mb-1">add_circle</span>
+          <div>
+            <span class="font-label-md text-xs font-bold block text-on-surface">Create Team</span>
+            <span class="text-[11px] text-secondary">Form a roster for robotics / hackathon tracks</span>
+          </div>
+        </button>
+
+        <button type="button" id="btnTechFestJoinTeam" class="p-3.5 rounded-xl bg-surface-container-low hover:bg-surface-container text-left border border-outline-variant/30 transition-all flex flex-col justify-between">
+          <span class="material-symbols-outlined text-primary text-2xl mb-1">group_add</span>
+          <div>
+            <span class="font-label-md text-xs font-bold block text-on-surface">Join Team</span>
+            <span class="text-[11px] text-secondary">Join an existing squad with team code</span>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <div class="pt-3 border-t border-surface-container flex justify-end">
+      <button type="button" class="close-modal-btn px-4 py-2 rounded-lg bg-surface-container text-xs font-semibold" data-target="techfestModal">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL 6: Digital E-Pass with Live Generated QR Code -->
+<div id="ePassModal" class="fixed inset-0 bg-inverse-surface/60 backdrop-blur-sm z-[9999] hidden flex items-center justify-center p-4">
+  <div class="bg-surface-container-lowest rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-outline-variant/30 text-center animate-in zoom-in-95 duration-150">
+    <div class="flex items-center justify-between pb-3 border-b border-surface-container">
+      <span class="font-label-caps text-xs text-primary font-bold uppercase tracking-wider">Campus Inn+ E-Pass</span>
+      <button type="button" class="close-modal-btn w-7 h-7 rounded-full bg-surface-container flex items-center justify-center text-secondary hover:text-on-surface" data-target="ePassModal">
+        <span class="material-symbols-outlined text-xs">close</span>
+      </button>
+    </div>
+
+    <div class="py-4 space-y-3">
+      <div class="p-3 rounded-xl bg-primary-fixed text-primary font-bold text-xs uppercase tracking-widest">
+        MET Bhujbal Knowledge City • Authorized Pass
+      </div>
+
+      <div>
+        <h3 id="passEventTitle" class="font-headline-sm text-lg font-bold text-on-surface">MET Campus Event</h3>
+        <p id="passEventMeta" class="text-xs text-secondary mt-0.5">Central Auditorium • Confirmed Entry</p>
+      </div>
+
+      <!-- Live QR Code Canvas / SVG -->
+      <div class="w-44 h-44 mx-auto p-2 bg-white rounded-xl shadow-inner border border-outline-variant/40 flex items-center justify-center" id="qrContainer">
+        <!-- SVG QR code rendered dynamically -->
+      </div>
+
+      <div class="p-2.5 rounded-lg bg-surface-container-low text-xs space-y-1 font-mono text-left">
+        <div class="flex justify-between"><span class="text-secondary">Delegate:</span><strong id="passAttendeeName" class="text-on-surface font-sans">Priya Sharma</strong></div>
+        <div class="flex justify-between"><span class="text-secondary">Roll Number:</span><strong id="passRollNumber" class="text-on-surface">2021CS8401</strong></div>
+        <div class="flex justify-between"><span class="text-secondary">Pass Token:</span><strong id="passTokenId" class="text-primary font-bold">MET-PASS-9821</strong></div>
+      </div>
+    </div>
+
+    <div class="pt-3 border-t border-surface-container flex items-center justify-between gap-2">
+      <button type="button" class="close-modal-btn px-4 py-2 rounded-lg bg-surface-container text-xs font-semibold" data-target="ePassModal">Close</button>
+      <button type="button" id="btnPrintPass" class="px-5 py-2 rounded-lg bg-primary text-on-primary text-xs font-bold hover:bg-primary-container shadow-sm flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-sm">print</span> Print / Save E-Pass
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL 7: Submit Event Proposal -->
+<div id="eventProposalModal" class="fixed inset-0 bg-inverse-surface/60 backdrop-blur-sm z-[9999] hidden flex items-center justify-center p-4">
+  <div class="bg-surface-container-lowest rounded-2xl max-w-lg w-full p-6 md:p-8 shadow-2xl border border-outline-variant/30 max-h-[90vh] overflow-y-auto">
+    <div class="flex items-center justify-between pb-4 border-b border-surface-container">
+      <div class="flex items-center gap-2">
+        <span class="w-10 h-10 rounded-xl bg-primary-fixed text-primary flex items-center justify-center font-bold">
+          <span class="material-symbols-outlined text-2xl">post_add</span>
+        </span>
+        <div>
+          <h2 class="font-headline-sm text-base font-bold text-on-surface">Submit Event Proposal</h2>
+          <p class="text-xs text-secondary">Student Clubs &amp; Departmental Coordinators</p>
+        </div>
+      </div>
+      <button type="button" class="close-modal-btn w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-secondary hover:text-on-surface" data-target="eventProposalModal">
+        <span class="material-symbols-outlined text-sm">close</span>
+      </button>
+    </div>
+
+    <form id="formEventProposal" class="space-y-4 my-4">
+      <div>
+        <label class="block text-xs font-semibold text-on-surface mb-1">Event Title *</label>
+        <input type="text" id="propTitle" placeholder="e.g. AI Prompt Engineering Hackathon" class="w-full px-3.5 py-2.5 bg-surface-container-low rounded-lg text-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20" required>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-semibold text-on-surface mb-1">Category *</label>
+          <select id="propCategory" class="w-full px-3 py-2.5 bg-surface-container-low rounded-lg text-xs text-on-surface">
+            <option value="Technical &amp; Coding">Technical &amp; Coding</option>
+            <option value="Cultural &amp; Arts">Cultural &amp; Arts</option>
+            <option value="Sports &amp; Fitness">Sports &amp; Fitness</option>
+            <option value="Workshop &amp; Guest Lecture">Workshop &amp; Guest Lecture</option>
+            <option value="Hackathon">Hackathon</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-on-surface mb-1">Organizing Department *</label>
+          <select id="propDept" class="w-full px-3 py-2.5 bg-surface-container-low rounded-lg text-xs text-on-surface">
+            <option value="Computer &amp; IT">Computer Engineering &amp; IT</option>
+            <option value="Mechanical &amp; Civil">Mechanical &amp; Civil</option>
+            <option value="Pharmacy">Pharmacy</option>
+            <option value="Management (MBA)">Management (MBA)</option>
+            <option value="Robotics &amp; AI Club">Robotics &amp; AI Club</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-semibold text-on-surface mb-1">Proposed Date *</label>
+          <input type="date" id="propDate" class="w-full px-3 py-2 bg-surface-container-low rounded-lg text-xs text-on-surface" required>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-on-surface mb-1">Venue *</label>
+          <input type="text" id="propVenue" placeholder="e.g. Central Auditorium" class="w-full px-3 py-2 bg-surface-container-low rounded-lg text-xs text-on-surface" required>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-on-surface mb-1">Anticipated Student Attendance *</label>
+        <input type="number" id="propCapacity" placeholder="e.g. 250" class="w-full px-3 py-2 bg-surface-container-low rounded-lg text-xs text-on-surface" required>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-on-surface mb-1">Proposal Abstract &amp; Resource Requirements *</label>
+        <textarea id="propDescription" rows="3" placeholder="Outline agenda, invited speakers, projector/lab requirements, and faculty advisor endorsement..." class="w-full px-3 py-2 bg-surface-container-low rounded-lg text-xs text-on-surface" required></textarea>
+      </div>
+
+      <div class="pt-3 border-t border-surface-container flex items-center justify-end gap-2">
+        <button type="button" class="close-modal-btn px-4 py-2 rounded-lg bg-surface-container text-xs font-semibold" data-target="eventProposalModal">Cancel</button>
+        <button type="submit" class="px-5 py-2.5 rounded-lg bg-primary text-on-primary text-xs font-bold hover:bg-primary-container shadow-sm flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-sm">send</span> Submit for Coordinator Review
+        </button>
+      </div>
+    </form>
+  </div>
+</div><footer class="w-full bg-surface-container-lowest shadow-[0_1px_8px_rgba(0,0,0,0.04)] mt-space-xl"><div class="max-w-[1440px] mx-auto px-margin-mobile lg:px-margin-desktop py-space-xl"><div class="grid grid-cols-1 md:grid-cols-4 gap-space-lg mb-space-xl"><div class="md:col-span-1"><div class="flex items-center gap-space-sm mb-space-sm"><img alt="Campus Inn+ Brand Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1Vf7o906NO_q9oQd1FlxYnOheLogJdekuf1OlrltZ2LSvyhi6eGbAULdPdjy44FJ_kCFyc5mWDfS35NKD0RW97rdOVwng8Gpkvh7_XOS_0rnox3QrQzdY-hinoj7EgikfKmi2e_P8b1BXYd2FBqsgV8yBLG3QrQKkmNjuozBaY9pPlLEfDc-A1bsuX9i0QMiuMR0dxIjQk_Jt12AeDrJNjG4dJ1OpZIceBETIMJ-6No10yxND6HfW6yMw"><span class="font-headline-sm text-headline-sm text-primary tracking-tight">Campus Inn+</span></div><p class="font-body-md text-body-md text-on-surface-variant mb-space-sm">Connect. Manage. Grow.</p><p class="font-body-sm text-body-sm text-secondary">The collegiate ecosystem empowering modern student journeys, placement pipelines, and institutional management.</p></div><div class="flex flex-col gap-space-xs"><span class="font-label-caps text-label-caps text-primary uppercase mb-space-xs tracking-wider">Discover</span><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" data-path="about" href="#">About</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" data-path="events" href="#">Events</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" data-path="placements" href="#">Placements</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" data-path="companies" href="#">Companies</a></div><div class="flex flex-col gap-space-xs"><span class="font-label-caps text-label-caps text-primary uppercase mb-space-xs tracking-wider">Resources</span><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" data-path="student-portal" href="#">Student Portal</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" data-path="recruiter-portal" href="#">Recruiter ATS</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" data-path="help" href="#">Help Center</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" data-path="contact" href="#">Contact</a></div><div class="flex flex-col gap-space-xs"><span class="font-label-caps text-label-caps text-primary uppercase mb-space-xs tracking-wider">Governance</span><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" data-path="privacy" href="#">Privacy Policy</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" data-path="terms" href="#">Terms of Service</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" data-path="accessibility" href="#">Accessibility</a></div></div><div class="pt-space-lg flex flex-col sm:flex-row items-center justify-between gap-space-sm"><p class="font-body-sm text-body-sm text-secondary">© 2026 Campus Inn+. Connect. Manage. Grow. All rights reserved.</p><div class="flex items-center gap-space-md"><a class="font-body-sm text-body-sm text-secondary hover:text-on-surface transition-colors" data-path="privacy" href="#">Privacy</a><a class="font-body-sm text-body-sm text-secondary hover:text-on-surface transition-colors" data-path="terms" href="#">Terms</a><a class="font-body-sm text-body-sm text-secondary hover:text-on-surface transition-colors" data-path="contact" href="about.html#contact">Contact</a></div></div></div></footer>
+
+
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // --- 1. MODAL CONTROLLERS ---
+  function openModal(id) {
+    const m = document.getElementById(id);
+    if (!m) return;
+    m.classList.remove('hidden');
+    m.classList.add('flex');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal(id) {
+    const m = document.getElementById(id);
+    if (!m) return;
+    m.classList.add('hidden');
+    m.classList.remove('flex');
+    document.body.style.overflow = '';
+  }
+
+  document.querySelectorAll('.close-modal-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.getAttribute('data-target');
+      if (target) closeModal(target);
+    });
+  });
+
+  window.addEventListener('click', (e) => {
+    if (e.target && e.target.classList.contains('fixed') && !e.target.classList.contains('hidden') && e.target.id) {
+      closeModal(e.target.id);
+    }
+  });
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.fixed:not(.hidden)').forEach(m => {
+        if (m.id && m.id.endsWith('Modal')) closeModal(m.id);
+      });
+    }
+  });
+
+  // --- 2. OFFLINE HIGH-CONTRAST SVG QR CODE GENERATOR ---
+  function generateQRCodeSvg(data) {
+    const size = 25;
+    const grid = Array.from({ length: size }, () => Array(size).fill(false));
+
+    function drawFinder(r0, c0) {
+      for (let r = 0; r < 7; r++) {
+        for (let c = 0; c < 7; c++) {
+          const isBorder = r === 0 || r === 6 || c === 0 || c === 6;
+          const isCore = r >= 2 && r <= 4 && c >= 2 && c <= 4;
+          grid[r0 + r][c0 + c] = isBorder || isCore;
+        }
+      }
+    }
+    drawFinder(0, 0);
+    drawFinder(0, size - 7);
+    drawFinder(size - 7, 0);
+
+    // Timing strips
+    for (let i = 8; i < size - 8; i++) {
+      grid[6][i] = (i % 2 === 0);
+      grid[i][6] = (i % 2 === 0);
+    }
+
+    // Deterministic module layout from hash
+    let hash = 0;
+    for (let i = 0; i < data.length; i++) {
+      hash = ((hash << 5) - hash) + data.charCodeAt(i);
+      hash |= 0;
+    }
+
+    for (let r = 0; r < size; r++) {
+      for (let c = 0; c < size; c++) {
+        const inFinder1 = r < 8 && c < 8;
+        const inFinder2 = r < 8 && c >= size - 8;
+        const inFinder3 = r >= size - 8 && c < 8;
+        const inTiming = (r === 6 && c >= 8 && c < size - 8) || (c === 6 && r >= 8 && r < size - 8);
+        if (!inFinder1 && !inFinder2 && !inFinder3 && !inTiming) {
+          const bit = Math.abs((hash ^ (r * 31 + c * 17) ^ (r * c)) % 3);
+          grid[r][c] = (bit === 0 || bit === 1);
+        }
+      }
+    }
+
+    let rects = '';
+    for (let r = 0; r < size; r++) {
+      for (let c = 0; c < size; c++) {
+        if (grid[r][c]) {
+          rects += `<rect x="${c}" y="${r}" width="1" height="1" fill="#131b2e" />`;
+        }
+      }
+    }
+    return `<svg viewBox="0 0 ${size} ${size}" class="w-full h-full" shape-rendering="crispEdges"><rect width="${size}" height="${size}" fill="#ffffff"/>${rects}</svg>`;
+  }
+
+  // --- 3. REGISTERED EVENTS PERSISTENCE & RENDERING ---
+  const DEFAULT_REGISTERED_EVENTS = [
+    {
+      id: 'reg-hackbkc-2026',
+      title: 'HackBKC 2026: Intercollege Hackathon',
+      date: '12 - 13 March 2026 • 36-Hour Continuous Sprint',
+      venue: 'Advanced Computing Labs, IOE',
+      category: 'Hackathon',
+      teamName: 'NeuralCoders',
+      role: 'Team Lead',
+      passToken: 'MET-PASS-HACK-8841',
+      registeredAt: '2026-03-01'
+    },
+    {
+      id: 'reg-utsav-2027',
+      title: 'MET UTSAV 2027',
+      date: '24 - 26 Feb 2026 • 3-Day Gala',
+      venue: 'Main Open Amphitheatre & Central Lawns',
+      category: 'Cultural Guild',
+      role: 'Delegate',
+      passToken: 'MET-PASS-UTSAV-9102',
+      registeredAt: '2026-02-15'
+    }
+  ];
+
+  function getRegisteredEvents() {
+    try {
+      const stored = localStorage.getItem('ci_registered_events');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch (_) {}
+    localStorage.setItem('ci_registered_events', JSON.stringify(DEFAULT_REGISTERED_EVENTS));
+    return DEFAULT_REGISTERED_EVENTS;
+  }
+
+  function saveRegisteredEvents(list) {
+    localStorage.setItem('ci_registered_events', JSON.stringify(list));
+    renderRegisteredEvents();
+  }
+
+  function openEPass(evt) {
+    const user = (window.CampusInn && window.CampusInn.Session && window.CampusInn.Session.getUser()) || {};
+    const attendeeName = user.name || 'Verified Delegate';
+    const rollNo = user.rollNo || user.rollNumber || 'MET-BKC-2026';
+
+    document.getElementById('passEventTitle').textContent = evt.title || 'Campus Event';
+    document.getElementById('passEventMeta').textContent = `${evt.venue || 'MET Campus'} • ${evt.date || 'Authorized Entry'}`;
+    document.getElementById('passAttendeeName').textContent = attendeeName;
+    document.getElementById('passRollNumber').textContent = rollNo;
+    document.getElementById('passTokenId').textContent = evt.passToken || 'MET-PASS-ACTIVE';
+
+    const qrContainer = document.getElementById('qrContainer');
+    if (qrContainer) {
+      qrContainer.innerHTML = generateQRCodeSvg(evt.passToken || 'MET-PASS-ENTRY');
+    }
+
+    openModal('ePassModal');
+  }
+
+  function renderRegisteredEvents() {
+    const list = getRegisteredEvents();
+    const container = document.getElementById('registeredEventsList');
+    const badge = document.getElementById('registeredEventsBadge');
+    const topCount = document.getElementById('topMyEventsCount');
+
+    if (badge) badge.textContent = `${list.length} ${list.length === 1 ? 'Event' : 'Events'} Active`;
+    if (topCount) topCount.textContent = list.length;
+
+    if (!container) return;
+
+    if (list.length === 0) {
+      container.innerHTML = `
+        <div class="col-span-full py-10 text-center bg-surface-container-low rounded-xl border border-dashed border-outline-variant p-6">
+          <span class="material-symbols-outlined text-4xl text-outline mb-2">event_busy</span>
+          <h4 class="font-headline-sm text-base font-bold text-on-surface">No Registered Events Found</h4>
+          <p class="text-xs text-secondary mt-1">Browse the campus headliners or departmental gatherings above to register.</p>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = list.map(item => `
+      <div class="p-space-md rounded-xl bg-surface-container-low border border-outline-variant/30 flex flex-col justify-between gap-space-sm shadow-sm hover:shadow-md transition-shadow">
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary-fixed text-primary uppercase">${item.category || 'Campus Event'}</span>
+            <span class="text-xs text-tertiary font-bold flex items-center gap-1">
+              <span class="material-symbols-outlined text-sm">verified</span> Confirmed Entry
+            </span>
+          </div>
+          <h3 class="font-headline-sm text-base font-bold text-on-surface mb-1">${item.title}</h3>
+          <p class="text-xs text-secondary mb-2 flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-xs text-primary">calendar_month</span> ${item.date}
+          </p>
+          <p class="text-xs text-secondary flex items-center gap-1.5 mb-2">
+            <span class="material-symbols-outlined text-xs text-tertiary">location_on</span> ${item.venue}
+          </p>
+          ${item.teamName ? `<div class="p-2 rounded bg-surface-container text-xs text-on-surface font-mono">Team: <strong>${item.teamName}</strong> • ${item.role || 'Member'}</div>` : ''}
+        </div>
+        <div class="pt-2 border-t border-surface-container flex items-center justify-between gap-2">
+          <button type="button" class="btn-cancel-reg text-xs text-error hover:underline" data-id="${item.id}">Cancel RSVP</button>
+          <button type="button" class="btn-get-pass px-3.5 py-1.5 rounded-lg bg-primary text-on-primary text-xs font-bold hover:bg-primary-container shadow-sm flex items-center gap-1.5" data-id="${item.id}">
+            <span class="material-symbols-outlined text-sm">qr_code_2</span> Get E-Pass
+          </button>
+        </div>
+      </div>
+    `).join('');
+
+    container.querySelectorAll('.btn-get-pass').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-id');
+        const found = list.find(x => x.id === id);
+        if (found) openEPass(found);
+      });
+    });
+
+    container.querySelectorAll('.btn-cancel-reg').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-id');
+        if (confirm('Are you sure you wish to cancel this registration and forfeit your entry pass?')) {
+          const updated = list.filter(x => x.id !== id);
+          saveRegisteredEvents(updated);
+          CampusInn.Toast.info('Registration cancelled.');
+        }
+      });
+    });
+  }
+
+  // Initialize Registered Events
+  renderRegisteredEvents();
+
+  // Print Pass Handler
+  const btnPrintPass = document.getElementById('btnPrintPass');
+  if (btnPrintPass) {
+    btnPrintPass.addEventListener('click', () => {
+      window.print();
+    });
+  }
+
+  // --- 4. SUBMIT EVENT PROPOSAL ---
+  const btnOpenProposal = document.getElementById('btnOpenProposalModal');
+  if (btnOpenProposal) {
+    btnOpenProposal.addEventListener('click', () => openModal('eventProposalModal'));
+  }
+
+  const formProposal = document.getElementById('formEventProposal');
+  if (formProposal) {
+    formProposal.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const title = document.getElementById('propTitle').value.trim();
+      const category = document.getElementById('propCategory').value;
+      const dept = document.getElementById('propDept').value;
+      const date = document.getElementById('propDate').value;
+      const venue = document.getElementById('propVenue').value.trim();
+      const capacity = document.getElementById('propCapacity').value;
+      const desc = document.getElementById('propDescription').value.trim();
+
+      if (!title || !venue || !date || !capacity || !desc) {
+        CampusInn.Toast.error('Please complete all proposal fields.');
+        return;
+      }
+
+      const proposal = {
+        id: 'prop-' + Date.now(),
+        title,
+        category,
+        dept,
+        date,
+        venue,
+        capacity,
+        desc,
+        status: 'Under Review by Faculty Coordinator',
+        submittedAt: new Date().toISOString()
+      };
+
+      try {
+        const existing = JSON.parse(localStorage.getItem('ci_event_proposals') || '[]');
+        existing.push(proposal);
+        localStorage.setItem('ci_event_proposals', JSON.stringify(existing));
+      } catch (_) {}
+
+      CampusInn.Toast.success(`Event proposal "${title}" submitted successfully for coordinator review!`);
+      formProposal.reset();
+      closeModal('eventProposalModal');
+    });
+  }
+
+  // --- 5. HACKATHON PROBLEM STATEMENTS & TEAM MODAL ---
+  const btnHackProblems = document.getElementById('btnHackathonProblems');
+  if (btnHackProblems) {
+    btnHackProblems.addEventListener('click', () => openModal('hackathonProblemsModal'));
+  }
+
+  const btnHackTeam = document.getElementById('btnHackathonTeam');
+  if (btnHackTeam) {
+    btnHackTeam.addEventListener('click', () => openModal('hackathonTeamModal'));
+  }
+
+  document.querySelectorAll('.btn-select-problem').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const ps = btn.getAttribute('data-ps');
+      closeModal('hackathonProblemsModal');
+      const sel = document.getElementById('hackathonProblemSelect');
+      if (sel) {
+        for (let opt of sel.options) {
+          if (opt.value.includes(ps.split(':')[0])) {
+            sel.value = opt.value;
+            break;
+          }
+        }
+      }
+      openModal('hackathonTeamModal');
+      CampusInn.Toast.info(`Selected ${ps.split(':')[0]}. Complete your team roster.`);
+    });
+  });
+
+  // Hackathon Tab Toggles (Create vs Join)
+  const tabCreateBtn = document.getElementById('tabCreateTeamBtn');
+  const tabJoinBtn = document.getElementById('tabJoinTeamBtn');
+  const viewCreate = document.getElementById('viewCreateTeam');
+  const viewJoin = document.getElementById('viewJoinTeam');
+
+  if (tabCreateBtn && tabJoinBtn && viewCreate && viewJoin) {
+    tabCreateBtn.addEventListener('click', () => {
+      tabCreateBtn.classList.add('bg-surface-container-lowest', 'text-primary', 'shadow-sm');
+      tabCreateBtn.classList.remove('text-on-surface-variant');
+      tabJoinBtn.classList.remove('bg-surface-container-lowest', 'text-primary', 'shadow-sm');
+      tabJoinBtn.classList.add('text-on-surface-variant');
+      viewCreate.classList.remove('hidden');
+      viewJoin.classList.add('hidden');
+    });
+
+    tabJoinBtn.addEventListener('click', () => {
+      tabJoinBtn.classList.add('bg-surface-container-lowest', 'text-primary', 'shadow-sm');
+      tabJoinBtn.classList.remove('text-on-surface-variant');
+      tabCreateBtn.classList.remove('bg-surface-container-lowest', 'text-primary', 'shadow-sm');
+      tabCreateBtn.classList.add('text-on-surface-variant');
+      viewJoin.classList.remove('hidden');
+      viewCreate.classList.add('hidden');
+    });
+  }
+
+  // Pre-fill leader details in hackathon modal
+  const user = (window.CampusInn && window.CampusInn.Session && window.CampusInn.Session.getUser()) || {};
+  const teamLeadNameInput = document.getElementById('teamLeaderName');
+  const teamLeadRollInput = document.getElementById('teamLeaderRoll');
+  if (teamLeadNameInput && user.name) teamLeadNameInput.value = user.name;
+  if (teamLeadRollInput && (user.rollNo || user.rollNumber)) teamLeadRollInput.value = user.rollNo || user.rollNumber;
+
+  const formCreateTeam = document.getElementById('formCreateTeam');
+  if (formCreateTeam) {
+    formCreateTeam.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const teamName = document.getElementById('hackTeamName').value.trim();
+      const leadName = document.getElementById('teamLeaderName').value.trim();
+      const leadRoll = document.getElementById('teamLeaderRoll').value.trim();
+      const m2 = document.getElementById('teamMember2').value.trim();
+      const m3 = document.getElementById('teamMember3').value.trim();
+      const m4 = document.getElementById('teamMember4').value.trim();
+      const ps = document.getElementById('hackathonProblemSelect').value;
+
+      if (!teamName || !leadName || !leadRoll || !m2) {
+        CampusInn.Toast.error('Please specify Team Name, Leader details, and at least 1 co-member.');
+        return;
+      }
+
+      const passToken = `MET-HACK-${Math.floor(1000 + Math.random() * 9000)}`;
+      const newEvt = {
+        id: 'reg-hack-' + Date.now(),
+        title: `HackBKC 2026 (${ps.split(':')[0]})`,
+        date: '12 - 13 March 2026 • 36-Hour Continuous Sprint',
+        venue: 'Advanced Computing Labs, IOE',
+        category: 'Hackathon',
+        teamName: teamName,
+        role: 'Team Leader',
+        passToken: passToken,
+        registeredAt: new Date().toISOString()
+      };
+
+      const list = getRegisteredEvents();
+      list.unshift(newEvt);
+      saveRegisteredEvents(list);
+
+      CampusInn.Toast.success(`Team "${teamName}" registered successfully! Entry pass generated.`);
+      formCreateTeam.reset();
+      closeModal('hackathonTeamModal');
+      openEPass(newEvt);
+    });
+  }
+
+  const formJoinTeam = document.getElementById('formJoinTeam');
+  if (formJoinTeam) {
+    formJoinTeam.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const code = document.getElementById('joinTeamCode').value.trim().toUpperCase();
+      const roll = document.getElementById('joinStudentRoll').value.trim();
+
+      if (!code || !roll) {
+        CampusInn.Toast.error('Please enter the 6-character Team Code and your Roll Number.');
+        return;
+      }
+
+      const passToken = `MET-HACK-${Math.floor(1000 + Math.random() * 9000)}`;
+      const newEvt = {
+        id: 'reg-hack-member-' + Date.now(),
+        title: `HackBKC 2026 (Team ${code})`,
+        date: '12 - 13 March 2026 • 36-Hour Continuous Sprint',
+        venue: 'Advanced Computing Labs, IOE',
+        category: 'Hackathon',
+        teamName: `Team ${code}`,
+        role: 'Team Member',
+        passToken: passToken,
+        registeredAt: new Date().toISOString()
+      };
+
+      const list = getRegisteredEvents();
+      list.unshift(newEvt);
+      saveRegisteredEvents(list);
+
+      CampusInn.Toast.success(`Joined Team "${code}" successfully! E-Pass generated.`);
+      formJoinTeam.reset();
+      closeModal('hackathonTeamModal');
+      openEPass(newEvt);
+    });
+  }
+
+  // --- 6. MET UTSAV REGISTRATION ---
+  const btnUtsav = document.getElementById('btnRegisterUtsav');
+  if (btnUtsav) {
+    btnUtsav.addEventListener('click', () => {
+      const uName = document.getElementById('utsavStudentName');
+      const uRoll = document.getElementById('utsavRollNumber');
+      const uEmail = document.getElementById('utsavEmail');
+      if (uName && user.name) uName.value = user.name;
+      if (uRoll && (user.rollNo || user.rollNumber)) uRoll.value = user.rollNo || user.rollNumber;
+      if (uEmail && user.email) uEmail.value = user.email;
+      openModal('metUtsavModal');
+    });
+  }
+
+  document.querySelectorAll('input[name="utsavMode"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      const teamBox = document.getElementById('utsavTeamFields');
+      if (teamBox) {
+        if (radio.value === 'team') teamBox.classList.remove('hidden');
+        else teamBox.classList.add('hidden');
+      }
+    });
+  });
+
+  const formUtsav = document.getElementById('formMetUtsav');
+  if (formUtsav) {
+    formUtsav.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const activity = document.getElementById('utsavActivity').value;
+      const isTeam = document.querySelector('input[name="utsavMode"]:checked')?.value === 'team';
+      const teamName = isTeam ? document.getElementById('utsavTeamName').value.trim() : null;
+
+      const passToken = `MET-UTSAV-${Math.floor(1000 + Math.random() * 9000)}`;
+      const newEvt = {
+        id: 'reg-utsav-' + Date.now(),
+        title: `MET UTSAV 2027: ${activity}`,
+        date: '24 - 26 Feb 2026 • 3-Day Gala',
+        venue: 'Main Open Amphitheatre & Central Lawns',
+        category: 'Cultural Guild',
+        teamName: teamName,
+        role: isTeam ? 'Team Member' : 'Solo Performer',
+        passToken: passToken,
+        registeredAt: new Date().toISOString()
+      };
+
+      const list = getRegisteredEvents();
+      list.unshift(newEvt);
+      saveRegisteredEvents(list);
+
+      CampusInn.Toast.success(`Registered for MET Utsav (${activity})! E-Pass generated.`);
+      closeModal('metUtsavModal');
+      openEPass(newEvt);
+    });
+  }
+
+  // --- 7. DEPARTMENT FRESHERS WITH STRICT RESTRICTIONS ---
+  let selectedFreshersEvent = null;
+
+  document.querySelectorAll('.btn-freshers-reg').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const deptRequired = btn.getAttribute('data-freshers-dept');
+      const title = btn.getAttribute('data-freshers-title');
+      selectedFreshersEvent = { deptRequired, title };
+
+      const modalTitle = document.getElementById('freshersModalEventTitle');
+      const reqDeptSpan = document.getElementById('freshersEligibleDeptName');
+      const rollInput = document.getElementById('freshersRollNumber');
+      const deptInput = document.getElementById('freshersStudentDept');
+      const alertBox = document.getElementById('freshersEligibilityAlert');
+      const submitBtn = document.getElementById('btnVerifyFreshers');
+
+      if (modalTitle) modalTitle.textContent = title;
+      if (reqDeptSpan) reqDeptSpan.textContent = deptRequired;
+
+      const studentRoll = user.rollNo || user.rollNumber || '2021CS8401';
+      const studentDept = user.department || localStorage.getItem('ci_student_dept') || 'Computer Engineering';
+
+      if (rollInput) rollInput.value = studentRoll;
+      if (deptInput) deptInput.value = studentDept;
+
+      // STRICT ELIGIBILITY CHECK: Check if studentDept matches deptRequired
+      const reqLower = deptRequired.toLowerCase();
+      const stuLower = studentDept.toLowerCase();
+
+      let isEligible = false;
+      if (reqLower.includes('comp') || reqLower.includes('it')) {
+        isEligible = stuLower.includes('comp') || stuLower.includes('it');
+      } else if (reqLower.includes('bca') || reqLower.includes('mca')) {
+        isEligible = stuLower.includes('bca') || stuLower.includes('mca') || stuLower.includes('computer');
+      } else if (reqLower.includes('mba') || reqLower.includes('bba') || reqLower.includes('management')) {
+        isEligible = stuLower.includes('mba') || stuLower.includes('bba') || stuLower.includes('management');
+      } else if (reqLower.includes('pharm')) {
+        isEligible = stuLower.includes('pharm');
+      }
+
+      if (alertBox && submitBtn) {
+        alertBox.classList.remove('hidden');
+        if (isEligible) {
+          alertBox.className = 'p-3 rounded-lg text-xs leading-relaxed bg-tertiary-fixed/30 text-tertiary border border-tertiary/20';
+          alertBox.innerHTML = `<strong>Eligibility Verified:</strong> Your department (${studentDept}) matches the authorized cohort for ${title}.`;
+          submitBtn.disabled = false;
+          submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        } else {
+          alertBox.className = 'p-3 rounded-lg text-xs leading-relaxed bg-error-container text-on-error-container border border-error/20';
+          alertBox.innerHTML = `<strong>Access Restricted:</strong> You are registered under <u>${studentDept}</u>. Only students enrolled in <u>${deptRequired}</u> are authorized to attend this departmental induction.`;
+          submitBtn.disabled = true;
+          submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        }
+      }
+
+      openModal('freshersModal');
+    });
+  });
+
+  const formFreshers = document.getElementById('formFreshersAttendance');
+  if (formFreshers) {
+    formFreshers.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (!selectedFreshersEvent) return;
+
+      const passToken = `MET-FRSH-${Math.floor(1000 + Math.random() * 9000)}`;
+      const newEvt = {
+        id: 'reg-freshers-' + Date.now(),
+        title: selectedFreshersEvent.title,
+        date: 'November 2025 Induction Gathering',
+        venue: 'MET BKC Campus Quadrangle',
+        category: 'Department Freshers',
+        role: 'Verified Batch Inductee',
+        passToken: passToken,
+        registeredAt: new Date().toISOString()
+      };
+
+      const list = getRegisteredEvents();
+      list.unshift(newEvt);
+      saveRegisteredEvents(list);
+
+      CampusInn.Toast.success(`Attendance marked & Entry Pass issued for ${selectedFreshersEvent.title}!`);
+      closeModal('freshersModal');
+      openEPass(newEvt);
+    });
+  }
+
+  // --- 8. MET TECHFEST 2026 MODAL ---
+  const btnTechFest = document.getElementById('btnOpenTechFest');
+  if (btnTechFest) {
+    btnTechFest.addEventListener('click', () => openModal('techfestModal'));
+  }
+
+  const btnEnrollGenAi = document.getElementById('btnEnrollGenAi');
+  if (btnEnrollGenAi) {
+    btnEnrollGenAi.addEventListener('click', () => {
+      const passToken = `MET-GENAI-${Math.floor(1000 + Math.random() * 9000)}`;
+      const newEvt = {
+        id: 'reg-genai-' + Date.now(),
+        title: 'MET TechFest 2026: Generative AI & Autonomous LLM Sprint',
+        date: '19 - 20 Jan 2026 • Live Project Expo',
+        venue: 'IOE AI Research Lab & Engineering Quad',
+        category: 'Tech Conclave',
+        role: 'AI Researcher / Builder',
+        passToken: passToken,
+        registeredAt: new Date().toISOString()
+      };
+
+      const list = getRegisteredEvents();
+      list.unshift(newEvt);
+      saveRegisteredEvents(list);
+
+      CampusInn.Toast.success('Enrolled in Generative AI Sprint! Cloud API credits & e-pass issued.');
+      closeModal('techfestModal');
+      openEPass(newEvt);
+    });
+  }
+
+  const btnTechCreate = document.getElementById('btnTechFestCreateTeam');
+  if (btnTechCreate) {
+    btnTechCreate.addEventListener('click', () => {
+      closeModal('techfestModal');
+      openModal('hackathonTeamModal');
+    });
+  }
+
+  const btnTechJoin = document.getElementById('btnTechFestJoinTeam');
+  if (btnTechJoin) {
+    btnTechJoin.addEventListener('click', () => {
+      closeModal('techfestModal');
+      openModal('hackathonTeamModal');
+      if (tabJoinBtn) tabJoinBtn.click();
+    });
+  }
+
+  // --- 9. CATEGORY FILTER PILLS ---
+  const filterPills = document.querySelectorAll('button.rounded-full, a.rounded-full');
+  filterPills.forEach(pill => {
+    const text = pill.textContent.trim();
+    if (['All Events', 'MET Campus Life', 'Department Freshers', 'Hackathons', 'Competitions', 'Sports', 'Workshops'].some(c => text.includes(c))) {
+      pill.addEventListener('click', (e) => {
+        e.preventDefault();
+        filterPills.forEach(p => {
+          p.classList.remove('bg-primary', 'text-on-primary');
+          p.classList.add('bg-surface-container', 'text-on-surface');
+        });
+        pill.classList.remove('bg-surface-container', 'text-on-surface');
+        pill.classList.add('bg-primary', 'text-on-primary');
+        CampusInn.Toast.info(`Filter applied: ${text}`, 1200);
+
+        const q = text.toLowerCase().split(' ')[0];
+        document.querySelectorAll('section article, .grid > .bg-surface-container-lowest').forEach(card => {
+          if (text.includes('All') || card.textContent.toLowerCase().includes(q)) {
+            card.style.display = '';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+    }
+  });
+
+  // --- 10. REAL-TIME SEARCH ---
+  const searchInputs = document.querySelectorAll('input[placeholder*="Search"]');
+  searchInputs.forEach(input => {
+    input.addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase().trim();
+      document.querySelectorAll('section article, .grid > .bg-surface-container-lowest').forEach(card => {
+        if (!q || card.textContent.toLowerCase().includes(q)) {
+          card.style.display = '';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    });
+  });
+
+  // --- 11. GENERAL BUTTON EVENT HANDLERS ---
+  document.querySelectorAll('button').forEach(btn => {
+    const txt = btn.textContent.trim();
+    if (txt.includes('Explore Lineup') || txt.includes('Rulebook')) {
+      btn.addEventListener('click', () => {
+        const title = btn.closest('.bg-surface-container-lowest, section')?.querySelector('h1, h2, h3')?.textContent || 'Campus Event';
+        CampusInn.Toast.info(`Viewing details & rulebook for: ${title}`);
+      });
+    }
+  });
+});
+</script>
+</body></html>

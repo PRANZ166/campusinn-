@@ -1,0 +1,509 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><meta content="web_dashboard" name="shell-type"><title>Campus Inn+</title><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;700;800&amp;family=Hanken+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {"surface-tint": "#7331df", "surface-dim": "#d2d9f4", "surface-container-high": "#e2e7ff", "secondary-container": "#e4e0f5", "on-primary-fixed-variant": "#5b00c5", "on-primary-container": "#dac5ff", "on-surface": "#131b2e", "on-tertiary": "#ffffff", "tertiary-container": "#006544", "on-secondary-container": "#646274", primary: "#5300b7", "on-error-container": "#93000a", "tertiary-fixed": "#6ffbbe", "surface-container-lowest": "#ffffff", "error-container": "#ffdad6", "inverse-on-surface": "#eef0ff", error: "#ba1a1a", "on-tertiary-fixed": "#002113", "on-surface-variant": "#4a4455", "primary-container": "#6d28d9", "on-primary-fixed": "#250059", "on-error": "#ffffff", "on-background": "#131b2e", "outline-variant": "#ccc3d7", surface: "#faf8ff", "surface-variant": "#dae2fd", "tertiary-fixed-dim": "#4edea3", outline: "#7b7486", "on-tertiary-fixed-variant": "#005236", "surface-bright": "#faf8ff", "secondary-fixed": "#e4e0f5", "inverse-surface": "#283044", "surface-container-highest": "#dae2fd", background: "#faf8ff", "primary-fixed-dim": "#d3bbff", secondary: "#5e5c6e", "secondary-fixed-dim": "#c7c4d8", "on-secondary-fixed": "#1b1a29", "on-tertiary-container": "#58e7ab", "surface-container": "#eaedff", tertiary: "#004b31", "surface-container-low": "#f2f3ff", "on-secondary": "#ffffff", "on-primary": "#ffffff", "inverse-primary": "#d3bbff", "on-secondary-fixed-variant": "#464555", "primary-fixed": "#ebddff"}, borderRadius: {DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px"}, spacing: {"gutter-mobile": "1rem", "space-lg": "1.5rem", "gutter-desktop": "2rem", gutter: "1.5rem", "margin-desktop": "3rem", "space-xs": "0.25rem", "space-md": "1rem", margin: "1.5rem", "space-sm": "0.5rem", "space-xl": "2.5rem", "margin-mobile": "1rem"}, fontFamily: {"display-lg-mobile": ["Bricolage Grotesque"], "body-sm": ["Hanken Grotesk"], "label-md": ["Hanken Grotesk"], "body-lg": ["Hanken Grotesk"], "headline-xl": ["Bricolage Grotesque"], "body-md": ["Hanken Grotesk"], "headline-md": ["Bricolage Grotesque"], "headline-sm": ["Bricolage Grotesque"], "display-lg": ["Bricolage Grotesque"], "body-xl": ["Hanken Grotesk"], "headline-xl-mobile": ["Bricolage Grotesque"], "headline-lg": ["Bricolage Grotesque"], "label-caps": ["Hanken Grotesk"], "label-lg": ["Hanken Grotesk"], headline: ["Bricolage Grotesque"], display: ["Bricolage Grotesque"], body: ["Hanken Grotesk"], label: ["Hanken Grotesk"]}, fontSize: {"display-lg-mobile": ["2.25rem", {lineHeight: "2.75rem", letterSpacing: "-0.025em", fontWeight: "800"}], "body-sm": ["0.75rem", {lineHeight: "1.125rem", fontWeight: "400"}], "label-md": ["0.75rem", {lineHeight: "1rem", letterSpacing: "0.02em", fontWeight: "600"}], "body-lg": ["1rem", {lineHeight: "1.5rem", fontWeight: "400"}], "headline-xl": ["2.5rem", {lineHeight: "3rem", letterSpacing: "-0.025em", fontWeight: "700"}], "body-md": ["0.875rem", {lineHeight: "1.375rem", fontWeight: "400"}], "headline-md": ["1.5rem", {lineHeight: "2rem", letterSpacing: "-0.015em", fontWeight: "600"}], "headline-sm": ["1.25rem", {lineHeight: "1.75rem", letterSpacing: "-0.01em", fontWeight: "600"}], "display-lg": ["3.5rem", {lineHeight: "4rem", letterSpacing: "-0.03em", fontWeight: "800"}], "body-xl": ["1.125rem", {lineHeight: "1.75rem", letterSpacing: "-0.005em", fontWeight: "400"}], "headline-xl-mobile": ["1.75rem", {lineHeight: "2.25rem", letterSpacing: "-0.02em", fontWeight: "700"}], "headline-lg": ["2rem", {lineHeight: "2.5rem", letterSpacing: "-0.02em", fontWeight: "700"}], "label-caps": ["0.6875rem", {lineHeight: "0.875rem", letterSpacing: "0.06em", fontWeight: "700"}], "label-lg": ["0.875rem", {lineHeight: "1.25rem", letterSpacing: "0.01em", fontWeight: "600"}]}}}};</script><link rel="stylesheet" href="css/theme.css"><script src="js/mock-data.js"></script>
+<script src="js/api.js"></script>
+<script src="js/shared.js"></script></head>
+<body class="bg-surface font-body-md text-body-md text-on-surface antialiased">
+<aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-low shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-50 flex flex-col justify-between">
+  <div class="flex flex-col">
+    <div class="h-16 px-space-md flex items-center gap-space-sm bg-surface-container">
+      <div class="w-9 h-9 rounded-lg bg-primary flex items-center justify-center text-on-primary font-headline-sm text-headline-sm font-bold">C</div>
+      <div class="flex flex-col">
+        <span class="font-headline-sm text-headline-sm font-bold text-on-surface tracking-tight leading-none">Campus Inn<span class="text-primary">+</span></span>
+        <span class="font-label-caps text-label-caps text-primary tracking-widest uppercase">Recruiter ATS</span>
+      </div>
+    </div>
+    <div class="px-space-md py-space-sm">
+      <div class="bg-surface-container-high rounded-lg p-space-sm flex items-center gap-space-sm">
+        <span class="material-symbols-outlined text-primary text-[20px]">apartment</span>
+        <div class="flex flex-col min-w-0 flex-1">
+          <span class="font-label-caps text-label-caps text-on-surface-variant uppercase font-semibold">Corporate Partner</span>
+          <span class="font-label-md text-label-md text-on-surface truncate">TechCorp Innovations</span>
+        </div>
+        <span class="w-2 h-2 rounded-full bg-tertiary-fixed-dim"></span>
+      </div>
+    </div>
+    <div class="px-space-md mt-space-xs">
+      <span class="font-label-caps text-label-caps text-on-surface-variant tracking-wider uppercase px-space-xs block mb-space-xs">Recruitment Hub</span>
+      <nav class="space-y-space-xs">
+        <a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-lg transition-colors bg-primary-container text-on-primary font-semibold" href="company.html">
+          <span class="material-symbols-outlined text-[20px]">dashboard</span>
+          <span class="font-label-lg text-label-lg">Recruiter Overview</span>
+        </a>
+        <a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="hiring-builder.html">
+          <span class="material-symbols-outlined text-[20px]">post_add</span>
+          <span class="font-label-lg text-label-lg">Hiring Requirement Builder</span>
+        </a>
+        <a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="hr-register.html">
+          <span class="material-symbols-outlined text-[20px]">verified_user</span>
+          <span class="font-label-lg text-label-lg">Company Verification</span>
+        </a>
+        <a class="flex items-center gap-space-sm px-space-sm py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="placement.html">
+          <span class="material-symbols-outlined text-[20px]">handshake</span>
+          <span class="font-label-lg text-label-lg">TPO Clearance</span>
+        </a>
+      </nav>
+    </div>
+  </div>
+  <div class="p-space-md bg-surface-container-low">
+    <div class="bg-surface-container rounded-lg p-space-sm flex items-center justify-between">
+      <div class="flex items-center gap-space-sm">
+        <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+          <span class="material-symbols-outlined text-on-primary text-[18px]">person</span>
+        </div>
+        <div class="flex flex-col min-w-0">
+          <span class="font-label-md text-label-md text-on-surface font-semibold truncate" data-bind="user-name">HR Talent Lead</span>
+          <span class="font-label-caps text-label-caps text-primary">Verified Recruiter</span>
+        </div>
+      </div>
+      <a class="text-on-surface-variant hover:text-error transition-colors p-space-xs flex items-center" data-path="logout" href="#">
+        <span class="material-symbols-outlined text-[18px]">logout</span>
+      </a>
+    </div>
+  </div>
+</aside>
+<div class="pl-72">
+  <header class="fixed top-0 left-72 right-0 h-16 bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 px-space-lg flex items-center justify-between">
+    <div class="flex items-center gap-space-md">
+      <a class="flex items-center gap-space-xs text-on-surface hover:text-primary transition-colors" href="index.html">
+        <span class="font-headline-sm text-headline-sm font-bold tracking-tight">Campus Inn+</span>
+      </a>
+      <span class="text-outline-variant font-body-sm text-body-sm">/</span>
+      <div class="flex items-center gap-space-xs bg-surface-container px-space-sm py-space-xs rounded-full">
+        <span class="material-symbols-outlined text-primary text-[16px]">domain</span>
+        <span class="font-label-md text-label-md text-on-surface font-medium">MET BKC Institutional Hiring Portal</span>
+      </div>
+    </div>
+    <div class="flex items-center gap-space-sm">
+      <button aria-label="Toggle Theme" class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors" type="button">
+        <span class="material-symbols-outlined text-[20px]">light_mode</span>
+      </button>
+      <a href="index.html" class="px-3 py-1.5 rounded-lg bg-surface-container font-label-md font-semibold text-primary hover:bg-surface-variant transition-colors flex items-center gap-1">
+        <span class="material-symbols-outlined text-[16px]">public</span> Public Site
+      </a>
+    </div>
+  </header>
+  <main class="w-full pt-16 bg-surface px-space-lg">
+    <div class="flex flex-col w-full pb-space-xl mt-space-md">
+      <div class="relative bg-surface-container-lowest rounded-xl p-space-lg mb-space-lg shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-space-md">
+        <div>
+          <h1 class="font-headline-lg font-extrabold text-on-surface">Corporate Talent Acquisition Console</h1>
+          <p class="font-body-md text-on-surface-variant mt-1 font-medium">Recruiting from MET Bhujbal Knowledge City (Engineering, Management, Computer Applications).</p>
+        </div>
+        <div class="flex gap-2">
+          <a href="hiring-builder.html" class="px-space-md py-space-sm bg-primary text-on-primary rounded-xl font-bold flex items-center gap-2 shadow-sm">
+            <span class="material-symbols-outlined text-[18px]">add</span> Post New Job Requirement
+          </a>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-4 gap-space-md mb-space-lg">
+        <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm border-l-4 border-l-primary">
+          <span class="font-label-caps text-secondary uppercase font-bold">Applications Received</span>
+          <div class="font-headline-xl text-headline-xl font-bold text-on-surface my-1">428</div>
+          <span class="font-body-sm text-tertiary font-semibold">100% Verified Profiles</span>
+        </div>
+        <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm border-l-4 border-l-secondary">
+          <span class="font-label-caps text-secondary uppercase font-bold">Shortlisted Candidates</span>
+          <div class="font-headline-xl text-headline-xl font-bold text-on-surface my-1">84</div>
+          <span class="font-body-sm text-primary font-semibold">Met 7.0+ CGPA Criterion</span>
+        </div>
+        <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm border-l-4 border-l-tertiary">
+          <span class="font-label-caps text-secondary uppercase font-bold">Interviews Slotted</span>
+          <div class="font-headline-xl text-headline-xl font-bold text-tertiary my-1">32</div>
+          <span class="font-body-sm text-tertiary font-semibold">MET BKC Lab 2 Confirmed</span>
+        </div>
+        <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm border-l-4 border-l-primary bg-primary-fixed/20">
+          <span class="font-label-caps text-secondary uppercase font-bold">Offers Extended</span>
+          <div class="font-headline-xl text-headline-xl font-bold text-primary my-1">14</div>
+          <span class="font-body-sm text-primary font-bold">Zero-Backlog Cohort</span>
+        </div>
+      </div>
+
+      <!-- Candidate Evaluation Roster & ATS Pipeline -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg mb-space-xl">
+        <!-- Main Candidates Table (8 cols) -->
+        <div class="lg:col-span-8 flex flex-col bg-surface-container-lowest rounded-xl shadow-sm p-space-lg">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm pb-space-md border-b border-surface-container">
+            <div>
+              <div class="flex items-center gap-space-xs">
+                <span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
+                <span class="font-label-caps text-label-caps text-primary uppercase font-bold tracking-wider">Candidate Evaluation Pool</span>
+              </div>
+              <h2 class="font-headline-md text-headline-md text-on-surface font-bold mt-0.5">Verified Applicant Roster</h2>
+            </div>
+            <!-- Search & Filters -->
+            <div class="flex items-center gap-space-xs">
+              <div class="flex items-center bg-surface-container-low px-3 py-1.5 rounded-lg text-on-surface-variant">
+                <span class="material-symbols-outlined text-[18px] mr-1.5 text-primary">search</span>
+                <input id="candidateSearchInput" type="text" placeholder="Search applicant..." class="bg-transparent text-on-surface text-body-sm focus:outline-none w-36 sm:w-48 font-medium">
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Filter Tabs -->
+          <div class="flex items-center gap-space-xs overflow-x-auto py-space-sm border-b border-surface-container mb-space-md" id="candFilterTabs">
+            <button data-filter="all" class="px-space-md py-1 rounded-lg bg-primary text-on-primary font-label-md text-label-md font-bold shadow-sm whitespace-nowrap">All Applicants (5)</button>
+            <button data-filter="Interview Slotted" class="px-space-md py-1 rounded-lg bg-surface-container-low text-on-surface-variant hover:text-on-surface font-label-md text-label-md font-semibold whitespace-nowrap transition-colors">Interviews (2)</button>
+            <button data-filter="Shortlisted" class="px-space-md py-1 rounded-lg bg-surface-container-low text-on-surface-variant hover:text-on-surface font-label-md text-label-md font-semibold whitespace-nowrap transition-colors">Shortlisted (2)</button>
+            <button data-filter="Offer Extended" class="px-space-md py-1 rounded-lg bg-surface-container-low text-on-surface-variant hover:text-on-surface font-label-md text-label-md font-semibold whitespace-nowrap transition-colors">Offers (1)</button>
+          </div>
+
+          <!-- Candidates Table -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-left font-body-md text-body-md" id="candTable">
+              <thead>
+                <tr class="bg-surface-container-low text-on-surface font-label-caps uppercase tracking-wider">
+                  <th class="py-space-sm px-space-md rounded-l-lg font-bold">Candidate</th>
+                  <th class="py-space-sm px-space-md font-bold">Program & CGPA</th>
+                  <th class="py-space-sm px-space-md font-bold">Skills & Match</th>
+                  <th class="py-space-sm px-space-md text-center font-bold">Status</th>
+                  <th class="py-space-sm px-space-md rounded-r-lg text-right font-bold">ATS Action</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-surface-container" id="candidateListBody">
+                <tr class="hover:bg-surface-container-low/50 transition-colors" data-status="Interview Slotted">
+                  <td class="py-space-md px-space-md font-bold text-on-surface">
+                    <div class="flex items-center gap-space-sm">
+                      <div class="w-9 h-9 rounded-full bg-primary-fixed text-primary font-bold flex items-center justify-center shrink-0">PS</div>
+                      <div>
+                        <span class="block font-bold text-on-surface">Priya Sharma</span>
+                        <span class="font-body-sm text-secondary font-medium text-[12px]">2021CS8401 • B.Tech CSE</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-space-md px-space-md">
+                    <span class="font-bold text-on-surface">8.84 CGPA</span>
+                    <span class="block text-[11px] text-tertiary font-bold">0 Backlogs • 94/100 Test</span>
+                  </td>
+                  <td class="py-space-md px-space-md">
+                    <div class="flex flex-wrap gap-1 mb-1">
+                      <span class="px-2 py-0.5 rounded bg-surface-container-high text-xs font-semibold">Python</span>
+                      <span class="px-2 py-0.5 rounded bg-surface-container-high text-xs font-semibold">Postgres</span>
+                    </div>
+                    <span class="text-xs font-bold text-tertiary">96% ATS Match</span>
+                  </td>
+                  <td class="py-space-md px-space-md text-center">
+                    <span class="px-2.5 py-1 rounded-full bg-primary text-on-primary font-label-caps font-bold text-[11px] shadow-sm">Interview Slotted</span>
+                  </td>
+                  <td class="py-space-md px-space-md text-right">
+                    <div class="flex items-center justify-end gap-1.5">
+                      <button onclick="CampusInn.Toast.success('Candidate dossier downloaded for Priya Sharma.')" class="px-2 py-1 rounded bg-surface-container-high text-on-surface font-label-md text-xs font-semibold hover:bg-surface-container">CV</button>
+                      <button data-action="offer" data-cand="Priya Sharma" class="px-2.5 py-1 rounded bg-tertiary-container text-on-tertiary font-label-md text-xs font-bold hover:bg-tertiary shadow-sm">Offer</button>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr class="hover:bg-surface-container-low/50 transition-colors" data-status="Interview Slotted">
+                  <td class="py-space-md px-space-md font-bold text-on-surface">
+                    <div class="flex items-center gap-space-sm">
+                      <div class="w-9 h-9 rounded-full bg-primary-fixed text-primary font-bold flex items-center justify-center shrink-0">RM</div>
+                      <div>
+                        <span class="block font-bold text-on-surface">Rohan Mehta</span>
+                        <span class="font-body-sm text-secondary font-medium text-[12px]">2021CS8435 • B.Tech CSE</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-space-md px-space-md">
+                    <span class="font-bold text-on-surface">9.15 CGPA</span>
+                    <span class="block text-[11px] text-tertiary font-bold">0 Backlogs • 98/100 Test</span>
+                  </td>
+                  <td class="py-space-md px-space-md">
+                    <div class="flex flex-wrap gap-1 mb-1">
+                      <span class="px-2 py-0.5 rounded bg-surface-container-high text-xs font-semibold">C++</span>
+                      <span class="px-2 py-0.5 rounded bg-surface-container-high text-xs font-semibold">System Design</span>
+                    </div>
+                    <span class="text-xs font-bold text-tertiary">98% ATS Match</span>
+                  </td>
+                  <td class="py-space-md px-space-md text-center">
+                    <span class="px-2.5 py-1 rounded-full bg-primary text-on-primary font-label-caps font-bold text-[11px] shadow-sm">Interview Slotted</span>
+                  </td>
+                  <td class="py-space-md px-space-md text-right">
+                    <div class="flex items-center justify-end gap-1.5">
+                      <button onclick="CampusInn.Toast.success('Candidate dossier downloaded for Rohan Mehta.')" class="px-2 py-1 rounded bg-surface-container-high text-on-surface font-label-md text-xs font-semibold hover:bg-surface-container">CV</button>
+                      <button data-action="offer" data-cand="Rohan Mehta" class="px-2.5 py-1 rounded bg-tertiary-container text-on-tertiary font-label-md text-xs font-bold hover:bg-tertiary shadow-sm">Offer</button>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr class="hover:bg-surface-container-low/50 transition-colors" data-status="Shortlisted">
+                  <td class="py-space-md px-space-md font-bold text-on-surface">
+                    <div class="flex items-center gap-space-sm">
+                      <div class="w-9 h-9 rounded-full bg-secondary-container text-on-secondary-fixed font-bold flex items-center justify-center shrink-0">NK</div>
+                      <div>
+                        <span class="block font-bold text-on-surface">Neha Kulkarni</span>
+                        <span class="font-body-sm text-secondary font-medium text-[12px]">2021CS8419 • B.Tech CSE</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-space-md px-space-md">
+                    <span class="font-bold text-on-surface">8.45 CGPA</span>
+                    <span class="block text-[11px] text-tertiary font-bold">0 Backlogs • 89/100 Test</span>
+                  </td>
+                  <td class="py-space-md px-space-md">
+                    <div class="flex flex-wrap gap-1 mb-1">
+                      <span class="px-2 py-0.5 rounded bg-surface-container-high text-xs font-semibold">AWS</span>
+                      <span class="px-2 py-0.5 rounded bg-surface-container-high text-xs font-semibold">FastAPI</span>
+                    </div>
+                    <span class="text-xs font-bold text-primary">92% ATS Match</span>
+                  </td>
+                  <td class="py-space-md px-space-md text-center">
+                    <span class="px-2.5 py-1 rounded-full bg-secondary-container text-on-secondary-fixed font-label-caps font-bold text-[11px]">Shortlisted</span>
+                  </td>
+                  <td class="py-space-md px-space-md text-right">
+                    <div class="flex items-center justify-end gap-1.5">
+                      <button data-action="slot" data-cand="Neha Kulkarni" class="px-2.5 py-1 rounded bg-primary text-on-primary font-label-md text-xs font-bold hover:bg-primary-container shadow-sm">Slot Interview</button>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr class="hover:bg-surface-container-low/50 transition-colors" data-status="Shortlisted">
+                  <td class="py-space-md px-space-md font-bold text-on-surface">
+                    <div class="flex items-center gap-space-sm">
+                      <div class="w-9 h-9 rounded-full bg-secondary-container text-on-secondary-fixed font-bold flex items-center justify-center shrink-0">AV</div>
+                      <div>
+                        <span class="block font-bold text-on-surface">Amit Verma</span>
+                        <span class="font-body-sm text-secondary font-medium text-[12px]">2021IT8422 • BE IT</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-space-md px-space-md">
+                    <span class="font-bold text-on-surface">8.12 CGPA</span>
+                    <span class="block text-[11px] text-tertiary font-bold">0 Backlogs • 85/100 Test</span>
+                  </td>
+                  <td class="py-space-md px-space-md">
+                    <div class="flex flex-wrap gap-1 mb-1">
+                      <span class="px-2 py-0.5 rounded bg-surface-container-high text-xs font-semibold">React</span>
+                      <span class="px-2 py-0.5 rounded bg-surface-container-high text-xs font-semibold">Node.js</span>
+                    </div>
+                    <span class="text-xs font-bold text-secondary">88% ATS Match</span>
+                  </td>
+                  <td class="py-space-md px-space-md text-center">
+                    <span class="px-2.5 py-1 rounded-full bg-secondary-container text-on-secondary-fixed font-label-caps font-bold text-[11px]">Shortlisted</span>
+                  </td>
+                  <td class="py-space-md px-space-md text-right">
+                    <div class="flex items-center justify-end gap-1.5">
+                      <button data-action="slot" data-cand="Amit Verma" class="px-2.5 py-1 rounded bg-primary text-on-primary font-label-md text-xs font-bold hover:bg-primary-container shadow-sm">Slot Interview</button>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr class="hover:bg-surface-container-low/50 transition-colors" data-status="Offer Extended">
+                  <td class="py-space-md px-space-md font-bold text-on-surface">
+                    <div class="flex items-center gap-space-sm">
+                      <div class="w-9 h-9 rounded-full bg-tertiary-fixed text-tertiary font-bold flex items-center justify-center shrink-0">AJ</div>
+                      <div>
+                        <span class="block font-bold text-on-surface">Aditya Joshi</span>
+                        <span class="font-body-sm text-secondary font-medium text-[12px]">2021CS8440 • B.Tech CSE</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-space-md px-space-md">
+                    <span class="font-bold text-on-surface">8.65 CGPA</span>
+                    <span class="block text-[11px] text-tertiary font-bold">0 Backlogs • 92/100 Test</span>
+                  </td>
+                  <td class="py-space-md px-space-md">
+                    <div class="flex flex-wrap gap-1 mb-1">
+                      <span class="px-2 py-0.5 rounded bg-surface-container-high text-xs font-semibold">Go</span>
+                      <span class="px-2 py-0.5 rounded bg-surface-container-high text-xs font-semibold">Kubernetes</span>
+                    </div>
+                    <span class="text-xs font-bold text-tertiary">94% ATS Match</span>
+                  </td>
+                  <td class="py-space-md px-space-md text-center">
+                    <span class="px-2.5 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-caps font-bold text-[11px]">Offer Extended</span>
+                  </td>
+                  <td class="py-space-md px-space-md text-right">
+                    <span class="text-xs font-bold text-tertiary">Accepted ✓</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Sidebar (4 cols): Live Interview Schedule & Open Job Requirements -->
+        <div class="lg:col-span-4 space-y-space-lg">
+          <!-- Live Interview Grid -->
+          <div class="bg-surface-container-lowest rounded-xl shadow-sm p-space-md">
+            <div class="flex items-center justify-between pb-space-sm border-b border-surface-container">
+              <div>
+                <span class="font-label-caps text-label-caps text-primary uppercase font-bold tracking-wider">Campus Drives Logistics</span>
+                <h3 class="font-headline-sm text-headline-sm font-bold text-on-surface mt-0.5">Slotted Interviews</h3>
+              </div>
+              <span class="w-2.5 h-2.5 rounded-full bg-tertiary animate-pulse"></span>
+            </div>
+            <div class="mt-space-md space-y-space-sm">
+              <div class="p-space-sm rounded-xl bg-primary-fixed/30 border border-primary/20 flex flex-col gap-1">
+                <div class="flex items-center justify-between">
+                  <span class="font-label-md text-label-md font-bold text-on-surface">Priya Sharma • CSE</span>
+                  <span class="font-label-caps text-xs text-primary font-bold">10:30 AM Tomorrow</span>
+                </div>
+                <div class="font-body-sm text-secondary text-xs flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[14px] text-primary">location_on</span> MET BKC Computing Lab 2 (Station 04)
+                </div>
+                <span class="text-[11px] text-primary font-bold">Round 1: Algorithms & Systems Depth</span>
+              </div>
+
+              <div class="p-space-sm rounded-xl bg-surface-container-low flex flex-col gap-1">
+                <div class="flex items-center justify-between">
+                  <span class="font-label-md text-label-md font-bold text-on-surface">Rohan Mehta • CSE</span>
+                  <span class="font-label-caps text-xs text-secondary font-bold">2:00 PM Tomorrow</span>
+                </div>
+                <div class="font-body-sm text-secondary text-xs flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[14px] text-primary">location_on</span> MET BKC Computing Lab 2 (Station 06)
+                </div>
+                <span class="text-[11px] text-on-surface-variant font-medium">Round 1: Low-level C++ & Concurrency</span>
+              </div>
+            </div>
+            <button onclick="CampusInn.Toast.info('Lab 2 slot booking sheet exported for MET BKC Placement Desk.')" class="w-full mt-space-md py-space-xs rounded-lg bg-surface-container-low text-primary font-label-md text-label-md font-bold hover:bg-surface-container transition-colors flex items-center justify-center gap-1">
+              <span class="material-symbols-outlined text-[16px]">print</span> Export Schedule Docket
+            </button>
+          </div>
+
+          <!-- Active Job Openings Card -->
+          <div class="bg-surface-container-lowest rounded-xl shadow-sm p-space-md">
+            <div class="flex items-center justify-between pb-space-sm border-b border-surface-container">
+              <div>
+                <span class="font-label-caps text-label-caps text-secondary uppercase font-bold tracking-wider">Active Openings</span>
+                <h3 class="font-headline-sm text-headline-sm font-bold text-on-surface mt-0.5">Published JDs</h3>
+              </div>
+              <a href="hiring-builder.html" class="text-xs text-primary font-bold hover:underline">+ New JD</a>
+            </div>
+            <div class="mt-space-md space-y-space-sm">
+              <div class="p-space-sm rounded-xl bg-surface-container-low flex items-center justify-between">
+                <div>
+                  <div class="font-label-md font-bold text-on-surface">Backend Systems Developer</div>
+                  <div class="text-xs text-secondary">₹10.80 LPA • B.Tech CSE/IT</div>
+                </div>
+                <span class="px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed text-[11px] font-bold">Active</span>
+              </div>
+              <div class="p-space-sm rounded-xl bg-surface-container-low flex items-center justify-between">
+                <div>
+                  <div class="font-label-md font-bold text-on-surface">Cloud Support Trainee</div>
+                  <div class="text-xs text-secondary">₹8.50 LPA • MCA / BE IT</div>
+                </div>
+                <span class="px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed text-[11px] font-bold">Active</span>
+              </div>
+            </div>
+            <a href="hiring-builder.html" class="w-full mt-space-md block text-center py-space-xs rounded-lg bg-primary text-on-primary font-label-md text-label-md font-bold hover:bg-primary-container transition-colors shadow-sm">
+              Launch Hiring Requirement Builder
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // 1. Role Guard (Only Recruiter or Admin)
+  if (!CampusInn.Auth.requireAuth(['recruiter', 'admin'])) {
+    return;
+  }
+
+  // 2. Dev Mock Badge
+  const user = CampusInn.Auth.getUser();
+  if (user && user.isMock) {
+    const banner = document.querySelector('.relative.bg-surface-container-lowest h1');
+    if (banner && !document.getElementById('rec-mock-badge')) {
+      const badge = document.createElement('span');
+      badge.id = 'rec-mock-badge';
+      badge.className = 'ci-dev-mock-badge ml-3';
+      badge.innerHTML = '<span class="material-symbols-outlined text-[12px]">science</span> Dev Mock Records';
+      banner.appendChild(badge);
+    }
+  }
+
+  // 3. Search Applicant Input Filter
+  const searchInput = document.getElementById('candidateSearchInput');
+  const rows = document.querySelectorAll('#candidateListBody tr');
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase().trim();
+      rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = (!q || text.includes(q)) ? '' : 'none';
+      });
+    });
+  }
+
+  // 4. Quick Filter Tabs
+  const filterTabs = document.querySelectorAll('#candFilterTabs button');
+  filterTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      filterTabs.forEach(t => {
+        t.className = 'px-space-md py-1 rounded-lg bg-surface-container-low text-on-surface-variant hover:text-on-surface font-label-md text-label-md font-semibold whitespace-nowrap transition-colors';
+      });
+      tab.className = 'px-space-md py-1 rounded-lg bg-primary text-on-primary font-label-md text-label-md font-bold shadow-sm whitespace-nowrap';
+
+      const filter = tab.getAttribute('data-filter');
+      rows.forEach(row => {
+        const status = row.getAttribute('data-status');
+        if (filter === 'all' || status === filter) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    });
+  });
+
+  // 5. Slot Interview & Offer Actions
+  document.querySelectorAll('button[data-action="offer"]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const cand = btn.getAttribute('data-cand');
+      btn.disabled = true;
+      btn.textContent = 'Extending...';
+      try {
+        if (window.CampusInn.API) {
+          await window.CampusInn.API.recruiter.extendOffer(cand);
+        }
+        CampusInn.Toast.success(`Formal Placement Offer extended to ${cand}! Dispatched to TPO Portal.`);
+        btn.textContent = 'Offered ✓';
+        btn.className = 'px-2.5 py-1 rounded bg-tertiary-fixed text-on-tertiary-fixed font-label-md text-xs font-bold';
+        const row = btn.closest('tr');
+        if (row) {
+          row.setAttribute('data-status', 'Offer Extended');
+          const badge = row.querySelector('td:nth-child(4) span');
+          if (badge) {
+            badge.className = 'px-2.5 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-caps font-bold text-[11px]';
+            badge.textContent = 'Offer Extended';
+          }
+        }
+      } catch (err) {
+        CampusInn.Toast.error(err.message || 'Action failed.');
+        btn.disabled = false;
+        btn.textContent = 'Offer';
+      }
+    });
+  });
+
+  document.querySelectorAll('button[data-action="slot"]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const cand = btn.getAttribute('data-cand');
+      btn.disabled = true;
+      btn.textContent = 'Slotting...';
+      try {
+        if (window.CampusInn.API) {
+          await window.CampusInn.API.recruiter.slotInterview(cand, 'Tomorrow 4:00 PM (Lab 2)');
+        }
+        CampusInn.Toast.success(`Technical interview slotted for ${cand} (Tomorrow 4:00 PM, Lab 2).`);
+        btn.textContent = 'Slotted ✓';
+        btn.className = 'px-2.5 py-1 rounded bg-primary-fixed text-primary font-label-md text-xs font-bold';
+        const row = btn.closest('tr');
+        if (row) {
+          row.setAttribute('data-status', 'Interview Slotted');
+          const badge = row.querySelector('td:nth-child(4) span');
+          if (badge) {
+            badge.className = 'px-2.5 py-1 rounded-full bg-primary text-on-primary font-label-caps font-bold text-[11px] shadow-sm';
+            badge.textContent = 'Interview Slotted';
+          }
+        }
+      } catch (err) {
+        CampusInn.Toast.error(err.message || 'Action failed.');
+        btn.disabled = false;
+        btn.textContent = 'Slot Interview';
+      }
+    });
+  });
+});
+</script>
+</body></html>

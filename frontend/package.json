@@ -1,0 +1,20 @@
+{
+  "name": "campus-inn-frontend",
+  "version": "1.0.0",
+  "description": "Campus Inn+ — Modern Collegiate Ecosystem Frontend",
+  "main": "serve.js",
+  "scripts": {
+    "start": "node serve.js",
+    "dev": "node serve.js",
+    "serve": "node serve.js",
+    "test": "node verify.js",
+    "verify": "node verify.js"
+  },
+  "keywords": [
+    "campus",
+    "frontend",
+    "tailwind"
+  ],
+  "license": "UNLICENSED",
+  "private": true
+}
