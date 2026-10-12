@@ -145,6 +145,24 @@ const API = (() => {
       };
     },
 
+    async registerFaculty(payload) {
+      const res = await request('/auth/register/faculty', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+
+      if (res.data && res.data.success) {
+        return { data: res.data, error: null, isMock: false };
+      }
+
+      return {
+        data: null,
+        error: res.error || 'Faculty registration failed. Please check the provided information.',
+        isMock: false,
+        status: res.status
+      };
+    },
+
     async me() {
       const res = await request('/auth/me', { method: 'GET' });
       if (res.data && res.data.user) {
@@ -415,6 +433,17 @@ const API = (() => {
         };
       }
       return res;
+    },
+
+    async getProfile() {
+      return await request('/faculty/profile');
+    },
+
+    async updateProfile(payload) {
+      return await request('/faculty/profile', {
+        method: 'PUT',
+        body: JSON.stringify(payload)
+      });
     }
   };
 
@@ -639,6 +668,24 @@ const API = (() => {
         };
       }
       return res;
+    },
+
+    async getFaculty() {
+      return await request('/admin/faculty');
+    },
+
+    async createFaculty(payload) {
+      return await request('/admin/faculty', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+    },
+
+    async updateFacultyStatus(id, status) {
+      return await request(`/admin/faculty/${encodeURIComponent(id)}/status`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status })
+      });
     }
   };
 

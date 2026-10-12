@@ -11,6 +11,7 @@ const { authenticate } = require('../middleware/auth');
 const {
   validateLogin,
   validateStudentRegister,
+  validateFacultyRegister,
   validateForgotPassword,
   validateResetPassword,
 } = require('../middleware/validate');
@@ -144,6 +145,108 @@ router.post('/register/student', validateStudentRegister, async (req, res, next)
 });
 
 /**
+ * POST /api/v1/auth/register/faculty
+ * Self-registration for institutional faculty members (creates pending account awaiting institutional verification)
+ */
+router.post('/register/faculty', validateFacultyRegister, async (req, res, next) => {
+  try {
+    const {
+      fullName,
+      email,
+      password,
+      phone,
+      employeeId,
+      college,
+      department,
+      designation,
+      cabinNumber,
+      officeHours,
+    } = req.body;
+
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanEmpId = employeeId.trim();
+
+    // 1. Check if email is already registered
+    const existingEmail = await query('SELECT id FROM users WHERE LOWER(email) = $1', [cleanEmail]);
+    if (existingEmail.rows.length > 0) {
+      return res.status(409).json({
+        success: false,
+        message: 'An account with this email address already exists.',
+        code: 'EMAIL_ALREADY_EXISTS',
+      });
+    }
+
+    // 2. Check if employeeId is already registered
+    const existingEmpId = await query('SELECT id FROM faculty_profiles WHERE LOWER(employee_id) = LOWER($1)', [cleanEmpId]);
+    if (existingEmpId.rows.length > 0) {
+      return res.status(409).json({
+        success: false,
+        message: 'A faculty member with this employee ID is already registered.',
+        code: 'EMPLOYEE_ID_ALREADY_EXISTS',
+      });
+    }
+
+    // 3. Split name
+    const parts = (fullName || '').trim().split(/\s+/);
+    const firstName = parts[0] || 'Faculty';
+    const lastName = parts.slice(1).join(' ') || 'Member';
+
+    // 4. Hash password securely
+    const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
+
+    // 5. Insert user with 'pending' status awaiting institutional/admin approval
+    const userRes = await query(
+      `INSERT INTO users (email, password_hash, role, status, first_name, last_name, phone, created_at, updated_at)
+       VALUES ($1, $2, 'faculty', 'pending', $3, $4, $5, NOW(), NOW())
+       RETURNING id, email, role, status, first_name, last_name, phone, created_at`,
+      [cleanEmail, passwordHash, firstName, lastName, phone ? phone.trim() : null]
+    );
+    const newUser = userRes.rows[0];
+
+    // 6. Insert faculty profile
+    const profileRes = await query(
+      `INSERT INTO faculty_profiles (
+         user_id, employee_id, college, department, designation, role_label,
+         cabin_number, office_hours, created_at, updated_at
+       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW())
+       RETURNING *`,
+      [
+        newUser.id,
+        cleanEmpId,
+        college || 'MET Institute of Engineering, Nashik',
+        department || 'Computer Engineering & IT',
+        designation || 'Assistant Professor',
+        designation || 'Assistant Professor',
+        cabinNumber || null,
+        officeHours || null,
+      ]
+    );
+
+    await query('INSERT INTO user_settings (user_id) VALUES ($1) ON CONFLICT DO NOTHING', [newUser.id]).catch(() => {});
+
+    return res.status(201).json({
+      success: true,
+      message: 'Faculty registration submitted successfully. Your account is pending administrator approval before portal access is activated.',
+      status: 'pending',
+      requiresApproval: true,
+      faculty: {
+        id: newUser.id,
+        email: newUser.email,
+        role: newUser.role,
+        status: newUser.status,
+        firstName: newUser.first_name,
+        lastName: newUser.last_name,
+        employeeId: profileRes.rows[0].employee_id,
+        department: profileRes.rows[0].department,
+        designation: profileRes.rows[0].designation,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
  * POST /api/v1/auth/login
  */
 router.post('/login', validateLogin, async (req, res, next) => {
@@ -196,6 +299,13 @@ router.post('/login', validateLogin, async (req, res, next) => {
     const user = userResult.rows[0];
 
     if (user.status !== 'active') {
+      if (user.status === 'pending') {
+        return res.status(403).json({
+          success: false,
+          message: 'Your faculty account registration is pending institutional verification or administrator approval. Please contact the College Administration.',
+          code: 'ACCOUNT_PENDING',
+        });
+      }
       return res.status(403).json({
         success: false,
         message: `Account is ${user.status}. Access denied.`,
@@ -275,6 +385,9 @@ router.post('/login', validateLogin, async (req, res, next) => {
           designation: p.designation,
           college: p.college,
           roleLabel: p.role_label,
+          employeeId: p.employee_id,
+          cabinNumber: p.cabin_number,
+          officeHours: p.office_hours,
         };
       }
     } else if (user.role === 'recruiter') {

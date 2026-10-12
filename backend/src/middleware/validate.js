@@ -145,10 +145,106 @@ function validateResetPassword(req, res, next) {
   next();
 }
 
+/**
+ * Validate Faculty Self-Registration Payload
+ */
+function validateFacultyRegister(req, res, next) {
+  const {
+    fullName,
+    email,
+    password,
+    employeeId,
+    department,
+  } = req.body || {};
+
+  const errors = [];
+
+  if (!fullName || typeof fullName !== 'string' || fullName.trim().length < 2) {
+    errors.push('Full name must be at least 2 characters.');
+  }
+
+  if (!email || !validateEmail(email)) {
+    errors.push('A valid institutional email address is required.');
+  } else {
+    const cleanEmail = email.trim().toLowerCase();
+    const isInstitutional = /@(?:[a-zA-Z0-9-]+\.)*(?:met\.edu|campus\.edu\.in|edu\.in|ac\.in|edu)$/i.test(cleanEmail);
+    if (!isInstitutional) {
+      return res.status(400).json({
+        success: false,
+        message: 'Faculty registration requires an accredited institutional email address (e.g., @met.edu, @campus.edu.in).',
+        code: 'INVALID_INSTITUTIONAL_EMAIL',
+      });
+    }
+  }
+
+  if (!password || typeof password !== 'string' || password.length < 8) {
+    errors.push('Password must be at least 8 characters long.');
+  } else {
+    const hasLetter = /[a-zA-Z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    if (!hasLetter || !hasNumber) {
+      errors.push('Password must contain at least one letter and one number.');
+    }
+  }
+
+  if (!employeeId || typeof employeeId !== 'string' || employeeId.trim().length < 2) {
+    errors.push('Institutional Employee ID is required.');
+  }
+
+  if (!department || typeof department !== 'string' || department.trim().length < 2) {
+    errors.push('Academic Department is required.');
+  }
+
+  if (errors.length > 0) {
+    return res.status(400).json({
+      success: false,
+      message: errors.join(' '),
+      code: 'VALIDATION_FAILED',
+      errors,
+    });
+  }
+
+  next();
+}
+
+/**
+ * Validate Admin Provisioning of Faculty Payload
+ */
+function validateAdminFacultyRegister(req, res, next) {
+  const { email, password, firstName, fullName } = req.body || {};
+  const errors = [];
+
+  if (!email || !validateEmail(email)) {
+    errors.push('A valid email address is required.');
+  }
+
+  if (!password || typeof password !== 'string' || password.length < 8) {
+    errors.push('Password must be at least 8 characters long.');
+  }
+
+  const hasName = (firstName && firstName.trim()) || (fullName && fullName.trim());
+  if (!hasName) {
+    errors.push('Faculty name is required.');
+  }
+
+  if (errors.length > 0) {
+    return res.status(400).json({
+      success: false,
+      message: errors.join(' '),
+      code: 'VALIDATION_FAILED',
+      errors,
+    });
+  }
+
+  next();
+}
+
 module.exports = {
   validateEmail,
   sanitizeString,
   validateStudentRegister,
+  validateFacultyRegister,
+  validateAdminFacultyRegister,
   validateLogin,
   validateForgotPassword,
   validateResetPassword,

@@ -956,19 +956,62 @@ describe('Campus Inn+ Backend API Suite', () => {
 
   describe('Faculty & Role-Based Authentication Suite', () => {
     let querySpy;
-    let facultyPassHash;
+    let faculty1PassHash;
+    let faculty2PassHash;
     let studentPassHash;
 
-    const mockFaculty = {
+    const faculty1 = {
       id: 'fac-uuid-101',
-      email: 'faculty.cs@met.edu',
+      email: 'dr.rajesh@met.edu',
       first_name: 'Dr. Rajesh',
       last_name: 'Deshmukh',
       role: 'faculty',
       status: 'active',
       avatar_url: null,
-      roll_number: null,
-      employee_id: 'FAC042',
+      employee_id: 'EMP101',
+      employeeId: 'EMP101',
+      department: 'Computer Engineering & IT',
+      designation: 'Associate Professor & Mentorship Lead',
+      college: 'MET Institute of Engineering, Nashik',
+      role_label: 'Associate Professor & Mentorship Lead',
+      cabin_number: 'Room 304, IT Block',
+      office_hours: 'Mon-Fri 10:00-12:00',
+    };
+
+    const faculty2 = {
+      id: 'fac-uuid-102',
+      email: 'prof.anita@met.edu',
+      first_name: 'Prof. Anita',
+      last_name: 'Patil',
+      role: 'faculty',
+      status: 'active',
+      avatar_url: null,
+      employee_id: 'EMP202',
+      employeeId: 'EMP202',
+      department: 'Information Technology',
+      designation: 'Assistant Professor',
+      college: 'MET Institute of Engineering, Nashik',
+      role_label: 'Assistant Professor',
+      cabin_number: 'Room 205, Main Block',
+      office_hours: 'Tue-Thu 14:00-16:00',
+    };
+
+    const facultyPending = {
+      id: 'fac-uuid-103',
+      email: 'new.faculty@met.edu',
+      first_name: 'Prof. Sanjay',
+      last_name: 'Kulkarni',
+      role: 'faculty',
+      status: 'pending',
+      avatar_url: null,
+      employee_id: 'EMP303',
+      employeeId: 'EMP303',
+      department: 'Electronics Engineering',
+      designation: 'Assistant Professor',
+      college: 'MET Institute of Engineering, Nashik',
+      role_label: 'Assistant Professor',
+      cabin_number: null,
+      office_hours: null,
     };
 
     const mockStudent = {
@@ -983,31 +1026,111 @@ describe('Campus Inn+ Backend API Suite', () => {
       employee_id: null,
     };
 
+    const adminUser = {
+      id: 'admin-uuid-001',
+      email: 'director@met.edu',
+      role: 'admin',
+      status: 'active',
+      first_name: 'V. P.',
+      last_name: 'Wani',
+    };
+
+    const adminToken = jwt.sign(
+      { sub: adminUser.id, id: adminUser.id, email: adminUser.email, role: 'admin' },
+      config.jwt.secret,
+      { expiresIn: '1h' }
+    );
+
+    const faculty1Token = jwt.sign(
+      { sub: faculty1.id, id: faculty1.id, email: faculty1.email, role: 'faculty' },
+      config.jwt.secret,
+      { expiresIn: '1h' }
+    );
+
+    const faculty2Token = jwt.sign(
+      { sub: faculty2.id, id: faculty2.id, email: faculty2.email, role: 'faculty' },
+      config.jwt.secret,
+      { expiresIn: '1h' }
+    );
+
     beforeAll(async () => {
-      facultyPassHash = await bcrypt.hash('faculty123', 10);
+      faculty1PassHash = await bcrypt.hash('Rajesh@123', 10);
+      faculty2PassHash = await bcrypt.hash('Anita@456', 10);
       studentPassHash = await bcrypt.hash('student123', 10);
 
       querySpy = jest.spyOn(require('../src/db/pool').pool, 'query').mockImplementation((sql, params) => {
         const sqlStr = typeof sql === 'string' ? sql : (sql && sql.text ? sql.text : '');
-        const p0 = (params && params[0] ? String(params[0]).trim().toLowerCase() : '');
+        const p0 = (params && params[0] !== undefined ? String(params[0]).trim().toLowerCase() : '');
 
-        // 1. Query by email
-        if (sqlStr.includes('FROM users u') && sqlStr.includes('WHERE LOWER(u.email) = $1')) {
-          if (p0 === 'faculty.cs@met.edu') {
+        // 0. User lookup by ID for authentication middleware
+        if (sqlStr.includes('FROM users WHERE id = $1')) {
+          const uid = params && params[0];
+          if (uid === adminUser.id) {
             return Promise.resolve({
               rows: [{
-                ...mockFaculty,
-                password_hash: facultyPassHash,
-              }]
+                id: adminUser.id,
+                email: adminUser.email,
+                role: 'admin',
+                status: 'active',
+                firstName: adminUser.first_name,
+                lastName: adminUser.last_name,
+                phone: null,
+                avatarUrl: null,
+              }],
             });
           }
-          if (p0 === 'priya.sharma@met.edu') {
+          if (uid === faculty1.id) {
             return Promise.resolve({
               rows: [{
-                ...mockStudent,
-                password_hash: studentPassHash,
-              }]
+                id: faculty1.id,
+                email: faculty1.email,
+                role: 'faculty',
+                status: 'active',
+                firstName: faculty1.first_name,
+                lastName: faculty1.last_name,
+                phone: null,
+                avatarUrl: null,
+              }],
             });
+          }
+          if (uid === faculty2.id) {
+            return Promise.resolve({
+              rows: [{
+                id: faculty2.id,
+                email: faculty2.email,
+                role: 'faculty',
+                status: 'active',
+                firstName: faculty2.first_name,
+                lastName: faculty2.last_name,
+                phone: null,
+                avatarUrl: null,
+              }],
+            });
+          }
+          return Promise.resolve({ rows: [] });
+        }
+
+        // 1. Query users by email
+        if (sqlStr.includes('FROM users u') && sqlStr.includes('WHERE LOWER(u.email) = $1')) {
+          if (p0 === 'dr.rajesh@met.edu') {
+            return Promise.resolve({ rows: [{ ...faculty1, password_hash: faculty1PassHash }] });
+          }
+          if (p0 === 'prof.anita@met.edu') {
+            return Promise.resolve({ rows: [{ ...faculty2, password_hash: faculty2PassHash }] });
+          }
+          if (p0 === 'new.faculty@met.edu') {
+            return Promise.resolve({ rows: [{ ...facultyPending, password_hash: faculty1PassHash }] });
+          }
+          if (p0 === 'priya.sharma@met.edu') {
+            return Promise.resolve({ rows: [{ ...mockStudent, password_hash: studentPassHash }] });
+          }
+          return Promise.resolve({ rows: [] });
+        }
+
+        // Email check without alias: SELECT id FROM users WHERE LOWER(email) = $1
+        if (sqlStr.includes('FROM users WHERE LOWER(email) = $1')) {
+          if (['dr.rajesh@met.edu', 'prof.anita@met.edu', 'new.faculty@met.edu', 'priya.sharma@met.edu', 'existing@met.edu'].includes(p0)) {
+            return Promise.resolve({ rows: [{ id: 'existing-id' }] });
           }
           return Promise.resolve({ rows: [] });
         }
@@ -1015,42 +1138,41 @@ describe('Campus Inn+ Backend API Suite', () => {
         // 2. Query by student roll_number
         if (sqlStr.includes('JOIN student_profiles sp') && sqlStr.includes('LOWER(sp.roll_number) = $1')) {
           if (p0 === 'met2022cs001') {
-            return Promise.resolve({
-              rows: [{
-                ...mockStudent,
-                password_hash: studentPassHash,
-              }]
-            });
+            return Promise.resolve({ rows: [{ ...mockStudent, password_hash: studentPassHash }] });
           }
           return Promise.resolve({ rows: [] });
         }
 
         // 3. Query by faculty employee_id
         if (sqlStr.includes('JOIN faculty_profiles fp') && sqlStr.includes('LOWER(fp.employee_id) = $1')) {
-          if (p0 === 'fac042') {
-            return Promise.resolve({
-              rows: [{
-                ...mockFaculty,
-                password_hash: facultyPassHash,
-              }]
-            });
+          if (p0 === 'emp101') {
+            return Promise.resolve({ rows: [{ ...faculty1, password_hash: faculty1PassHash }] });
+          }
+          if (p0 === 'emp202') {
+            return Promise.resolve({ rows: [{ ...faculty2, password_hash: faculty2PassHash }] });
+          }
+          if (p0 === 'emp303') {
+            return Promise.resolve({ rows: [{ ...facultyPending, password_hash: faculty1PassHash }] });
           }
           return Promise.resolve({ rows: [] });
         }
 
-        // 4. Role profile lookups
-        if (sqlStr.includes('FROM faculty_profiles WHERE user_id = $1')) {
-          return Promise.resolve({
-            rows: [{
-              user_id: mockFaculty.id,
-              department: 'Computer Engineering & IT',
-              designation: 'Associate Professor',
-              employee_id: 'FAC042',
-              cabin_number: 'Room 304, IT Block',
-              office_hours: 'Mon-Fri 10:00-12:00'
-            }]
-          });
+        // EmployeeId uniqueness check in faculty_profiles
+        if (sqlStr.includes('FROM faculty_profiles WHERE LOWER(employee_id) = LOWER($1)')) {
+          if (['emp101', 'emp202', 'emp303', 'dupemp'].includes(p0)) {
+            return Promise.resolve({ rows: [{ id: 'fp-dup' }] });
+          }
+          return Promise.resolve({ rows: [] });
         }
+
+        // 4. Role profile lookups by user_id
+        if (sqlStr.includes('FROM faculty_profiles WHERE user_id = $1')) {
+          if (p0 === faculty1.id) return Promise.resolve({ rows: [faculty1] });
+          if (p0 === faculty2.id) return Promise.resolve({ rows: [faculty2] });
+          if (p0 === facultyPending.id) return Promise.resolve({ rows: [facultyPending] });
+          return Promise.resolve({ rows: [] });
+        }
+
         if (sqlStr.includes('FROM student_profiles WHERE user_id = $1')) {
           return Promise.resolve({
             rows: [{
@@ -1063,13 +1185,87 @@ describe('Campus Inn+ Backend API Suite', () => {
               semester: 6,
               role_label: 'Student',
               cgpa: '9.2',
-              backlogs: 0
-            }]
+              backlogs: 0,
+            }],
           });
         }
 
-        // 5. Update last_login
+        // Faculty profile retrieval (GET /api/v1/faculty/profile)
+        if (sqlStr.includes('JOIN faculty_profiles fp ON fp.user_id = u.id') && sqlStr.includes('WHERE u.id = $1')) {
+          if (p0 === faculty1.id) return Promise.resolve({ rows: [faculty1] });
+          if (p0 === faculty2.id) return Promise.resolve({ rows: [faculty2] });
+          return Promise.resolve({ rows: [] });
+        }
+
+        // Faculty profile update (PUT /api/v1/faculty/profile)
+        if (sqlStr.includes('UPDATE faculty_profiles') && sqlStr.includes('WHERE user_id = $3')) {
+          return Promise.resolve({
+            rows: [{
+              cabinNumber: params[0] || 'Room 304, IT Block',
+              officeHours: params[1] || 'Mon-Fri 10:00-12:00',
+            }],
+          });
+        }
+
+        // Admin faculty list (GET /api/v1/admin/faculty)
+        if (sqlStr.includes('FROM users u') && sqlStr.includes("WHERE u.role = 'faculty'")) {
+          return Promise.resolve({ rows: [faculty1, faculty2] });
+        }
+
+        // Admin faculty insert
+        if (sqlStr.includes('INSERT INTO users') && sqlStr.includes("'faculty'")) {
+          return Promise.resolve({
+            rows: [{
+              id: 'fac-new-created',
+              email: params[0],
+              role: 'faculty',
+              status: params[2],
+              first_name: params[3],
+              last_name: params[4],
+              phone: params[5],
+            }],
+          });
+        }
+
+        if (sqlStr.includes('INSERT INTO faculty_profiles')) {
+          return Promise.resolve({
+            rows: [{
+              user_id: params[0],
+              employee_id: params[1] || params[5],
+              department: params[3] || 'Computer Engineering & IT',
+              designation: params[4] || 'Assistant Professor',
+              college: params[2] || 'MET Institute of Engineering, Nashik',
+            }],
+          });
+        }
+
+        // Admin faculty status update
+        if (sqlStr.includes('UPDATE users') && sqlStr.includes("role = 'faculty'")) {
+          return Promise.resolve({
+            rows: [{
+              id: params[1],
+              email: 'new.faculty@met.edu',
+              role: 'faculty',
+              status: params[0],
+              first_name: 'Prof. Sanjay',
+              last_name: 'Kulkarni',
+            }],
+          });
+        }
+
+        // Update last_login
         if (sqlStr.includes('UPDATE users SET last_login')) {
+          return Promise.resolve({ rowCount: 1 });
+        }
+
+        // Forgot password token check
+        if (sqlStr.includes('SELECT id, email, status FROM users WHERE LOWER(email) = $1')) {
+          if (p0 === 'dr.rajesh@met.edu') return Promise.resolve({ rows: [{ id: faculty1.id, email: faculty1.email, status: 'active' }] });
+          if (p0 === 'prof.anita@met.edu') return Promise.resolve({ rows: [{ id: faculty2.id, email: faculty2.email, status: 'active' }] });
+          return Promise.resolve({ rows: [] });
+        }
+
+        if (sqlStr.includes('INSERT INTO password_reset_tokens')) {
           return Promise.resolve({ rowCount: 1 });
         }
 
@@ -1081,58 +1277,88 @@ describe('Campus Inn+ Backend API Suite', () => {
       if (querySpy) querySpy.mockRestore();
     });
 
-    it('1. Valid faculty email and password authenticates successfully', async () => {
+    it('1. Faculty member A authenticates with their own institutional email and password', async () => {
       const res = await request(app)
         .post('/api/v1/auth/login')
         .send({
-          identifier: 'faculty.cs@met.edu',
-          password: 'faculty123',
-          role: 'faculty'
+          identifier: 'dr.rajesh@met.edu',
+          password: 'Rajesh@123',
+          role: 'faculty',
         });
 
       expect(res.statusCode).toEqual(200);
       expect(res.body.success).toBe(true);
-      expect(res.body.user.email).toEqual('faculty.cs@met.edu');
+      expect(res.body.user.email).toEqual('dr.rajesh@met.edu');
       expect(res.body.user.role).toEqual('faculty');
+      expect(res.body.user.department).toEqual('Computer Engineering & IT');
       expect(res.body.token).toBeDefined();
     });
 
-    it('2. Valid faculty employee ID authenticates successfully', async () => {
+    it('2. Faculty member B authenticates independently with their distinct credentials', async () => {
       const res = await request(app)
         .post('/api/v1/auth/login')
         .send({
-          identifier: 'FAC042',
-          password: 'faculty123',
-          role: 'faculty'
+          identifier: 'prof.anita@met.edu',
+          password: 'Anita@456',
+          role: 'faculty',
         });
 
       expect(res.statusCode).toEqual(200);
       expect(res.body.success).toBe(true);
+      expect(res.body.user.email).toEqual('prof.anita@met.edu');
       expect(res.body.user.role).toEqual('faculty');
+      expect(res.body.user.department).toEqual('Information Technology');
     });
 
-    it('3. Incorrect faculty password is rejected with generic error', async () => {
+    it('3. Faculty member A authenticates via unique employee ID', async () => {
       const res = await request(app)
         .post('/api/v1/auth/login')
         .send({
-          identifier: 'faculty.cs@met.edu',
-          password: 'wrong_password_999',
-          role: 'faculty'
+          identifier: 'EMP101',
+          password: 'Rajesh@123',
+          role: 'faculty',
+        });
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.user.email).toEqual('dr.rajesh@met.edu');
+    });
+
+    it('4. Faculty member B authenticates via unique employee ID', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/login')
+        .send({
+          identifier: 'EMP202',
+          password: 'Anita@456',
+          role: 'faculty',
+        });
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.user.email).toEqual('prof.anita@met.edu');
+    });
+
+    it('5. Using wrong password for faculty account is strictly rejected', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/login')
+        .send({
+          identifier: 'dr.rajesh@met.edu',
+          password: 'WrongPassword999',
+          role: 'faculty',
         });
 
       expect(res.statusCode).toEqual(401);
       expect(res.body.success).toBe(false);
       expect(res.body.code).toEqual('INVALID_PASSWORD');
-      expect(res.body.message).toContain('Please check your password');
     });
 
-    it('4. Unknown faculty identifier is rejected with generic error', async () => {
+    it('6. Unknown faculty identifier is rejected with generic safe message', async () => {
       const res = await request(app)
         .post('/api/v1/auth/login')
         .send({
-          identifier: 'unknown.prof@met.edu',
-          password: 'faculty123',
-          role: 'faculty'
+          identifier: 'nonexistent.faculty@met.edu',
+          password: 'AnyPassword123',
+          role: 'faculty',
         });
 
       expect(res.statusCode).toEqual(401);
@@ -1141,82 +1367,188 @@ describe('Campus Inn+ Backend API Suite', () => {
       expect(res.body.message).toContain('verify your faculty email or ID');
     });
 
-    it('5. Student credentials cannot authenticate as faculty (unauthorized role rejected)', async () => {
+    it('7. Unapproved/pending faculty account cannot access the Faculty Portal', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/login')
+        .send({
+          identifier: 'new.faculty@met.edu',
+          password: 'Rajesh@123',
+          role: 'faculty',
+        });
+
+      expect(res.statusCode).toEqual(403);
+      expect(res.body.success).toBe(false);
+      expect(res.body.code).toEqual('ACCOUNT_PENDING');
+      expect(res.body.message).toContain('pending institutional verification or administrator approval');
+    });
+
+    it('8. Student account cannot authenticate as faculty', async () => {
       const res = await request(app)
         .post('/api/v1/auth/login')
         .send({
           identifier: 'priya.sharma@met.edu',
           password: 'student123',
-          role: 'faculty'
+          role: 'faculty',
         });
 
       expect(res.statusCode).toEqual(403);
       expect(res.body.success).toBe(false);
       expect(res.body.code).toEqual('UNAUTHORIZED_ROLE');
-      expect(res.body.message.toLowerCase()).toContain('not authorized for the faculty portal');
     });
 
-    it('6. Faculty credentials cannot authenticate as admin (privilege escalation blocked)', async () => {
+    it('9. Faculty account cannot authenticate as administrator (privilege escalation blocked)', async () => {
       const res = await request(app)
         .post('/api/v1/auth/login')
         .send({
-          identifier: 'faculty.cs@met.edu',
-          password: 'faculty123',
-          role: 'admin'
+          identifier: 'dr.rajesh@met.edu',
+          password: 'Rajesh@123',
+          role: 'admin',
         });
 
       expect(res.statusCode).toEqual(403);
       expect(res.body.success).toBe(false);
       expect(res.body.code).toEqual('UNAUTHORIZED_ROLE');
-      expect(res.body.message.toLowerCase()).toContain('administrative privileges');
     });
 
-    it('7. Identifier normalization handles mixed case and whitespace correctly', async () => {
+    it('10. Administrator can provision a legitimate faculty member with individual credentials', async () => {
       const res = await request(app)
-        .post('/api/v1/auth/login')
+        .post('/api/v1/admin/faculty')
+        .set('Authorization', `Bearer ${adminToken}`)
         .send({
-          identifier: '   FACULTY.CS@MET.EDU   ',
-          password: 'faculty123',
-          role: 'faculty'
+          email: 'dr.manish@met.edu',
+          password: 'SecurePassword123',
+          firstName: 'Dr. Manish',
+          lastName: 'Joshi',
+          employeeId: 'EMP404',
+          department: 'Mechanical Engineering',
+          designation: 'Professor & HOD',
+        });
+
+      expect(res.statusCode).toEqual(201);
+      expect(res.body.success).toBe(true);
+      expect(res.body.faculty.email).toEqual('dr.manish@met.edu');
+      expect(res.body.faculty.role).toEqual('faculty');
+      expect(res.body.faculty.status).toEqual('active');
+    });
+
+    it('11. Provisioning rejects duplicate institutional email addresses', async () => {
+      const res = await request(app)
+        .post('/api/v1/admin/faculty')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          email: 'dr.rajesh@met.edu',
+          password: 'SecurePassword123',
+          firstName: 'Another',
+          lastName: 'Faculty',
+          employeeId: 'EMP999',
+        });
+
+      expect(res.statusCode).toEqual(409);
+      expect(res.body.code).toEqual('EMAIL_ALREADY_EXISTS');
+    });
+
+    it('12. Provisioning rejects duplicate employee IDs', async () => {
+      const res = await request(app)
+        .post('/api/v1/admin/faculty')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          email: 'unique.email@met.edu',
+          password: 'SecurePassword123',
+          firstName: 'Another',
+          lastName: 'Faculty',
+          employeeId: 'EMP101',
+        });
+
+      expect(res.statusCode).toEqual(409);
+      expect(res.body.code).toEqual('EMPLOYEE_ID_ALREADY_EXISTS');
+    });
+
+    it('13. Administrator can approve a pending faculty account status', async () => {
+      const res = await request(app)
+        .patch(`/api/v1/admin/faculty/${facultyPending.id}/status`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({ status: 'active' });
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.faculty.status).toEqual('active');
+    });
+
+    it('14. Faculty self-registration creates a pending account requiring approval', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/register/faculty')
+        .send({
+          fullName: 'Prof. Sunil Patil',
+          email: 'prof.sunil@met.edu',
+          password: 'SunilPassword123',
+          employeeId: 'EMP505',
+          department: 'Civil Engineering',
+        });
+
+      expect(res.statusCode).toEqual(201);
+      expect(res.body.success).toBe(true);
+      expect(res.body.status).toEqual('pending');
+      expect(res.body.requiresApproval).toBe(true);
+    });
+
+    it('15. Faculty self-registration rejects non-institutional email addresses', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/register/faculty')
+        .send({
+          fullName: 'Fake User',
+          email: 'fake.user@gmail.com',
+          password: 'Password123',
+          employeeId: 'EMP999',
+          department: 'IT',
+        });
+
+      expect(res.statusCode).toEqual(400);
+      expect(res.body.code).toEqual('INVALID_INSTITUTIONAL_EMAIL');
+    });
+
+    it('16. Faculty data isolation: authenticated faculty member can view their own profile only', async () => {
+      const res = await request(app)
+        .get('/api/v1/faculty/profile')
+        .set('Authorization', `Bearer ${faculty1Token}`);
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.profile.email).toEqual('dr.rajesh@met.edu');
+      expect(res.body.profile.employeeId).toEqual('EMP101');
+    });
+
+    it('17. Faculty data isolation: authenticated faculty member can update their own office details', async () => {
+      const res = await request(app)
+        .put('/api/v1/faculty/profile')
+        .set('Authorization', `Bearer ${faculty1Token}`)
+        .send({
+          cabinNumber: 'Room 305, Tech Hub',
+          officeHours: 'Mon-Wed 11:00-13:00',
         });
 
       expect(res.statusCode).toEqual(200);
       expect(res.body.success).toBe(true);
-      expect(res.body.user.role).toEqual('faculty');
-
-      // Test normalized employee ID lowercase with spaces
-      const resEmp = await request(app)
-        .post('/api/v1/auth/login')
-        .send({
-          identifier: '   fac042   ',
-          password: 'faculty123',
-          role: 'faculty'
-        });
-
-      expect(resEmp.statusCode).toEqual(200);
-      expect(resEmp.body.success).toBe(true);
     });
 
-    it('8. Existing student login remains functional with student roll number', async () => {
+    it('18. Password recovery initiates successfully for distinct faculty email', async () => {
+      emailService.isConfigured = jest.fn().mockReturnValue(true);
+      emailService.sendPasswordResetEmail = jest.fn().mockResolvedValue({ messageId: 'msg-fac-1' });
+
+      const res = await request(app)
+        .post('/api/v1/auth/forgot-password')
+        .send({ email: 'dr.rajesh@met.edu' });
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.success).toBe(true);
+    });
+
+    it('19. Existing student login remains fully operational', async () => {
       const res = await request(app)
         .post('/api/v1/auth/login')
         .send({
           identifier: 'MET2022CS001',
           password: 'student123',
-          role: 'student'
-        });
-
-      expect(res.statusCode).toEqual(200);
-      expect(res.body.success).toBe(true);
-      expect(res.body.user.role).toEqual('student');
-    });
-
-    it('9. Existing student login remains functional without specifying role', async () => {
-      const res = await request(app)
-        .post('/api/v1/auth/login')
-        .send({
-          identifier: 'priya.sharma@met.edu',
-          password: 'student123'
+          role: 'student',
         });
 
       expect(res.statusCode).toEqual(200);

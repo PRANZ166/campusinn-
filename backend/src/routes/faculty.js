@@ -87,4 +87,87 @@ router.post('/noc/:id/grant', authenticate, authorize('faculty'), async (req, re
   }
 });
 
+/**
+ * GET /api/v1/faculty/profile
+ * Retrieve authenticated faculty member's individual profile (strict data isolation)
+ */
+router.get('/profile', authenticate, authorize('faculty'), async (req, res, next) => {
+  try {
+    const userRes = await query(
+      `SELECT u.id, u.email, u.role, u.status, u.first_name AS "firstName", u.last_name AS "lastName",
+              u.phone, u.avatar_url AS "avatarUrl",
+              fp.employee_id AS "employeeId", fp.department, fp.designation, fp.college,
+              fp.role_label AS "roleLabel", fp.cabin_number AS "cabinNumber", fp.office_hours AS "officeHours"
+       FROM users u
+       JOIN faculty_profiles fp ON fp.user_id = u.id
+       WHERE u.id = $1`,
+      [req.user.id]
+    );
+
+    if (userRes.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Faculty profile not found.',
+        code: 'PROFILE_NOT_FOUND',
+      });
+    }
+
+    const row = userRes.rows[0];
+    return res.status(200).json({
+      success: true,
+      profile: {
+        id: row.id,
+        email: row.email,
+        role: row.role,
+        status: row.status,
+        firstName: row.firstName || row.first_name || '',
+        lastName: row.lastName || row.last_name || '',
+        phone: row.phone || null,
+        avatarUrl: row.avatarUrl || row.avatar_url || null,
+        employeeId: row.employeeId || row.employee_id || '',
+        department: row.department || '',
+        designation: row.designation || '',
+        college: row.college || '',
+        roleLabel: row.roleLabel || row.role_label || '',
+        cabinNumber: row.cabinNumber || row.cabin_number || null,
+        officeHours: row.officeHours || row.office_hours || null,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
+ * PUT /api/v1/faculty/profile
+ * Update authenticated faculty member's individual profile details
+ */
+router.put('/profile', authenticate, authorize('faculty'), async (req, res, next) => {
+  try {
+    const { phone, cabinNumber, officeHours } = req.body || {};
+
+    if (phone !== undefined) {
+      await query('UPDATE users SET phone = $1, updated_at = NOW() WHERE id = $2', [phone ? String(phone).trim() : null, req.user.id]);
+    }
+
+    const updateFpRes = await query(
+      `UPDATE faculty_profiles
+       SET cabin_number = COALESCE($1, cabin_number),
+           office_hours = COALESCE($2, office_hours),
+           updated_at = NOW()
+       WHERE user_id = $3
+       RETURNING cabin_number AS "cabinNumber", office_hours AS "officeHours"`,
+      [cabinNumber !== undefined ? String(cabinNumber).trim() : null, officeHours !== undefined ? String(officeHours).trim() : null, req.user.id]
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: 'Faculty profile updated successfully.',
+      profile: updateFpRes.rows[0] || {},
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
 module.exports = router;
