@@ -107,6 +107,11 @@ router.post('/register/student', validateStudentRegister, async (req, res, next)
     );
     const newUser = userRes.rows[0];
 
+    // Auto-generate unique student roll number if not explicitly provided
+    const cleanRoll = rollNumber && rollNumber.trim().length > 0
+      ? rollNumber.trim().toUpperCase()
+      : `CI-${Date.now().toString().slice(-6)}-${Math.floor(100 + Math.random() * 900)}`;
+
     // Insert student profile
     const profileRes = await query(
       `INSERT INTO student_profiles (
@@ -115,7 +120,7 @@ router.post('/register/student', validateStudentRegister, async (req, res, next)
        RETURNING *`,
       [
         newUser.id,
-        rollNumber || null,
+        cleanRoll,
         college || 'MET Institute of Engineering, Nashik',
         department || 'Computer Engineering',
         program || 'B.Tech CSE',
@@ -959,13 +964,15 @@ async function findOrCreateGoogleUser(googlePayload) {
 
     if (newUserRes.rows.length > 0) {
       user = newUserRes.rows[0];
-      // Create student profile for new Google user
+      // Create student profile for new Google user with valid roll number
+      const googleRoll = `CI-G-${Date.now().toString().slice(-6)}-${Math.floor(100 + Math.random() * 900)}`;
       await query(
-        `INSERT INTO student_profiles (user_id, college, department, program, academic_year, semester, role_label)
-         VALUES ($1, $2, $3, $4, $5, $6, $7)
+        `INSERT INTO student_profiles (user_id, roll_number, college, department, program, academic_year, semester, role_label)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
          ON CONFLICT (user_id) DO NOTHING`,
         [
           user.id,
+          googleRoll,
           'MET Institute of Engineering, Nashik',
           'Computer Engineering',
           'B.Tech CSE',
