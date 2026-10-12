@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40" fill="none">
+  <defs>
+    <linearGradient id="ci-brand-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7C3AED"/>
+      <stop offset="50%" stop-color="#6D28D9"/>
+      <stop offset="100%" stop-color="#5300B7"/>
+    </linearGradient>
+    <linearGradient id="ci-plus-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34D399"/>
+      <stop offset="100%" stop-color="#10B981"/>
+    </linearGradient>
+    <filter id="ci-shadow" x="-10%" y="-10%" width="125%" height="125%">
+      <feDropShadow dx="0" dy="1.5" stdDeviation="1.5" flood-color="#311042" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+  <!-- Background rounded squircle with Stitch purple gradient -->
+  <rect width="40" height="40" rx="10" fill="url(#ci-brand-grad)"/>
+  <!-- Subtle border highlight -->
+  <rect x="0.5" y="0.5" width="39" height="39" rx="9.5" stroke="#E9D5FF" stroke-opacity="0.35" stroke-width="1"/>
+  <!-- Academic Graduation Mortarboard / Collegiate Crest in crisp white -->
+  <!-- Cap top rhombus/diamond -->
+  <path d="M20 9L7 16L20 23L33 16L20 9Z" fill="#FFFFFF"/>
+  <!-- Cap skullcap/base -->
+  <path d="M12 18.7V24C12 26.5 15.6 28.5 20 28.5C24.4 28.5 28 26.5 28 24V18.7L20 23.1L12 18.7Z" fill="#FFFFFF" fill-opacity="0.94"/>
+  <!-- Cap tassel button & hanging cord -->
+  <path d="M10 17.6V25.5" stroke="#FDE047" stroke-width="1.8" stroke-linecap="round"/>
+  <circle cx="10" cy="26" r="1.2" fill="#FDE047"/>
+  <!-- Campus Inn "+" Emblem badge at top-right -->
+  <circle cx="31" cy="9" r="6" fill="url(#ci-plus-grad)" filter="url(#ci-shadow)"/>
+  <path d="M31 6V12M28 9H34" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round"/>
+</svg>

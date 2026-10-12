@@ -355,33 +355,76 @@ function getGoogleOAuthClient() {
 }
 
 /**
+ * Helper: Check if origin is a trusted frontend origin.
+ * Strictly prevents open-redirect and token-exfiltration vulnerabilities.
+ */
+function isTrustedFrontendOrigin(originStr) {
+  if (!originStr || typeof originStr !== 'string') return false;
+  try {
+    const url = new URL(originStr);
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') return false;
+
+    const origin = url.origin.toLowerCase();
+
+    // 1. Configured frontend URL
+    if (config.frontendUrl) {
+      try {
+        const configuredOrigin = new URL(config.frontendUrl).origin.toLowerCase();
+        if (origin === configuredOrigin) return true;
+      } catch (e) {}
+    }
+
+    // 2. CORS configured origins
+    if (config.cors && Array.isArray(config.cors.origins)) {
+      for (const allowed of config.cors.origins) {
+        try {
+          if (allowed && new URL(allowed).origin.toLowerCase() === origin) {
+            return true;
+          }
+        } catch (e) {}
+      }
+    }
+
+    // 3. Vercel deployment URLs for Campus Inn project
+    if (url.hostname.endsWith('.vercel.app') && url.hostname.includes('campusinn')) {
+      return true;
+    }
+
+    // 4. In development, allow localhost and 127.0.0.1
+    if (!config.isProduction()) {
+      if (url.hostname === 'localhost' || url.hostname === '127.0.0.1') {
+        return true;
+      }
+    }
+
+    return false;
+  } catch (e) {
+    return false;
+  }
+}
+
+/**
  * Helper: Determine frontend base URL for OAuth redirects.
  * Resolves to production Vercel frontend, or local development origin if initiated locally.
  */
 function getFrontendRedirectBase(req) {
   // 1. Check if an explicit frontend origin was tracked in cookie during login initiation
   const trackedOrigin = req && req.cookies && req.cookies.ci_oauth_frontend;
-  if (trackedOrigin) {
-    try {
-      const parsed = new URL(trackedOrigin);
-      if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
-        // In production, prevent accidental localhost redirects
-        if (config.isProduction() && (parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1')) {
-          // Ignore localhost cookie in production and use config.frontendUrl
-        } else {
-          return trackedOrigin.replace(/\/+$/, '');
-        }
-      }
-    } catch (e) {}
+  if (trackedOrigin && isTrustedFrontendOrigin(trackedOrigin)) {
+    return trackedOrigin.replace(/\/+$/, '');
   }
 
-  // 2. Use configured frontendUrl
-  if (config.frontendUrl) {
+  // 2. Use configured frontendUrl if trusted
+  if (config.frontendUrl && isTrustedFrontendOrigin(config.frontendUrl)) {
     return config.frontendUrl.replace(/\/+$/, '');
   }
 
-  // 3. Fallback to empty string for relative paths
-  return '';
+  // 3. Fallback to production Vercel default
+  if (config.isProduction()) {
+    return 'https://campusinn-frontend-9nxrritaj-pranz.vercel.app';
+  }
+
+  return 'http://localhost:5500';
 }
 
 /**
@@ -404,6 +447,9 @@ router.get('/google', (req, res) => {
     try {
       initiatorOrigin = new URL(req.headers.referer).origin;
     } catch (e) {}
+  }
+  if (initiatorOrigin && !isTrustedFrontendOrigin(initiatorOrigin)) {
+    initiatorOrigin = null;
   }
   // Create cryptographically random per-login state token with HMAC signature & server-side storage
   const stateRecord = oauthStateStore.createState({
@@ -546,50 +592,54 @@ async function findOrCreateGoogleUser(googlePayload) {
  * Google OAuth 2.0 redirect handler
  */
 router.get('/google/callback', async (req, res) => {
-  const { code, state, error } = req.query;
-
-  const frontendBase = getFrontendRedirectBase(req);
-
-  // Handle user cancellation on Google consent screen
-  if (error) {
-    res.clearCookie('ci_oauth_state', { path: '/' });
-    res.clearCookie('ci_oauth_frontend', { path: '/' });
-    return res.redirect(`${frontendBase}/login.html?error=${encodeURIComponent('Google authentication was cancelled: ' + error)}`);
-  }
-
-  // Validate state parameter to prevent CSRF using server-side store + HMAC signature + cookie
-  const storedState = req.cookies.ci_oauth_state;
-  res.clearCookie('ci_oauth_state', { path: '/' });
-
-  const validation = oauthStateStore.verifyAndConsumeState(state, storedState);
-
-  if (!validation.valid) {
-    res.clearCookie('ci_oauth_frontend', { path: '/' });
-    return res.redirect(
-      `${frontendBase}/login.html?error=${encodeURIComponent('Invalid or expired OAuth state parameter. Please try signing in again.')}`
-    );
-  }
-
-  // If state record contains initiating frontendUrl, prefer it for redirection
-  if (validation.stateRecord && validation.stateRecord.frontendUrl) {
-    const candidate = validation.stateRecord.frontendUrl.replace(/\/+$/, '');
-    if (!config.isProduction() || (!candidate.includes('localhost') && !candidate.includes('127.0.0.1'))) {
-      frontendBase = candidate;
-    }
-  }
-
-  if (!code) {
-    res.clearCookie('ci_oauth_frontend', { path: '/' });
-    return res.redirect(`${frontendBase}/login.html?error=${encodeURIComponent('No authorization code provided by Google.')}`);
-  }
-
-  const oauth2Client = getGoogleOAuthClient();
-  if (!oauth2Client) {
-    res.clearCookie('ci_oauth_frontend', { path: '/' });
-    return res.redirect(`${frontendBase}/login.html?error=${encodeURIComponent('Google OAuth is not configured on the server.')}`);
-  }
+  let frontendBase = getFrontendRedirectBase(req);
 
   try {
+    const { code, state, error } = req.query;
+
+    // Handle user cancellation on Google consent screen
+    if (error) {
+      res.clearCookie('ci_oauth_state', { path: '/' });
+      res.clearCookie('ci_oauth_frontend', { path: '/' });
+      res.clearCookie('ci_oauth_redirect', { path: '/' });
+      return res.redirect(`${frontendBase}/login.html?error=${encodeURIComponent('Google authentication was cancelled: ' + error)}`);
+    }
+
+    // Validate state parameter to prevent CSRF using server-side store + HMAC signature + cookie
+    const storedState = req.cookies && req.cookies.ci_oauth_state;
+    res.clearCookie('ci_oauth_state', { path: '/' });
+
+    const validation = oauthStateStore.verifyAndConsumeState(state, storedState);
+
+    if (!validation.valid) {
+      res.clearCookie('ci_oauth_frontend', { path: '/' });
+      res.clearCookie('ci_oauth_redirect', { path: '/' });
+      return res.redirect(
+        `${frontendBase}/login.html?error=${encodeURIComponent('Invalid or expired OAuth state parameter. Please try signing in again.')}`
+      );
+    }
+
+    // If state record contains initiating frontendUrl, prefer it for redirection ONLY IF trusted
+    if (validation.stateRecord && validation.stateRecord.frontendUrl) {
+      const candidate = validation.stateRecord.frontendUrl.replace(/\/+$/, '');
+      if (isTrustedFrontendOrigin(candidate)) {
+        frontendBase = candidate;
+      }
+    }
+
+    if (!code) {
+      res.clearCookie('ci_oauth_frontend', { path: '/' });
+      res.clearCookie('ci_oauth_redirect', { path: '/' });
+      return res.redirect(`${frontendBase}/login.html?error=${encodeURIComponent('No authorization code provided by Google.')}`);
+    }
+
+    const oauth2Client = getGoogleOAuthClient();
+    if (!oauth2Client) {
+      res.clearCookie('ci_oauth_frontend', { path: '/' });
+      res.clearCookie('ci_oauth_redirect', { path: '/' });
+      return res.redirect(`${frontendBase}/login.html?error=${encodeURIComponent('Google OAuth is not configured on the server.')}`);
+    }
+
     // Exchange authorization code for tokens
     const { tokens } = await oauth2Client.getToken(code);
     oauth2Client.setCredentials(tokens);
@@ -637,16 +687,25 @@ router.get('/google/callback', async (req, res) => {
 
     // Also pass token via URL fragment or param for frontend localStorage synchronization
     const redirectData = encodeURIComponent(JSON.stringify({ token, user: userPayload }));
-    let returnTo = req.cookies.ci_oauth_redirect || (validation.stateRecord && validation.stateRecord.redirect);
+    let returnTo = (req.cookies && req.cookies.ci_oauth_redirect) || (validation.stateRecord && validation.stateRecord.redirect);
     res.clearCookie('ci_oauth_redirect', { path: '/' });
     res.clearCookie('ci_oauth_frontend', { path: '/' });
 
-    // Sanitize returnTo: in production, never allow localhost redirects
+    // Sanitize returnTo: in production, never allow localhost redirects or open redirects
     if (returnTo) {
       if (config.isProduction() && (returnTo.includes('localhost') || returnTo.includes('127.0.0.1'))) {
         try {
-          const u = new URL(returnTo, frontendBase || 'http://localhost');
+          const u = new URL(returnTo, frontendBase);
           returnTo = u.pathname + u.search + u.hash;
+        } catch (e) {
+          returnTo = 'index.html';
+        }
+      } else if (/^https?:\/\//i.test(returnTo)) {
+        try {
+          const u = new URL(returnTo);
+          if (!isTrustedFrontendOrigin(u.origin)) {
+            returnTo = u.pathname + u.search + u.hash;
+          }
         } catch (e) {
           returnTo = 'index.html';
         }
@@ -656,7 +715,9 @@ router.get('/google/callback', async (req, res) => {
     const redirectParam = returnTo ? `&redirect=${encodeURIComponent(returnTo)}` : '';
     return res.redirect(`${frontendBase}/login.html?google_auth_success=1&auth_payload=${redirectData}${redirectParam}`);
   } catch (err) {
+    res.clearCookie('ci_oauth_state', { path: '/' });
     res.clearCookie('ci_oauth_frontend', { path: '/' });
+    res.clearCookie('ci_oauth_redirect', { path: '/' });
     return res.redirect(`${frontendBase}/login.html?error=${encodeURIComponent(err.message || 'Google authentication failed.')}`);
   }
 });

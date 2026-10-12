@@ -136,6 +136,25 @@ server.listen(PORT, async () => {
     });
   }
 
+  const staticAssets = ['assets/campus_inn_logo.svg', 'assets/logo.svg', 'css/theme.css'];
+  for (const asset of staticAssets) {
+    await new Promise((resolve) => {
+      http.get(`http://localhost:${PORT}/${asset}`, (res) => {
+        if (res.statusCode === 200) {
+          console.log(`  [HTTP 200] /${asset}`);
+        } else {
+          console.error(`  [HTTP ${res.statusCode}] /${asset}`);
+          httpPass = false;
+        }
+        resolve();
+      }).on('error', (err) => {
+        console.error(`  [HTTP ERR] /${asset}: ${err.message}`);
+        httpPass = false;
+        resolve();
+      });
+    });
+  }
+
   server.close(() => {
     console.log('\n==================================================');
     if (jsPass && pagesPass && httpPass) {

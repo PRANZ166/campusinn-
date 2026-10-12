@@ -216,5 +216,123 @@ describe('Campus Inn+ Backend API Suite', () => {
         process.env.NODE_ENV = origEnv;
       }
     });
+
+    describe('Google OAuth Callback Production Regression Suite', () => {
+      const { OAuth2Client } = require('google-auth-library');
+
+      it('Regression: valid state with trusted frontendUrl does not throw TypeError: Assignment to constant variable', async () => {
+        const stateRecord = oauthStateStore.createState({
+          frontendUrl: 'https://campusinn-frontend-9nxrritaj-pranz.vercel.app',
+          redirect: 'student.html',
+        });
+        const res = await request(app)
+          .get(`/api/v1/auth/google/callback?state=${encodeURIComponent(stateRecord.stateToken)}`)
+          .set('Cookie', [`ci_oauth_state=${stateRecord.stateToken}`]);
+
+        expect(res.statusCode).toEqual(302);
+        expect(res.headers.location).toContain('https://campusinn-frontend-9nxrritaj-pranz.vercel.app/login.html?error=');
+        expect(res.headers.location).toContain('No%20authorization%20code');
+      });
+
+      it('Regression: untrusted frontend origin is rejected and falls back to configured trusted frontend', async () => {
+        const stateRecord = oauthStateStore.createState({
+          frontendUrl: 'https://malicious-phishing-attacker.com',
+        });
+        const res = await request(app)
+          .get(`/api/v1/auth/google/callback?state=${encodeURIComponent(stateRecord.stateToken)}`)
+          .set('Cookie', [`ci_oauth_state=${stateRecord.stateToken}`]);
+
+        expect(res.statusCode).toEqual(302);
+        expect(res.headers.location).not.toContain('malicious-phishing-attacker.com');
+        expect(res.headers.location).toMatch(/campusinn-frontend.*\.vercel\.app|localhost:5500/);
+      });
+
+      it('Regression: missing OAuth code with valid state redirects to frontend with safe error', async () => {
+        const stateRecord = oauthStateStore.createState({
+          frontendUrl: 'https://campusinn-frontend-9nxrritaj-pranz.vercel.app',
+        });
+        const res = await request(app)
+          .get(`/api/v1/auth/google/callback?state=${encodeURIComponent(stateRecord.stateToken)}`)
+          .set('Cookie', [`ci_oauth_state=${stateRecord.stateToken}`]);
+
+        expect(res.statusCode).toEqual(302);
+        expect(res.headers.location).toContain('/login.html?error=');
+        expect(res.headers.location).toContain('No%20authorization%20code%20provided%20by%20Google');
+      });
+
+      it('Regression: invalid OAuth state is safely rejected without crash', async () => {
+        const res = await request(app)
+          .get('/api/v1/auth/google/callback?state=invalid_tampered_token&code=some_code');
+
+        expect(res.statusCode).toEqual(302);
+        expect(res.headers.location).toContain('/login.html?error=');
+        expect(res.headers.location).toContain('Invalid%20or%20expired%20OAuth%20state');
+      });
+
+      it('Regression: callback runtime exception is caught by top-level try/catch and never crashes server', async () => {
+        const stateRecord = oauthStateStore.createState();
+        const origGetToken = OAuth2Client.prototype.getToken;
+        OAuth2Client.prototype.getToken = jest.fn().mockRejectedValue(new Error('Simulated Google network timeout'));
+
+        try {
+          const res = await request(app)
+            .get(`/api/v1/auth/google/callback?state=${encodeURIComponent(stateRecord.stateToken)}&code=valid_test_code`)
+            .set('Cookie', [`ci_oauth_state=${stateRecord.stateToken}`]);
+
+          expect(res.statusCode).toEqual(302);
+          expect(res.headers.location).toContain('/login.html?error=');
+          expect(res.headers.location).toContain('Simulated%20Google%20network%20timeout');
+        } finally {
+          OAuth2Client.prototype.getToken = origGetToken;
+        }
+      });
+
+      it('Regression: successful OAuth exchange provisions session, clears temp cookies, and redirects with auth_payload', async () => {
+        const stateRecord = oauthStateStore.createState({
+          frontendUrl: 'https://campusinn-frontend-9nxrritaj-pranz.vercel.app',
+          redirect: 'student.html',
+        });
+
+        const origGetToken = OAuth2Client.prototype.getToken;
+        const origVerifyIdToken = OAuth2Client.prototype.verifyIdToken;
+
+        OAuth2Client.prototype.getToken = jest.fn().mockResolvedValue({
+          tokens: { id_token: 'mock_valid_id_token', access_token: 'mock_access_token' }
+        });
+        OAuth2Client.prototype.verifyIdToken = jest.fn().mockResolvedValue({
+          getPayload: () => ({
+            sub: 'google_test_sub_99999',
+            email: 'test.student@metbkc.edu.in',
+            email_verified: true,
+            given_name: 'Regression',
+            family_name: 'Tester',
+            picture: 'https://example.com/avatar.png',
+          })
+        });
+
+        try {
+          const res = await request(app)
+            .get(`/api/v1/auth/google/callback?state=${encodeURIComponent(stateRecord.stateToken)}&code=auth_code_12345`)
+            .set('Cookie', [
+              `ci_oauth_state=${stateRecord.stateToken}`,
+              `ci_oauth_frontend=https://campusinn-frontend-9nxrritaj-pranz.vercel.app`,
+              `ci_oauth_redirect=student.html`
+            ]);
+
+          expect(res.statusCode).toEqual(302);
+          expect(res.headers.location).toContain('https://campusinn-frontend-9nxrritaj-pranz.vercel.app/login.html?google_auth_success=1');
+          expect(res.headers.location).toContain('auth_payload=');
+          expect(res.headers.location).toContain('redirect=student.html');
+
+          const cookies = res.headers['set-cookie'];
+          expect(cookies).toBeDefined();
+          const sessionCookie = cookies.find(c => c.startsWith('ci_session='));
+          expect(sessionCookie).toBeDefined();
+        } finally {
+          OAuth2Client.prototype.getToken = origGetToken;
+          OAuth2Client.prototype.verifyIdToken = origVerifyIdToken;
+        }
+      });
+    });
   });
 });

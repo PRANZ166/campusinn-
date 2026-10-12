@@ -350,12 +350,17 @@ const Nav = (() => {
       }
     });
 
-    // Clean extra "Campus Inn+" text beside logo in headers (Requirement 1 & 2)
+    // Ensure header logo links to index.html and resolves logo image
     document.querySelectorAll('header a[data-path="home"], header a[href*="index.html"]').forEach(logo => {
       logo.href = 'index.html';
-      const extraSpan = logo.querySelector('span');
-      if (extraSpan && extraSpan.textContent.includes('Campus Inn')) {
-        extraSpan.remove();
+      const img = logo.querySelector('img');
+      if (img) {
+        if (!img.getAttribute('src') || img.src.includes('googleusercontent.com') || img.getAttribute('src').startsWith('http')) {
+          img.src = 'assets/campus_inn_logo.svg';
+        }
+        img.addEventListener('error', () => {
+          img.src = 'assets/campus_inn_logo.svg';
+        }, { once: true });
       }
     });
 
