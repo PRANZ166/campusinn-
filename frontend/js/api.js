@@ -105,10 +105,12 @@ const API = (() => {
      1. AUTHENTICATION SERVICE (STRICT REAL BACKEND)
      ═══════════════════════════════════════════ */
   const auth = {
-    async login(identifier, password) {
+    async login(identifier, password, role) {
+      const payload = { identifier, password };
+      if (role) payload.role = role;
       const res = await request('/auth/login', {
         method: 'POST',
-        body: JSON.stringify({ identifier, password })
+        body: JSON.stringify(payload)
       });
 
       if (res.data && res.data.token) {

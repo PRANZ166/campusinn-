@@ -56,12 +56,13 @@ function validateStudentRegister(req, res, next) {
  * Validate Login Payload
  */
 function validateLogin(req, res, next) {
-  const { identifier, password } = req.body;
+  const { identifier, password, role } = req.body;
 
   if (!identifier || typeof identifier !== 'string' || !identifier.trim()) {
     return res.status(400).json({
       success: false,
-      message: 'Identifier (email or roll number) is required.',
+      message: 'Identifier (email, roll number, or institutional ID) is required.',
+      code: 'MISSING_IDENTIFIER',
     });
   }
 
@@ -69,6 +70,15 @@ function validateLogin(req, res, next) {
     return res.status(400).json({
       success: false,
       message: 'Password is required.',
+      code: 'MISSING_PASSWORD',
+    });
+  }
+
+  if (role && (typeof role !== 'string' || !['student', 'faculty', 'admin', 'tpo', 'coordinator', 'recruiter'].includes(role.trim().toLowerCase()))) {
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid role specified.',
+      code: 'INVALID_ROLE',
     });
   }
 

@@ -953,4 +953,275 @@ describe('Campus Inn+ Backend API Suite', () => {
       expect(checkRes.body.resume).toBeNull();
     });
   });
+
+  describe('Faculty & Role-Based Authentication Suite', () => {
+    let querySpy;
+    let facultyPassHash;
+    let studentPassHash;
+
+    const mockFaculty = {
+      id: 'fac-uuid-101',
+      email: 'faculty.cs@met.edu',
+      first_name: 'Dr. Rajesh',
+      last_name: 'Deshmukh',
+      role: 'faculty',
+      status: 'active',
+      avatar_url: null,
+      roll_number: null,
+      employee_id: 'FAC042',
+    };
+
+    const mockStudent = {
+      id: 'std-uuid-202',
+      email: 'priya.sharma@met.edu',
+      first_name: 'Priya',
+      last_name: 'Sharma',
+      role: 'student',
+      status: 'active',
+      avatar_url: null,
+      roll_number: 'MET2022CS001',
+      employee_id: null,
+    };
+
+    beforeAll(async () => {
+      facultyPassHash = await bcrypt.hash('faculty123', 10);
+      studentPassHash = await bcrypt.hash('student123', 10);
+
+      querySpy = jest.spyOn(require('../src/db/pool').pool, 'query').mockImplementation((sql, params) => {
+        const sqlStr = typeof sql === 'string' ? sql : (sql && sql.text ? sql.text : '');
+        const p0 = (params && params[0] ? String(params[0]).trim().toLowerCase() : '');
+
+        // 1. Query by email
+        if (sqlStr.includes('FROM users u') && sqlStr.includes('WHERE LOWER(u.email) = $1')) {
+          if (p0 === 'faculty.cs@met.edu') {
+            return Promise.resolve({
+              rows: [{
+                ...mockFaculty,
+                password_hash: facultyPassHash,
+              }]
+            });
+          }
+          if (p0 === 'priya.sharma@met.edu') {
+            return Promise.resolve({
+              rows: [{
+                ...mockStudent,
+                password_hash: studentPassHash,
+              }]
+            });
+          }
+          return Promise.resolve({ rows: [] });
+        }
+
+        // 2. Query by student roll_number
+        if (sqlStr.includes('JOIN student_profiles sp') && sqlStr.includes('LOWER(sp.roll_number) = $1')) {
+          if (p0 === 'met2022cs001') {
+            return Promise.resolve({
+              rows: [{
+                ...mockStudent,
+                password_hash: studentPassHash,
+              }]
+            });
+          }
+          return Promise.resolve({ rows: [] });
+        }
+
+        // 3. Query by faculty employee_id
+        if (sqlStr.includes('JOIN faculty_profiles fp') && sqlStr.includes('LOWER(fp.employee_id) = $1')) {
+          if (p0 === 'fac042') {
+            return Promise.resolve({
+              rows: [{
+                ...mockFaculty,
+                password_hash: facultyPassHash,
+              }]
+            });
+          }
+          return Promise.resolve({ rows: [] });
+        }
+
+        // 4. Role profile lookups
+        if (sqlStr.includes('FROM faculty_profiles WHERE user_id = $1')) {
+          return Promise.resolve({
+            rows: [{
+              user_id: mockFaculty.id,
+              department: 'Computer Engineering & IT',
+              designation: 'Associate Professor',
+              employee_id: 'FAC042',
+              cabin_number: 'Room 304, IT Block',
+              office_hours: 'Mon-Fri 10:00-12:00'
+            }]
+          });
+        }
+        if (sqlStr.includes('FROM student_profiles WHERE user_id = $1')) {
+          return Promise.resolve({
+            rows: [{
+              user_id: mockStudent.id,
+              roll_number: 'MET2022CS001',
+              college: 'MET Bhujbal Knowledge City',
+              department: 'Computer Engineering',
+              program: 'B.Tech',
+              academic_year: '2022-2026',
+              semester: 6,
+              role_label: 'Student',
+              cgpa: '9.2',
+              backlogs: 0
+            }]
+          });
+        }
+
+        // 5. Update last_login
+        if (sqlStr.includes('UPDATE users SET last_login')) {
+          return Promise.resolve({ rowCount: 1 });
+        }
+
+        return Promise.resolve({ rows: [] });
+      });
+    });
+
+    afterAll(() => {
+      if (querySpy) querySpy.mockRestore();
+    });
+
+    it('1. Valid faculty email and password authenticates successfully', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/login')
+        .send({
+          identifier: 'faculty.cs@met.edu',
+          password: 'faculty123',
+          role: 'faculty'
+        });
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.user.email).toEqual('faculty.cs@met.edu');
+      expect(res.body.user.role).toEqual('faculty');
+      expect(res.body.token).toBeDefined();
+    });
+
+    it('2. Valid faculty employee ID authenticates successfully', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/login')
+        .send({
+          identifier: 'FAC042',
+          password: 'faculty123',
+          role: 'faculty'
+        });
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.user.role).toEqual('faculty');
+    });
+
+    it('3. Incorrect faculty password is rejected with generic error', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/login')
+        .send({
+          identifier: 'faculty.cs@met.edu',
+          password: 'wrong_password_999',
+          role: 'faculty'
+        });
+
+      expect(res.statusCode).toEqual(401);
+      expect(res.body.success).toBe(false);
+      expect(res.body.code).toEqual('INVALID_PASSWORD');
+      expect(res.body.message).toContain('Please check your password');
+    });
+
+    it('4. Unknown faculty identifier is rejected with generic error', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/login')
+        .send({
+          identifier: 'unknown.prof@met.edu',
+          password: 'faculty123',
+          role: 'faculty'
+        });
+
+      expect(res.statusCode).toEqual(401);
+      expect(res.body.success).toBe(false);
+      expect(res.body.code).toEqual('INVALID_CREDENTIALS');
+      expect(res.body.message).toContain('verify your faculty email or ID');
+    });
+
+    it('5. Student credentials cannot authenticate as faculty (unauthorized role rejected)', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/login')
+        .send({
+          identifier: 'priya.sharma@met.edu',
+          password: 'student123',
+          role: 'faculty'
+        });
+
+      expect(res.statusCode).toEqual(403);
+      expect(res.body.success).toBe(false);
+      expect(res.body.code).toEqual('UNAUTHORIZED_ROLE');
+      expect(res.body.message.toLowerCase()).toContain('not authorized for the faculty portal');
+    });
+
+    it('6. Faculty credentials cannot authenticate as admin (privilege escalation blocked)', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/login')
+        .send({
+          identifier: 'faculty.cs@met.edu',
+          password: 'faculty123',
+          role: 'admin'
+        });
+
+      expect(res.statusCode).toEqual(403);
+      expect(res.body.success).toBe(false);
+      expect(res.body.code).toEqual('UNAUTHORIZED_ROLE');
+      expect(res.body.message.toLowerCase()).toContain('administrative privileges');
+    });
+
+    it('7. Identifier normalization handles mixed case and whitespace correctly', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/login')
+        .send({
+          identifier: '   FACULTY.CS@MET.EDU   ',
+          password: 'faculty123',
+          role: 'faculty'
+        });
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.user.role).toEqual('faculty');
+
+      // Test normalized employee ID lowercase with spaces
+      const resEmp = await request(app)
+        .post('/api/v1/auth/login')
+        .send({
+          identifier: '   fac042   ',
+          password: 'faculty123',
+          role: 'faculty'
+        });
+
+      expect(resEmp.statusCode).toEqual(200);
+      expect(resEmp.body.success).toBe(true);
+    });
+
+    it('8. Existing student login remains functional with student roll number', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/login')
+        .send({
+          identifier: 'MET2022CS001',
+          password: 'student123',
+          role: 'student'
+        });
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.user.role).toEqual('student');
+    });
+
+    it('9. Existing student login remains functional without specifying role', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/login')
+        .send({
+          identifier: 'priya.sharma@met.edu',
+          password: 'student123'
+        });
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.user.role).toEqual('student');
+    });
+  });
 });

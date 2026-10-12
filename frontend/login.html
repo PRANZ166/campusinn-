@@ -606,6 +606,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  const urlRole = new URLSearchParams(window.location.search).get('role');
+  if (urlRole) {
+    const tabToActivate = Array.from(tabs).find(t => t.getAttribute('data-role') === urlRole.toLowerCase());
+    if (tabToActivate) tabToActivate.click();
+  }
+
   // 1. SUBMIT LOGIN FORM
   const authForm = document.getElementById('authForm');
   const submitCta = document.getElementById('submitCta');
@@ -631,7 +637,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       CampusInn.FormUtils.setButtonLoading(submitCta, true);
       try {
-        const session = await CampusInn.Auth.login(idVal, passVal);
+        const session = await CampusInn.Auth.login(idVal, passVal, selectedRole);
         CampusInn.Toast.success(`Authenticated as ${session.name || session.email}. Redirecting...`);
         const redirectParam = new URLSearchParams(window.location.search).get('redirect');
         const fallbackTarget = (typeof CampusInn !== 'undefined' && CampusInn.Auth) ? CampusInn.Auth.getDashboardUrl() : 'index.html';

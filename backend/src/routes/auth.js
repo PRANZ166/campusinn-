@@ -148,10 +148,11 @@ router.post('/register/student', validateStudentRegister, async (req, res, next)
  */
 router.post('/login', validateLogin, async (req, res, next) => {
   try {
-    const { identifier, password } = req.body;
+    const { identifier, password, role } = req.body;
     const cleanId = (identifier || '').trim().toLowerCase();
+    const requestedRole = (role || '').trim().toLowerCase();
 
-    // Find user by email or student roll_number
+    // 1. Find user by email
     let userResult = await query(
       `SELECT u.id, u.email, u.password_hash, u.role, u.status, u.first_name, u.last_name, u.phone, u.avatar_url
        FROM users u
@@ -159,6 +160,7 @@ router.post('/login', validateLogin, async (req, res, next) => {
       [cleanId]
     );
 
+    // 2. If not found, check student_profiles roll_number
     if (userResult.rows.length === 0) {
       userResult = await query(
         `SELECT u.id, u.email, u.password_hash, u.role, u.status, u.first_name, u.last_name, u.phone, u.avatar_url
@@ -166,13 +168,28 @@ router.post('/login', validateLogin, async (req, res, next) => {
          JOIN student_profiles sp ON sp.user_id = u.id
          WHERE LOWER(sp.roll_number) = $1`,
         [cleanId]
-      );
+      ).catch(() => ({ rows: [] }));
+    }
+
+    // 3. If not found, check faculty_profiles employee_id
+    if (userResult.rows.length === 0) {
+      userResult = await query(
+        `SELECT u.id, u.email, u.password_hash, u.role, u.status, u.first_name, u.last_name, u.phone, u.avatar_url
+         FROM users u
+         JOIN faculty_profiles fp ON fp.user_id = u.id
+         WHERE LOWER(fp.employee_id) = $1`,
+        [cleanId]
+      ).catch(() => ({ rows: [] }));
     }
 
     if (userResult.rows.length === 0) {
+      const isFacultyReq = requestedRole === 'faculty';
       return res.status(401).json({
         success: false,
-        message: 'Invalid credentials. Please verify your email or roll number.',
+        message: isFacultyReq
+          ? 'Invalid credentials. Please verify your faculty email or ID.'
+          : 'Invalid credentials. Please verify your email or roll number.',
+        code: 'INVALID_CREDENTIALS',
       });
     }
 
@@ -182,6 +199,7 @@ router.post('/login', validateLogin, async (req, res, next) => {
       return res.status(403).json({
         success: false,
         message: `Account is ${user.status}. Access denied.`,
+        code: 'ACCOUNT_SUSPENDED',
       });
     }
 
@@ -190,7 +208,43 @@ router.post('/login', validateLogin, async (req, res, next) => {
       return res.status(401).json({
         success: false,
         message: 'Invalid credentials. Please check your password.',
+        code: 'INVALID_PASSWORD',
       });
+    }
+
+    // 4. Role Authorization: verify user is authorized for the requested portal
+    if (requestedRole) {
+      if (requestedRole === 'admin' && user.role !== 'admin') {
+        return res.status(403).json({
+          success: false,
+          message: 'Access denied. This account does not possess administrative privileges.',
+          code: 'UNAUTHORIZED_ROLE',
+        });
+      }
+
+      if (requestedRole === 'faculty' && user.role !== 'faculty' && user.role !== 'admin') {
+        return res.status(403).json({
+          success: false,
+          message: 'Access denied. This account is not authorized for the Faculty Portal.',
+          code: 'UNAUTHORIZED_ROLE',
+        });
+      }
+
+      if (requestedRole === 'student' && user.role !== 'student' && user.role !== 'admin') {
+        return res.status(403).json({
+          success: false,
+          message: 'Access denied. This account is not registered as a student.',
+          code: 'UNAUTHORIZED_ROLE',
+        });
+      }
+
+      if (['tpo', 'coordinator', 'recruiter'].includes(requestedRole) && user.role !== requestedRole && user.role !== 'admin') {
+        return res.status(403).json({
+          success: false,
+          message: `Access denied. This account is not authorized for the ${requestedRole} portal.`,
+          code: 'UNAUTHORIZED_ROLE',
+        });
+      }
     }
 
     // Fetch role-specific profile details

@@ -108,12 +108,12 @@ const Auth = (() => {
     return role && ROLES[role] ? ROLES[role].dashboard : 'login.html';
   }
 
-  async function login(identifier, password) {
+  async function login(identifier, password, role) {
     if (!identifier || !identifier.trim()) throw new Error('Please enter your ID or college email.');
     if (!password || !password.trim()) throw new Error('Please enter your password.');
 
     if (typeof window.CampusInnAPI !== 'undefined') {
-      const result = await window.CampusInnAPI.auth.login(identifier.trim(), password);
+      const result = await window.CampusInnAPI.auth.login(identifier.trim(), password, role);
       if (result.data) {
         setSession(result.data);
         if (result.token) {
