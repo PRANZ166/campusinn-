@@ -175,6 +175,22 @@ const API = (() => {
       localStorage.removeItem('ci_token');
       localStorage.removeItem('ci_auth');
       return { success: true };
+    },
+
+    async forgotPassword(email) {
+      const res = await request('/auth/forgot-password', {
+        method: 'POST',
+        body: JSON.stringify({ email })
+      });
+      return res;
+    },
+
+    async resetPassword(token, newPassword, confirmPassword) {
+      const res = await request('/auth/reset-password', {
+        method: 'POST',
+        body: JSON.stringify({ token, newPassword, confirmPassword })
+      });
+      return res;
     }
   };
 
@@ -188,6 +204,55 @@ const API = (() => {
         return { data: res.data.student, error: null, isMock: false };
       }
       return { data: null, error: res.error || 'Failed to retrieve student profile.', isMock: false };
+    },
+
+    async getResume() {
+      const res = await request('/students/resume');
+      return res;
+    },
+
+    async uploadResume(file) {
+      const formData = new FormData();
+      formData.append('cvFile', file);
+      const url = `${BASE_URL}/students/resume`;
+      const headers = {};
+      const token = localStorage.getItem('ci_token');
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers,
+          body: formData,
+          credentials: 'include'
+        });
+        const json = await response.json().catch(() => null);
+        if (!response.ok) {
+          return {
+            data: null,
+            error: (json && json.message) || `Upload failed with status ${response.status}`,
+            status: response.status
+          };
+        }
+        return { data: json, error: null, status: response.status };
+      } catch (err) {
+        return {
+          data: null,
+          error: err.message || 'Network error encountered during resume upload.',
+          status: 0
+        };
+      }
+    },
+
+    async deleteResume() {
+      const res = await request('/students/resume', { method: 'DELETE' });
+      return res;
+    },
+
+    getResumeDownloadUrl() {
+      return `${BASE_URL}/students/resume/download`;
     },
 
     async apply(driveId, company, title) {

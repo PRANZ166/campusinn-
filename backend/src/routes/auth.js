@@ -2,12 +2,19 @@
  * Campus Inn+ — Authentication Routes (/api/v1/auth)
  */
 const express = require('express');
+const crypto = require('crypto');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const config = require('../config');
 const { query } = require('../db/pool');
 const { authenticate } = require('../middleware/auth');
-const { validateLogin, validateStudentRegister } = require('../middleware/validate');
+const {
+  validateLogin,
+  validateStudentRegister,
+  validateForgotPassword,
+  validateResetPassword,
+} = require('../middleware/validate');
+const emailService = require('../services/email');
 
 const router = express.Router();
 const SALT_ROUNDS = 12;
@@ -339,7 +346,6 @@ router.post('/logout', (req, res) => {
   });
 });
 
-const crypto = require('crypto');
 const { OAuth2Client } = require('google-auth-library');
 const oauthStateStore = require('../services/oauthStateStore');
 
@@ -798,5 +804,192 @@ router.post('/google-sso', async (req, res, next) => {
   }
 });
 
+/**
+ * POST /api/v1/auth/forgot-password
+ * Initiates single-use password recovery token and dispatches reset email
+ */
+router.post('/forgot-password', validateForgotPassword, async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    const normalizedEmail = email.trim().toLowerCase();
+
+    // Verify SMTP service configuration
+    if (!emailService.isConfigured()) {
+      console.warn('[Auth] SMTP service credentials not configured. Cannot dispatch password recovery email.');
+      return res.status(503).json({
+        success: false,
+        message: 'Password recovery email service is temporarily unavailable. Please contact institutional support or configure SMTP credentials.',
+        code: 'EMAIL_SERVICE_UNAVAILABLE',
+      });
+    }
+
+    // Generic response protecting against account enumeration
+    const genericResponse = {
+      success: true,
+      message: 'If an account exists with this email address, password reset instructions have been sent.',
+    };
+
+    // Lookup user by normalized email
+    let userRes;
+    try {
+      userRes = await query(
+        'SELECT id, email, first_name, status FROM users WHERE LOWER(email) = $1',
+        [normalizedEmail]
+      );
+    } catch (dbErr) {
+      console.error('[Auth] Database error looking up user for forgot-password:', dbErr.message);
+      return res.status(503).json({
+        success: false,
+        message: 'Service is temporarily unavailable. Please try again later.',
+        code: 'SERVICE_UNAVAILABLE',
+      });
+    }
+
+    // If user does not exist or account is inactive, return generic response without revealing existence
+    if (userRes.rows.length === 0 || userRes.rows[0].status !== 'active') {
+      return res.status(200).json(genericResponse);
+    }
+
+    const user = userRes.rows[0];
+
+    // Anti-flooding: check if an unexpired token was created in the last 60 seconds
+    const recentToken = await query(
+      `SELECT id FROM password_reset_tokens
+       WHERE user_id = $1 AND created_at > NOW() - INTERVAL '60 seconds' AND consumed_at IS NULL`,
+      [user.id]
+    ).catch(() => ({ rows: [] }));
+
+    if (recentToken.rows.length > 0) {
+      // Rapid duplicate request: suppress duplicate email dispatch, return generic success
+      return res.status(200).json(genericResponse);
+    }
+
+    // Generate cryptographically secure random token (32 bytes hex)
+    const rawToken = crypto.randomBytes(32).toString('hex');
+    const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15-minute expiration
+
+    // Persist hashed token
+    await query(
+      `INSERT INTO password_reset_tokens (user_id, token_hash, expires_at)
+       VALUES ($1, $2, $3)`,
+      [user.id, tokenHash, expiresAt]
+    );
+
+    // Build reset link using validated FRONTEND_URL
+    const frontendBase = (config.frontendUrl || 'https://campusinn-frontend-9nxrritaj-pranz.vercel.app').replace(/\/+$/, '');
+    const resetUrl = `${frontendBase}/reset-password.html?token=${rawToken}`;
+
+    // Send email via SMTP
+    try {
+      await emailService.sendPasswordResetEmail({
+        to: user.email,
+        firstName: user.first_name,
+        resetUrl,
+        expiresInMinutes: 15,
+      });
+    } catch (emailErr) {
+      console.error('[Auth] Password reset email dispatch failed:', emailErr.message);
+      return res.status(503).json({
+        success: false,
+        message: 'Unable to deliver password reset email at this time. Please try again later.',
+        code: 'EMAIL_DELIVERY_FAILED',
+      });
+    }
+
+    return res.status(200).json(genericResponse);
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
+ * POST /api/v1/auth/reset-password
+ * Consumes single-use reset token atomically, validates password, and updates hash
+ */
+router.post('/reset-password', validateResetPassword, async (req, res, next) => {
+  try {
+    const { token, newPassword } = req.body;
+    const tokenHash = crypto.createHash('sha256').update(token.trim()).digest('hex');
+
+    // Look up token with associated user account
+    const tokenRes = await query(
+      `SELECT prt.id, prt.user_id, prt.expires_at, prt.consumed_at, u.status
+       FROM password_reset_tokens prt
+       JOIN users u ON u.id = prt.user_id
+       WHERE prt.token_hash = $1`,
+      [tokenHash]
+    );
+
+    if (tokenRes.rows.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid or unrecognized password reset link.',
+        code: 'INVALID_TOKEN',
+      });
+    }
+
+    const record = tokenRes.rows[0];
+
+    // Check if token was already consumed
+    if (record.consumed_at) {
+      return res.status(400).json({
+        success: false,
+        message: 'This password reset link has already been used. Please request a new link.',
+        code: 'TOKEN_ALREADY_USED',
+      });
+    }
+
+    // Check expiration timestamp
+    if (new Date(record.expires_at).getTime() < Date.now()) {
+      return res.status(400).json({
+        success: false,
+        message: 'This password reset link has expired (15-minute validity limit). Please request a new link.',
+        code: 'TOKEN_EXPIRED',
+      });
+    }
+
+    // Check user account status
+    if (record.status !== 'active') {
+      return res.status(403).json({
+        success: false,
+        message: 'Account is suspended or deactivated. Password cannot be reset.',
+        code: 'ACCOUNT_INACTIVE',
+      });
+    }
+
+    // Hash new password using project standard SALT_ROUNDS
+    const newPasswordHash = await bcrypt.hash(newPassword, SALT_ROUNDS);
+
+    // Atomically mark token consumed and update password
+    await query(
+      `UPDATE password_reset_tokens SET consumed_at = NOW() WHERE id = $1`,
+      [record.id]
+    );
+
+    await query(
+      `UPDATE users SET password_hash = $1, updated_at = NOW() WHERE id = $2`,
+      [newPasswordHash, record.user_id]
+    );
+
+    // Invalidate any other outstanding reset tokens for this user
+    await query(
+      `UPDATE password_reset_tokens SET consumed_at = NOW() WHERE user_id = $1 AND consumed_at IS NULL`,
+      [record.user_id]
+    );
+
+    // Clear session cookie if set
+    res.clearCookie('ci_session', { path: '/' });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Your password has been successfully reset. Please sign in with your new password.',
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
 module.exports = router;
+
 

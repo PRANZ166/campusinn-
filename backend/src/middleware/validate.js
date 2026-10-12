@@ -75,9 +75,72 @@ function validateLogin(req, res, next) {
   next();
 }
 
+/**
+ * Validate Forgot Password Payload
+ */
+function validateForgotPassword(req, res, next) {
+  const { email } = req.body || {};
+
+  if (!email || typeof email !== 'string' || !validateEmail(email)) {
+    return res.status(400).json({
+      success: false,
+      message: 'A valid email address is required.',
+      code: 'INVALID_EMAIL',
+    });
+  }
+
+  next();
+}
+
+/**
+ * Validate Reset Password Payload
+ */
+function validateResetPassword(req, res, next) {
+  const { token, newPassword, confirmPassword } = req.body || {};
+
+  if (!token || typeof token !== 'string' || token.trim().length < 16) {
+    return res.status(400).json({
+      success: false,
+      message: 'A valid password reset token is required.',
+      code: 'INVALID_TOKEN',
+    });
+  }
+
+  if (!newPassword || typeof newPassword !== 'string' || newPassword.length < 8) {
+    return res.status(400).json({
+      success: false,
+      message: 'New password must be at least 8 characters long.',
+      code: 'WEAK_PASSWORD',
+    });
+  }
+
+  const hasLetter = /[a-zA-Z]/.test(newPassword);
+  const hasNumber = /[0-9]/.test(newPassword);
+  if (!hasLetter || !hasNumber) {
+    return res.status(400).json({
+      success: false,
+      message: 'Password must contain at least one letter and one number.',
+      code: 'WEAK_PASSWORD',
+    });
+  }
+
+  if (newPassword !== confirmPassword) {
+    return res.status(400).json({
+      success: false,
+      message: 'Passwords do not match.',
+      code: 'PASSWORD_MISMATCH',
+    });
+  }
+
+  next();
+}
+
 module.exports = {
   validateEmail,
   sanitizeString,
   validateStudentRegister,
   validateLogin,
+  validateForgotPassword,
+  validateResetPassword,
 };
+

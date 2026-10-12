@@ -25,6 +25,14 @@ const config = {
     ? 'https://campusinn-frontend-9nxrritaj-pranz.vercel.app'
     : 'http://localhost:5500'),
 
+  email: {
+    smtpHost: process.env.SMTP_HOST || '',
+    smtpPort: parseInt(process.env.SMTP_PORT, 10) || 587,
+    smtpUser: process.env.SMTP_USER || '',
+    smtpPass: process.env.SMTP_PASS || '',
+    emailFrom: process.env.EMAIL_FROM || 'Campus Inn+ <no-reply@campusinn.edu>',
+  },
+
   google: {
     clientId: process.env.GOOGLE_CLIENT_ID || '',
     clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',

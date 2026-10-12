@@ -543,52 +543,81 @@ CREATE TABLE IF NOT EXISTS _migrations (
 );
 `;
 
+const MIGRATION_002_SQL = `
+CREATE TABLE IF NOT EXISTS password_reset_tokens (
+  id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id     UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  token_hash  VARCHAR(255) NOT NULL,
+  expires_at  TIMESTAMPTZ NOT NULL,
+  consumed_at TIMESTAMPTZ,
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_password_reset_tokens_hash ON password_reset_tokens (token_hash);
+CREATE INDEX IF NOT EXISTS idx_password_reset_tokens_user ON password_reset_tokens (user_id);
+CREATE INDEX IF NOT EXISTS idx_password_reset_tokens_expires ON password_reset_tokens (expires_at);
+`;
+
+const MIGRATIONS = [
+  {
+    name: '001_initial_schema',
+    sqlFile: '001_initial_schema.sql',
+    fallbackSql: MIGRATION_SQL,
+  },
+  {
+    name: '002_password_reset_tokens',
+    sqlFile: '002_password_reset_tokens.sql',
+    fallbackSql: MIGRATION_002_SQL,
+  },
+];
+
 async function runMigration() {
   const client = await pool.connect();
   try {
-    // Check if this migration has already been applied
+    // Check if _migrations table exists
     await client.query(`CREATE TABLE IF NOT EXISTS _migrations (
       id SERIAL PRIMARY KEY,
       name VARCHAR(255) NOT NULL UNIQUE,
       applied_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     )`);
 
-    const migrationName = '001_initial_schema';
-    const existing = await client.query(
-      'SELECT id FROM _migrations WHERE name = $1',
-      [migrationName]
-    );
+    for (const migration of MIGRATIONS) {
+      const existing = await client.query(
+        'SELECT id FROM _migrations WHERE name = $1',
+        [migration.name]
+      );
 
-    if (existing.rows.length > 0) {
-      console.log(`[Migration] ${migrationName} already applied — skipping.`);
-      return;
-    }
-
-    function getMigrationSql() {
-      const sqlFilePath = path.resolve(__dirname, '../../migrations/001_initial_schema.sql');
-      if (fs.existsSync(sqlFilePath)) {
-        try {
-          const fileContent = fs.readFileSync(sqlFilePath, 'utf8');
-          if (fileContent && fileContent.trim().length > 0) {
-            return fileContent;
-          }
-        } catch (readErr) {
-          console.warn('[Migration] Could not read SQL file from disk, using embedded schema:', readErr.message);
-        }
+      if (existing.rows.length > 0) {
+        console.log(`[Migration] ${migration.name} already applied — skipping.`);
+        continue;
       }
-      return MIGRATION_SQL;
-    }
 
-    console.log('[Migration] Applying 001_initial_schema...');
-    const migrationSql = getMigrationSql();
-    await client.query('BEGIN');
-    await client.query(migrationSql);
-    await client.query(
-      'INSERT INTO _migrations (name) VALUES ($1)',
-      [migrationName]
-    );
-    await client.query('COMMIT');
-    console.log('[Migration] 001_initial_schema applied successfully.');
+      function getSql() {
+        const sqlFilePath = path.resolve(__dirname, '../../migrations', migration.sqlFile);
+        if (fs.existsSync(sqlFilePath)) {
+          try {
+            const fileContent = fs.readFileSync(sqlFilePath, 'utf8');
+            if (fileContent && fileContent.trim().length > 0) {
+              return fileContent;
+            }
+          } catch (readErr) {
+            console.warn(`[Migration] Could not read ${migration.sqlFile} from disk, using embedded:`, readErr.message);
+          }
+        }
+        return migration.fallbackSql;
+      }
+
+      console.log(`[Migration] Applying ${migration.name}...`);
+      const sqlToRun = getSql();
+      await client.query('BEGIN');
+      await client.query(sqlToRun);
+      await client.query(
+        'INSERT INTO _migrations (name) VALUES ($1)',
+        [migration.name]
+      );
+      await client.query('COMMIT');
+      console.log(`[Migration] ${migration.name} applied successfully.`);
+    }
   } catch (err) {
     await client.query('ROLLBACK').catch(() => {});
     console.error('[Migration] Failed:', err.message);

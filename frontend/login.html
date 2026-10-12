@@ -170,9 +170,9 @@
         <label class="font-label-md text-label-md text-on-surface" for="passwordInput">
           Password
         </label>
-        <a class="font-label-md text-label-md text-primary hover:text-primary-container transition-colors" href="mailto:support@met.edu?subject=Password%20Reset%20Request">
+        <button type="button" id="btnForgotPassword" class="font-label-md text-label-md text-primary hover:text-primary-container transition-colors cursor-pointer focus:outline-none">
           Forgot Password?
-        </a>
+        </button>
       </div>
       <div class="relative flex items-center">
         <span class="material-symbols-outlined absolute left-3.5 text-secondary text-[20px] pointer-events-none">
@@ -426,6 +426,55 @@
 </div>
 </div>
 </div></main>
+
+<!-- Forgot Password Modal -->
+<div id="forgotPasswordModal" class="fixed inset-0 bg-inverse-surface/60 backdrop-blur-sm z-[9999] hidden flex items-center justify-center p-4 transition-all duration-200" role="dialog" aria-modal="true" aria-labelledby="forgotModalTitle">
+  <div class="w-full max-w-md bg-surface-container-lowest rounded-2xl shadow-2xl border border-outline-variant/30 p-6 sm:p-8 flex flex-col gap-5 relative animate-in fade-in zoom-in-95 duration-150">
+    <!-- Header -->
+    <div class="flex items-start justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-primary-fixed text-primary flex items-center justify-center shrink-0 shadow-sm">
+          <span class="material-symbols-outlined text-[24px]">lock_reset</span>
+        </div>
+        <div>
+          <h2 id="forgotModalTitle" class="font-headline-sm text-headline-sm font-bold text-on-surface">Forgot Password?</h2>
+          <p class="font-body-sm text-body-sm text-secondary mt-0.5">Enter your email to receive a secure password reset link.</p>
+        </div>
+      </div>
+      <button type="button" id="btnCloseForgotModal" class="p-1.5 rounded-lg text-secondary hover:text-on-surface hover:bg-surface-container transition-colors cursor-pointer" aria-label="Close modal">
+        <span class="material-symbols-outlined text-[20px]">close</span>
+      </button>
+    </div>
+
+    <!-- Status Alert Banner -->
+    <div id="forgotStatusBanner" class="hidden p-3.5 rounded-xl border text-body-sm flex items-start gap-2.5">
+      <span class="material-symbols-outlined text-[20px] shrink-0" id="forgotStatusIcon">info</span>
+      <span id="forgotStatusMsg" class="flex-1 font-medium leading-relaxed"></span>
+    </div>
+
+    <!-- Form -->
+    <form id="forgotPasswordForm" class="flex flex-col gap-4" novalidate>
+      <div class="flex flex-col gap-1.5">
+        <label for="forgotEmailInput" class="font-label-md text-label-md text-on-surface">Registered Email Address *</label>
+        <div class="relative flex items-center">
+          <span class="material-symbols-outlined absolute left-3.5 text-secondary text-[20px] pointer-events-none">mail</span>
+          <input type="email" id="forgotEmailInput" placeholder="name@campus.edu.in" required autocomplete="email" class="w-full pl-11 pr-4 py-3.5 bg-surface-container-lowest rounded-xl border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm">
+        </div>
+        <span class="text-xs text-secondary mt-0.5">A 15-minute single-use reset link will be dispatched to this address.</span>
+      </div>
+
+      <div class="flex flex-col gap-2 pt-2">
+        <button type="submit" id="btnSubmitForgot" class="w-full py-3.5 px-5 rounded-xl bg-primary text-white font-semibold text-body-md shadow-md hover:bg-primary-container transition-all flex items-center justify-center gap-2 group cursor-pointer active:scale-[0.99]">
+          <span class="material-symbols-outlined text-[20px]" id="forgotSubmitIcon">send</span>
+          <span id="btnSubmitForgotText">Send Reset Link</span>
+        </button>
+        <button type="button" id="btnCancelForgot" class="w-full py-2.5 px-4 rounded-xl text-secondary hover:text-on-surface font-semibold text-body-sm transition-colors text-center cursor-pointer">
+          Return to Sign In
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
 
 <!-- Interactive Logic for Tab Switching, Auth & Student Registration -->
 <script>
@@ -761,6 +810,125 @@ document.addEventListener('DOMContentLoaded', () => {
       window.location.href = oauthUrl;
     });
   }
+
+  // ════════════════════════════════════════════════════════════
+  // Forgot Password Modal & Submission Handler
+  // ════════════════════════════════════════════════════════════
+  const forgotModal = document.getElementById('forgotPasswordModal');
+  const btnForgotPassword = document.getElementById('btnForgotPassword');
+  const btnCloseForgotModal = document.getElementById('btnCloseForgotModal');
+  const btnCancelForgot = document.getElementById('btnCancelForgot');
+  const forgotForm = document.getElementById('forgotPasswordForm');
+  const forgotEmailInput = document.getElementById('forgotEmailInput');
+  const forgotStatusBanner = document.getElementById('forgotStatusBanner');
+  const forgotStatusIcon = document.getElementById('forgotStatusIcon');
+  const forgotStatusMsg = document.getElementById('forgotStatusMsg');
+  const btnSubmitForgot = document.getElementById('btnSubmitForgot');
+  const btnSubmitForgotText = document.getElementById('btnSubmitForgotText');
+  const forgotSubmitIcon = document.getElementById('forgotSubmitIcon');
+
+  function openForgotModal() {
+    if (!forgotModal) return;
+    forgotStatusBanner?.classList.add('hidden');
+    if (forgotEmailInput) {
+      // Pre-fill with login input if it looks like an email
+      const curId = document.getElementById('identifierInput')?.value?.trim();
+      if (curId && curId.includes('@')) {
+        forgotEmailInput.value = curId;
+      }
+    }
+    forgotModal.classList.remove('hidden');
+    setTimeout(() => forgotEmailInput?.focus(), 50);
+  }
+
+  function closeForgotModal() {
+    if (!forgotModal) return;
+    forgotModal.classList.add('hidden');
+    forgotStatusBanner?.classList.add('hidden');
+  }
+
+  btnForgotPassword?.addEventListener('click', openForgotModal);
+  btnCloseForgotModal?.addEventListener('click', closeForgotModal);
+  btnCancelForgot?.addEventListener('click', closeForgotModal);
+
+  // Close modal when clicking outside card
+  forgotModal?.addEventListener('click', (e) => {
+    if (e.target === forgotModal) closeForgotModal();
+  });
+
+  // Close on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && forgotModal && !forgotModal.classList.contains('hidden')) {
+      closeForgotModal();
+    }
+  });
+
+  forgotForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = forgotEmailInput?.value?.trim();
+
+    if (!email || !email.includes('@') || !email.includes('.')) {
+      if (forgotStatusBanner && forgotStatusMsg && forgotStatusIcon) {
+        forgotStatusBanner.className = 'p-3.5 rounded-xl border text-body-sm flex items-start gap-2.5 bg-rose-50 text-rose-900 border-rose-200';
+        forgotStatusIcon.textContent = 'error';
+        forgotStatusMsg.textContent = 'Please enter a valid institutional or registered email address.';
+        forgotStatusBanner.classList.remove('hidden');
+      }
+      forgotEmailInput?.focus();
+      return;
+    }
+
+    // Set loading state
+    if (btnSubmitForgot) btnSubmitForgot.disabled = true;
+    if (btnSubmitForgotText) btnSubmitForgotText.textContent = 'Sending...';
+    if (forgotSubmitIcon) {
+      forgotSubmitIcon.textContent = 'progress_activity';
+      forgotSubmitIcon.classList.add('animate-spin');
+    }
+    forgotStatusBanner?.classList.add('hidden');
+
+    try {
+      const res = await window.CampusInnAPI.auth.forgotPassword(email);
+
+      if (res.data && res.data.success) {
+        if (forgotStatusBanner && forgotStatusMsg && forgotStatusIcon) {
+          forgotStatusBanner.className = 'p-3.5 rounded-xl border text-body-sm flex items-start gap-2.5 bg-emerald-50 text-emerald-900 border-emerald-200';
+          forgotStatusIcon.textContent = 'check_circle';
+          forgotStatusMsg.textContent = res.data.message || 'If an account exists with this email address, password reset instructions have been sent. Please check your inbox.';
+          forgotStatusBanner.classList.remove('hidden');
+        }
+        if (forgotEmailInput) forgotEmailInput.value = '';
+        if (typeof CampusInn !== 'undefined' && CampusInn.Toast) {
+          CampusInn.Toast.success('Password recovery request submitted successfully.');
+        }
+      } else {
+        const errorMsg = res.error || (res.data && res.data.message) || 'Unable to process reset request. Please try again.';
+        if (forgotStatusBanner && forgotStatusMsg && forgotStatusIcon) {
+          forgotStatusBanner.className = 'p-3.5 rounded-xl border text-body-sm flex items-start gap-2.5 bg-rose-50 text-rose-900 border-rose-200';
+          forgotStatusIcon.textContent = 'error';
+          forgotStatusMsg.textContent = errorMsg;
+          forgotStatusBanner.classList.remove('hidden');
+        }
+        if (typeof CampusInn !== 'undefined' && CampusInn.Toast) {
+          CampusInn.Toast.error(errorMsg);
+        }
+      }
+    } catch (err) {
+      if (forgotStatusBanner && forgotStatusMsg && forgotStatusIcon) {
+        forgotStatusBanner.className = 'p-3.5 rounded-xl border text-body-sm flex items-start gap-2.5 bg-rose-50 text-rose-900 border-rose-200';
+        forgotStatusIcon.textContent = 'error';
+        forgotStatusMsg.textContent = err.message || 'Network request failed. Please check your connection.';
+        forgotStatusBanner.classList.remove('hidden');
+      }
+    } finally {
+      if (btnSubmitForgot) btnSubmitForgot.disabled = false;
+      if (btnSubmitForgotText) btnSubmitForgotText.textContent = 'Send Reset Link';
+      if (forgotSubmitIcon) {
+        forgotSubmitIcon.textContent = 'send';
+        forgotSubmitIcon.classList.remove('animate-spin');
+      }
+    }
+  });
 });
 </script>
 </body></html>

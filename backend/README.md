@@ -72,6 +72,12 @@ Copy `backend/.env.example` to `backend/.env` and update credentials:
 | `GOOGLE_CALLBACK_URL`| Google OAuth redirect callback URI | `http://localhost:3000/api/v1/auth/google/callback` |
 | `CORS_ORIGIN` | Allowed frontend origins (comma-separated)| `http://localhost:3000,http://localhost:5500` |
 | `COOKIE_SECRET` | Cookie signing secret | Random secret string |
+| `SMTP_HOST` | Outgoing SMTP host for password resets | `smtp.sendgrid.net` |
+| `SMTP_PORT` | Outgoing SMTP port (587 or 465) | `587` |
+| `SMTP_USER` | SMTP username / API key | `apikey` |
+| `SMTP_PASS` | SMTP password / API token | `SG...` |
+| `EMAIL_FROM` | Outgoing sender identity | `Campus Inn+ <no-reply@campusinn.edu>` |
+| `FRONTEND_URL` | Canonical frontend domain for reset links | `https://campusinn-frontend-9nxrritaj-pranz.vercel.app` |
 
 > [!IMPORTANT]
 > **Google OAuth Redirect URI:**  

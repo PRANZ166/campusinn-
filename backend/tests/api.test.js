@@ -4,6 +4,7 @@
 const request = require('supertest');
 const jwt = require('jsonwebtoken');
 const config = require('../src/config');
+const emailService = require('../src/services/email');
 const app = require('../src/app');
 
 describe('Campus Inn+ Backend API Suite', () => {
@@ -502,6 +503,262 @@ describe('Campus Inn+ Backend API Suite', () => {
       expect(res.body.success).toBe(true);
       expect(res.body.registration).toBeDefined();
       expect(res.body.registration.passToken).toMatch(/^MET-PASS-/);
+    });
+  });
+
+  describe('Password Recovery & Reset Suite', () => {
+    it('POST /api/v1/auth/forgot-password with invalid email should return 400', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/forgot-password')
+        .send({ email: 'not-an-email' });
+      expect(res.statusCode).toEqual(400);
+      expect(res.body.code).toEqual('INVALID_EMAIL');
+    });
+
+    it('POST /api/v1/auth/forgot-password with missing email should return 400', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/forgot-password')
+        .send({});
+      expect(res.statusCode).toEqual(400);
+      expect(res.body.code).toEqual('INVALID_EMAIL');
+    });
+
+    it('POST /api/v1/auth/forgot-password when SMTP is unconfigured should return 503', async () => {
+      const isConfiguredSpy = jest.spyOn(emailService, 'isConfigured').mockReturnValue(false);
+      const res = await request(app)
+        .post('/api/v1/auth/forgot-password')
+        .send({ email: 'student@met.edu' });
+      expect(res.statusCode).toEqual(503);
+      expect(res.body.code).toEqual('EMAIL_SERVICE_UNAVAILABLE');
+      isConfiguredSpy.mockRestore();
+    });
+
+    it('POST /api/v1/auth/forgot-password with configured SMTP should return generic success without leaking existence', async () => {
+      const isConfiguredSpy = jest.spyOn(emailService, 'isConfigured').mockReturnValue(true);
+      const sendEmailSpy = jest.spyOn(emailService, 'sendPasswordResetEmail').mockResolvedValue({ success: true });
+      const querySpy = jest.spyOn(require('../src/db/pool').pool, 'query').mockResolvedValue({ rows: [] });
+
+      const res = await request(app)
+        .post('/api/v1/auth/forgot-password')
+        .send({ email: 'unknown.nonexistent@met.edu' });
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.message).toContain('If an account exists');
+
+      isConfiguredSpy.mockRestore();
+      sendEmailSpy.mockRestore();
+      querySpy.mockRestore();
+    });
+
+    it('POST /api/v1/auth/reset-password with missing token should return 400', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/reset-password')
+        .send({ newPassword: 'NewPassword123', confirmPassword: 'NewPassword123' });
+      expect(res.statusCode).toEqual(400);
+      expect(res.body.code).toEqual('INVALID_TOKEN');
+    });
+
+    it('POST /api/v1/auth/reset-password with password mismatch should return 400', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/reset-password')
+        .send({
+          token: 'abcdef1234567890abcdef1234567890',
+          newPassword: 'Password123',
+          confirmPassword: 'DifferentPassword123'
+        });
+      expect(res.statusCode).toEqual(400);
+      expect(res.body.code).toEqual('PASSWORD_MISMATCH');
+    });
+
+    it('POST /api/v1/auth/reset-password with weak password should return 400', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/reset-password')
+        .send({
+          token: 'abcdef1234567890abcdef1234567890',
+          newPassword: 'short',
+          confirmPassword: 'short'
+        });
+      expect(res.statusCode).toEqual(400);
+      expect(res.body.code).toEqual('WEAK_PASSWORD');
+    });
+
+    it('POST /api/v1/auth/reset-password with non-existent token should return 400', async () => {
+      const querySpy = jest.spyOn(require('../src/db/pool').pool, 'query').mockResolvedValue({ rows: [] });
+      const res = await request(app)
+        .post('/api/v1/auth/reset-password')
+        .send({
+          token: '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef',
+          newPassword: 'ValidPassword123',
+          confirmPassword: 'ValidPassword123'
+        });
+      expect(res.statusCode).toEqual(400);
+      expect(res.body.code).toEqual('INVALID_TOKEN');
+      querySpy.mockRestore();
+    });
+
+    it('POST /api/v1/auth/reset-password with valid token should update password and return 200', async () => {
+      const validToken = 'valid_test_token_1234567890abcdef';
+      const userId = 'user_reset_test_123';
+
+      const querySpy = jest.spyOn(require('../src/db/pool').pool, 'query').mockImplementation((text) => {
+        if (typeof text === 'string' && text.includes('FROM password_reset_tokens')) {
+          return Promise.resolve({
+            rows: [{
+              id: 'token_id_1',
+              user_id: userId,
+              expires_at: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+              consumed_at: null,
+              status: 'active',
+            }],
+          });
+        }
+        return Promise.resolve({ rows: [] });
+      });
+
+      const res = await request(app)
+        .post('/api/v1/auth/reset-password')
+        .send({
+          token: validToken,
+          newPassword: 'BrandNewSecurePassword123',
+          confirmPassword: 'BrandNewSecurePassword123',
+        });
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.message).toContain('successfully reset');
+      querySpy.mockRestore();
+    });
+  });
+
+  describe('Student Resume Management Suite', () => {
+    const student1Id = 'std-user-' + Date.now();
+    const student2Id = 'std-user-other-' + Date.now();
+    const studentToken = jwt.sign(
+      { sub: student1Id, id: student1Id, email: 'student1@met.edu', role: 'student', firstName: 'Priya', lastName: 'Sharma' },
+      config.jwt.secret,
+      { expiresIn: '1h' }
+    );
+    const otherStudentToken = jwt.sign(
+      { sub: student2Id, id: student2Id, email: 'other@met.edu', role: 'student', firstName: 'Other', lastName: 'Student' },
+      config.jwt.secret,
+      { expiresIn: '1h' }
+    );
+
+    let querySpy;
+    beforeAll(() => {
+      querySpy = jest.spyOn(require('../src/db/pool').pool, 'query').mockImplementation((sql, params) => {
+        if (typeof sql === 'string' && sql.includes('FROM users WHERE id = $1')) {
+          const id = params && params[0];
+          return Promise.resolve({
+            rows: [{
+              id: id,
+              email: id === student1Id ? 'student1@met.edu' : 'other@met.edu',
+              role: 'student',
+              status: 'active',
+              firstName: id === student1Id ? 'Priya' : 'Other',
+              lastName: id === student1Id ? 'Sharma' : 'Student',
+              phone: '9876543210',
+              avatarUrl: null,
+            }],
+          });
+        }
+        return Promise.resolve({ rows: [] });
+      });
+    });
+
+    afterAll(() => {
+      if (querySpy) querySpy.mockRestore();
+    });
+
+    it('GET /api/v1/students/resume without token should return 401', async () => {
+      const res = await request(app).get('/api/v1/students/resume');
+      expect(res.statusCode).toEqual(401);
+    });
+
+    it('GET /api/v1/students/resume with valid student token and no uploaded file should return resume: null', async () => {
+      const res = await request(app)
+        .get('/api/v1/students/resume')
+        .set('Authorization', `Bearer ${studentToken}`);
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.resume).toBeNull();
+    });
+
+    it('POST /api/v1/students/resume without file should return 400', async () => {
+      const res = await request(app)
+        .post('/api/v1/students/resume')
+        .set('Authorization', `Bearer ${studentToken}`);
+      expect(res.statusCode).toEqual(400);
+      expect(res.body.code).toEqual('NO_FILE_PROVIDED');
+    });
+
+    it('POST /api/v1/students/resume with invalid file format should return 400', async () => {
+      const res = await request(app)
+        .post('/api/v1/students/resume')
+        .set('Authorization', `Bearer ${studentToken}`)
+        .attach('cvFile', Buffer.from('console.log("hello");'), 'resume.js');
+      expect(res.statusCode).toEqual(400);
+      expect(res.body.code).toEqual('INVALID_FILE_TYPE');
+    });
+
+    it('POST /api/v1/students/resume with valid PDF should upload and persist document', async () => {
+      const pdfBuffer = Buffer.from('%PDF-1.4 sample resume content for testing purposes');
+      const res = await request(app)
+        .post('/api/v1/students/resume')
+        .set('Authorization', `Bearer ${studentToken}`)
+        .attach('cvFile', pdfBuffer, 'Priya_Candidate_CV.pdf');
+
+      expect([200, 201]).toContain(res.statusCode);
+      expect(res.body.success).toBe(true);
+      expect(res.body.resume).toBeDefined();
+      expect(res.body.resume.name).toEqual('Priya_Candidate_CV.pdf');
+    });
+
+    it('GET /api/v1/students/resume should retrieve the uploaded resume', async () => {
+      const res = await request(app)
+        .get('/api/v1/students/resume')
+        .set('Authorization', `Bearer ${studentToken}`);
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.resume).toBeDefined();
+      expect(res.body.resume.name).toEqual('Priya_Candidate_CV.pdf');
+    });
+
+    it('GET /api/v1/students/resume/download as owner should download file', async () => {
+      const res = await request(app)
+        .get('/api/v1/students/resume/download')
+        .set('Authorization', `Bearer ${studentToken}`);
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.headers['content-disposition']).toContain('attachment');
+      expect(res.headers['content-disposition']).toContain('Priya_Candidate_CV.pdf');
+    });
+
+    it('GET /api/v1/students/resume/download as unauthorized student should return 403', async () => {
+      const res = await request(app)
+        .get(`/api/v1/students/resume/download?studentId=${student1Id}`)
+        .set('Authorization', `Bearer ${otherStudentToken}`);
+
+      expect(res.statusCode).toEqual(403);
+      expect(res.body.code).toEqual('FORBIDDEN');
+    });
+
+    it('DELETE /api/v1/students/resume should remove uploaded resume', async () => {
+      const res = await request(app)
+        .delete('/api/v1/students/resume')
+        .set('Authorization', `Bearer ${studentToken}`);
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.success).toBe(true);
+
+      // Verify subsequent GET returns null
+      const checkRes = await request(app)
+        .get('/api/v1/students/resume')
+        .set('Authorization', `Bearer ${studentToken}`);
+      expect(checkRes.statusCode).toEqual(200);
+      expect(checkRes.body.resume).toBeNull();
     });
   });
 });

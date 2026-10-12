@@ -61,6 +61,7 @@ const pages = [
   { file: 'companies.html', title: 'Corporate Partners Directory' },
   { file: 'hiring-builder.html', title: 'HR Hiring Requirement Builder' },
   { file: 'hr-register.html', title: 'Company HR Registration' },
+  { file: 'reset-password.html', title: 'Password Reset & Recovery' },
 ];
 
 let pagesPass = true;
