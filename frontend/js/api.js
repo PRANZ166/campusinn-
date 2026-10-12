@@ -128,9 +128,21 @@ const API = (() => {
     },
 
     async registerStudent(payload) {
+      const clean = { ...(payload || {}) };
+      if (!clean.fullName && (clean.firstName || clean.lastName)) {
+        clean.fullName = `${clean.firstName || ''} ${clean.lastName || ''}`.trim();
+      } else if (!clean.fullName && clean.name) {
+        clean.fullName = clean.name.trim();
+      }
+      if (clean.fullName) {
+        clean.fullName = clean.fullName.trim();
+        const parts = clean.fullName.split(/\s+/);
+        if (!clean.firstName) clean.firstName = parts[0] || '';
+        if (!clean.lastName) clean.lastName = parts.slice(1).join(' ') || '';
+      }
       const res = await request('/auth/register/student', {
         method: 'POST',
-        body: JSON.stringify(payload)
+        body: JSON.stringify(clean)
       });
 
       if (res.data && res.data.success) {
@@ -139,16 +151,19 @@ const API = (() => {
 
       return {
         data: null,
-        error: res.error || 'Registration failed. Please check the provided information.',
+        error: res.error || (res.data && res.data.message) || 'Student registration failed. Please check the provided information.',
         isMock: false,
         status: res.status
       };
     },
 
     async registerFaculty(payload) {
+      const clean = { ...(payload || {}) };
+      if (!clean.fullName && clean.name) clean.fullName = clean.name.trim();
+      if (clean.fullName) clean.fullName = clean.fullName.trim();
       const res = await request('/auth/register/faculty', {
         method: 'POST',
-        body: JSON.stringify(payload)
+        body: JSON.stringify(clean)
       });
 
       if (res.data && res.data.success) {
@@ -157,16 +172,19 @@ const API = (() => {
 
       return {
         data: null,
-        error: res.error || 'Faculty registration failed. Please check the provided information.',
+        error: res.error || (res.data && res.data.message) || 'Faculty registration failed. Please check the provided information.',
         isMock: false,
         status: res.status
       };
     },
 
     async registerCoordinator(payload) {
+      const clean = { ...(payload || {}) };
+      if (!clean.fullName && clean.name) clean.fullName = clean.name.trim();
+      if (clean.fullName) clean.fullName = clean.fullName.trim();
       const res = await request('/auth/register/coordinator', {
         method: 'POST',
-        body: JSON.stringify(payload)
+        body: JSON.stringify(clean)
       });
 
       if (res.data && res.data.success) {
@@ -175,16 +193,20 @@ const API = (() => {
 
       return {
         data: null,
-        error: res.error || 'Coordinator registration failed. Please check the provided information.',
+        error: res.error || (res.data && res.data.message) || 'Coordinator registration failed. Please check the provided information.',
         isMock: false,
         status: res.status
       };
     },
 
     async registerRecruiter(payload) {
+      const clean = { ...(payload || {}) };
+      if (!clean.fullName && clean.recruiterName) clean.fullName = clean.recruiterName.trim();
+      if (!clean.fullName && clean.name) clean.fullName = clean.name.trim();
+      if (clean.fullName) clean.fullName = clean.fullName.trim();
       const res = await request('/auth/register/recruiter', {
         method: 'POST',
-        body: JSON.stringify(payload)
+        body: JSON.stringify(clean)
       });
 
       if (res.data && res.data.success) {
@@ -193,7 +215,7 @@ const API = (() => {
 
       return {
         data: null,
-        error: res.error || 'Recruiter registration failed. Please check the provided information.',
+        error: res.error || (res.data && res.data.message) || 'Recruiter registration failed. Please check the provided information.',
         isMock: false,
         status: res.status
       };

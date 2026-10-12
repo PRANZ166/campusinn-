@@ -1836,6 +1836,257 @@ describe('Campus Inn+ Backend API Suite', () => {
       expect(res.statusCode).toEqual(403);
       expect(res.body.code).toEqual('PRIVILEGED_ROLE_NOT_SELF_REGISTRABLE');
     });
+
+    afterAll(() => {
+      if (multiRoleSpy) multiRoleSpy.mockRestore();
+    });
+  });
+
+  describe('Universal Full Name & Registration Validation Suite', () => {
+    let regSpy;
+    const registeredEmails = new Set();
+
+    beforeAll(() => {
+      regSpy = jest.spyOn(require('../src/db/pool').pool, 'query').mockImplementation((sql, params) => {
+        const sqlStr = typeof sql === 'string' ? sql : (sql && sql.text ? sql.text : '');
+        const p0 = (params && params[0] !== undefined ? String(params[0]).trim().toLowerCase() : '');
+
+        if (sqlStr.includes('FROM users WHERE LOWER(email) = $1')) {
+          if (registeredEmails.has(p0)) {
+            return Promise.resolve({ rows: [{ id: 'existing-user-id' }] });
+          }
+          return Promise.resolve({ rows: [] });
+        }
+
+        if (sqlStr.includes('INSERT INTO users')) {
+          registeredEmails.add(p0);
+          return Promise.resolve({
+            rows: [{
+              id: 'new-user-uuid',
+              email: params[0],
+              role: 'student',
+              first_name: params[2],
+              last_name: params[3],
+              phone: params[4] || null,
+            }],
+          });
+        }
+
+        if (sqlStr.includes('INSERT INTO student_profiles')) {
+          return Promise.resolve({
+            rows: [{
+              id: 'new-student-profile-id',
+              user_id: params[0],
+              roll_number: params[1],
+              college: params[2],
+              department: params[3],
+            }],
+          });
+        }
+
+        if (sqlStr.includes('INSERT INTO user_settings')) {
+          return Promise.resolve({ rows: [] });
+        }
+
+        return Promise.resolve({ rows: [] });
+      });
+    });
+
+    afterAll(() => {
+      if (regSpy) regSpy.mockRestore();
+    });
+
+    it('1. Valid full name "Pranav Zalte" registers successfully and persists first & last name', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/register/student')
+        .send({
+          fullName: 'Pranav Zalte',
+          email: 'pranav.zalte@met.edu',
+          password: 'Password@123',
+          phone: '9820123456',
+          rollNumber: '2022CS9001',
+          department: 'Computer Engineering',
+          college: 'MET Institute of Engineering, Nashik',
+          program: 'B.Tech CSE',
+          academicYear: 'Final Year (2022-2026)',
+          semester: 'Semester 7',
+        });
+
+      expect(res.statusCode).toEqual(201);
+      expect(res.body.success).toBe(true);
+      expect(res.body.user.fullName).toEqual('Pranav Zalte');
+      expect(res.body.user.firstName).toEqual('Pranav');
+      expect(res.body.user.lastName).toEqual('Zalte');
+    });
+
+    it('2. Name with multiple spaces "Pranav   K   Zalte" trims and normalizes cleanly', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/register/student')
+        .send({
+          fullName: 'Pranav   K   Zalte',
+          email: 'pranav.multispace@met.edu',
+          password: 'Password@123',
+          phone: '9820123457',
+          rollNumber: '2022CS9002',
+          department: 'Computer Engineering',
+        });
+
+      expect(res.statusCode).toEqual(201);
+      expect(res.body.success).toBe(true);
+      expect(res.body.user.firstName).toEqual('Pranav');
+    });
+
+    it('3. Name with leading and trailing spaces "  Pranav Zalte  " trims cleanly', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/register/student')
+        .send({
+          fullName: '  Pranav Zalte  ',
+          email: 'pranav.trimmed@met.edu',
+          password: 'Password@123',
+          phone: '9820123458',
+          rollNumber: '2022CS9003',
+          department: 'Computer Engineering',
+        });
+
+      expect(res.statusCode).toEqual(201);
+      expect(res.body.success).toBe(true);
+      expect(res.body.user.fullName).toEqual('Pranav Zalte');
+    });
+
+    it('4. Legitimate hyphenated and apostrophe-containing names are accepted', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/register/student')
+        .send({
+          fullName: "Mary-Jane O'Connor",
+          email: 'maryjane.oconnor@met.edu',
+          password: 'Password@123',
+          phone: '9820123459',
+          rollNumber: '2022CS9004',
+          department: 'Computer Engineering',
+        });
+
+      expect(res.statusCode).toEqual(201);
+      expect(res.body.success).toBe(true);
+      expect(res.body.user.fullName).toEqual("Mary-Jane O'Connor");
+    });
+
+    it('5. Legitimate international and unicode names are accepted', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/register/student')
+        .send({
+          fullName: 'आदित्य जोशी',
+          email: 'aditya.joshi@met.edu',
+          password: 'Password@123',
+          phone: '9820123460',
+          rollNumber: '2022CS9005',
+          department: 'Computer Engineering',
+        });
+
+      expect(res.statusCode).toEqual(201);
+      expect(res.body.success).toBe(true);
+    });
+
+    it('6. Empty full-name field is rejected with 400', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/register/student')
+        .send({
+          fullName: '',
+          email: 'empty.name@met.edu',
+          password: 'Password@123',
+          phone: '9820123461',
+          rollNumber: '2022CS9006',
+          department: 'Computer Engineering',
+        });
+
+      expect(res.statusCode).toEqual(400);
+      expect(res.body.success).toBe(false);
+      expect(res.body.message).toContain('Full name must be at least 2 characters');
+    });
+
+    it('7. One-character name is rejected with 400', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/register/student')
+        .send({
+          fullName: 'P',
+          email: 'short.name@met.edu',
+          password: 'Password@123',
+          phone: '9820123462',
+          rollNumber: '2022CS9007',
+          department: 'Computer Engineering',
+        });
+
+      expect(res.statusCode).toEqual(400);
+      expect(res.body.success).toBe(false);
+      expect(res.body.message).toContain('Full name must be at least 2 characters');
+    });
+
+    it('8. Name containing invalid numbers or symbols is rejected with 400', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/register/student')
+        .send({
+          fullName: 'Pranav12345',
+          email: 'invalid.chars@met.edu',
+          password: 'Password@123',
+          phone: '9820123463',
+          rollNumber: '2022CS9008',
+          department: 'Computer Engineering',
+        });
+
+      expect(res.statusCode).toEqual(400);
+      expect(res.body.success).toBe(false);
+      expect(res.body.message).toContain('Full name must contain valid letters');
+    });
+
+    it('9. Deployed frontend payload with firstName and lastName resolves cleanly without 400', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/register/student')
+        .send({
+          firstName: 'Pranav',
+          lastName: 'Zalte',
+          email: 'pranav.splitname@met.edu',
+          password: 'Password@123',
+          phone: '9820123464',
+          rollNumber: '2022CS9009',
+          department: 'Computer Engineering',
+        });
+
+      expect(res.statusCode).toEqual(201);
+      expect(res.body.success).toBe(true);
+      expect(res.body.user.fullName).toEqual('Pranav Zalte');
+    });
+
+    it('10. Payload with unified "name" field resolves cleanly', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/register/student')
+        .send({
+          name: 'Pranav Zalte',
+          email: 'pranav.uniname@met.edu',
+          password: 'Password@123',
+          phone: '9820123465',
+          rollNumber: '2022CS9010',
+          department: 'Computer Engineering',
+        });
+
+      expect(res.statusCode).toEqual(201);
+      expect(res.body.success).toBe(true);
+      expect(res.body.user.fullName).toEqual('Pranav Zalte');
+    });
+
+    it('11. Duplicate registration attempt with same email returns 409', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/register/student')
+        .send({
+          fullName: 'Pranav Zalte',
+          email: 'pranav.zalte@met.edu',
+          password: 'Password@123',
+          phone: '9820123466',
+          rollNumber: '2022CS9011',
+          department: 'Computer Engineering',
+        });
+
+      expect(res.statusCode).toEqual(409);
+      expect(res.body.success).toBe(false);
+    });
   });
 
   describe('Events, Freshers & Attendance Management Suite', () => {

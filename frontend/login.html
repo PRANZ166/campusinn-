@@ -232,6 +232,18 @@
     </svg>
     <span class="font-medium">Continue with Institutional Google ID</span>
   </button>
+
+  <!-- Corporate Recruiter Drive Callout (Sign In View Only) -->
+  <div class="mt-6 pt-4 pb-3 px-4 flex items-center justify-between gap-2.5 bg-surface-container rounded-xl border border-outline-variant/50 text-body-md" id="loginRecruiterCard">
+    <div class="flex items-center gap-2">
+      <span class="material-symbols-outlined text-primary text-[20px]">domain</span>
+      <span class="font-semibold text-on-surface">Corporate Recruiter?</span>
+    </div>
+    <a class="inline-flex items-center gap-1 font-semibold text-primary hover:underline text-body-sm" href="hr-register.html">
+      <span>Register company drive</span>
+      <span class="material-symbols-outlined text-[16px]">arrow_outward</span>
+    </a>
+  </div>
 </div>
 
 <!-- SECTION 2: MULTI-ROLE REGISTRATION VIEW -->
@@ -288,15 +300,9 @@
           <span class="font-label-md text-label-md uppercase font-bold text-primary tracking-wider">1. Personal Information</span>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-          <div class="flex flex-col gap-1">
-            <label class="font-label-md text-label-md text-on-surface" for="regFirstName">First Name *</label>
-            <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regFirstName" placeholder="e.g. Priya" required type="text">
-          </div>
-          <div class="flex flex-col gap-1">
-            <label class="font-label-md text-label-md text-on-surface" for="regLastName">Last Name *</label>
-            <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regLastName" placeholder="e.g. Sharma" required type="text">
-          </div>
+        <div class="flex flex-col gap-1">
+          <label class="font-label-md text-label-md text-on-surface" for="regFullName">Full Name *</label>
+          <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regFullName" name="fullName" placeholder="e.g. Pranav Zalte" required type="text" autocomplete="name">
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
@@ -694,29 +700,17 @@
 
 </div>
 
-<!-- Corporate Onboarding & Footer Meta (PRESERVED) -->
-<div class="mt-8 pt-5 pb-4 px-5 flex flex-col gap-3.5 bg-surface-container rounded-xl border border-outline-variant/50">
-<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 text-body-md">
-<div class="flex items-center gap-2">
-<span class="material-symbols-outlined text-primary text-[20px]">domain</span>
-<span class="font-semibold text-on-surface">Corporate Recruiter?</span>
-</div>
-<a class="inline-flex items-center gap-1 font-semibold text-primary hover:underline text-body-sm" href="hr-register.html">
-<span class="">Register company drive</span>
-<span class="material-symbols-outlined text-[16px]">arrow_outward</span>
-</a>
-</div>
-<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-body-sm text-secondary pt-2 border-t border-outline-variant/40">
-<div class="flex items-center gap-1.5">
-<span class="material-symbols-outlined text-[16px] text-tertiary">verified_user</span>
-<span class="">DPDP 2023 Compliant • ISO 27001 Certified</span>
-</div>
-<div class="flex items-center gap-3">
-<a class="hover:text-on-surface transition-colors" href="index.html#faq">IT Support</a>
-<span class="">•</span>
-<a class="hover:text-on-surface transition-colors" href="index.html#privacy">Security</a>
-</div>
-</div>
+<!-- Footer Compliance Meta (PRESERVED) -->
+<div class="mt-8 pt-4 pb-4 px-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-body-sm text-secondary bg-surface-container rounded-xl border border-outline-variant/40">
+  <div class="flex items-center gap-1.5">
+    <span class="material-symbols-outlined text-[16px] text-tertiary">verified_user</span>
+    <span>DPDP 2023 Compliant • ISO 27001 Certified</span>
+  </div>
+  <div class="flex items-center gap-3">
+    <a class="hover:text-on-surface transition-colors" href="index.html#faq">IT Support</a>
+    <span>•</span>
+    <a class="hover:text-on-surface transition-colors" href="index.html#privacy">Security</a>
+  </div>
 </div>
 </div>
 </div>
@@ -928,8 +922,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function showMode(mode, targetRole = null) {
-    const roleToUse = targetRole || selectedRole;
+    let roleToUse = targetRole || selectedRole;
     if (mode === 'register') {
+      if (roleToUse === 'admin' || roleToUse === 'tpo') {
+        roleToUse = 'student';
+      }
       tabModeRegister.classList.add('bg-primary', 'text-white', 'shadow-sm');
       tabModeRegister.classList.remove('text-secondary');
       tabModeLogin.classList.remove('bg-primary', 'text-white', 'shadow-sm');
@@ -1079,8 +1076,25 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       CampusInn.FormUtils.clearAllErrors(studentForm);
 
-      const firstName = document.getElementById('regFirstName')?.value.trim();
-      const lastName = document.getElementById('regLastName')?.value.trim();
+      const fullNameInput = document.getElementById('regFullName');
+      const rawFullName = fullNameInput ? fullNameInput.value.trim() : '';
+      const firstNameInput = document.getElementById('regFirstName');
+      const lastNameInput = document.getElementById('regLastName');
+
+      let fullName = rawFullName;
+      let firstName = firstNameInput ? firstNameInput.value.trim() : '';
+      let lastName = lastNameInput ? lastNameInput.value.trim() : '';
+
+      if (!fullName && (firstName || lastName)) {
+        fullName = `${firstName} ${lastName}`.trim();
+      }
+
+      if (fullName) {
+        const parts = fullName.split(/\s+/);
+        if (!firstName) firstName = parts[0] || '';
+        if (!lastName) lastName = parts.slice(1).join(' ') || '';
+      }
+
       const email = document.getElementById('regEmail')?.value.trim();
       const phone = document.getElementById('regPhone')?.value.trim();
       const college = document.getElementById('regCollege')?.value;
@@ -1093,14 +1107,15 @@ document.addEventListener('DOMContentLoaded', () => {
       const confirmPassword = document.getElementById('regConfirmPassword')?.value;
 
       let hasError = false;
-      if (!firstName) {
-        CampusInn.FormUtils.showFieldError(document.getElementById('regFirstName'), 'First name is required.');
+      const NAME_PATTERN = /^[\p{L}\p{M}][\p{L}\p{M}\s.'’\-]*[\p{L}\p{M}.]?$/u;
+      if (!fullName || fullName.length < 2) {
+        CampusInn.FormUtils.showFieldError(fullNameInput || firstNameInput, 'Full name must be at least 2 characters.');
+        hasError = true;
+      } else if (!NAME_PATTERN.test(fullName)) {
+        CampusInn.FormUtils.showFieldError(fullNameInput || firstNameInput, 'Full name must contain valid letters, spaces, hyphens, or apostrophes only.');
         hasError = true;
       }
-      if (!lastName) {
-        CampusInn.FormUtils.showFieldError(document.getElementById('regLastName'), 'Last name is required.');
-        hasError = true;
-      }
+
       if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         CampusInn.FormUtils.showFieldError(document.getElementById('regEmail'), 'Please provide a valid email address.');
         hasError = true;
@@ -1129,22 +1144,44 @@ document.addEventListener('DOMContentLoaded', () => {
       CampusInn.FormUtils.setButtonLoading(regSubmitBtn, true);
       try {
         const payload = {
-          firstName, lastName, email, phone, college,
-          rollNumber, department, program, academicYear, semester, password
+          fullName,
+          firstName,
+          lastName,
+          email,
+          phone,
+          college,
+          rollNumber,
+          department,
+          program,
+          academicYear,
+          semester,
+          password
         };
-        await CampusInn.Auth.registerStudent(payload);
+        const res = await CampusInn.Auth.registerStudent(payload);
+        if (res && res.error) {
+          throw new Error(res.error);
+        }
+        if (!res || !res.data || !res.data.success) {
+          throw new Error((res && res.error) || 'Student registration failed.');
+        }
+
         CampusInn.Toast.success('Student account created successfully!');
-        displayLoginBanner('Account Created Successfully', `Welcome ${firstName} ${lastName}! Your student account (${rollNumber}) has been registered. Please enter your password to sign in.`);
+        displayLoginBanner('Account Created Successfully', `Welcome ${fullName}! Your student account (${rollNumber}) has been registered. Please enter your password to sign in.`);
         if (identifierInput) identifierInput.value = email;
         if (passwordInput) { passwordInput.value = ''; passwordInput.focus(); }
         studentForm.reset();
         showMode('login', 'student');
       } catch (err) {
-        CampusInn.Toast.error(err.message || 'Registration failed.');
-        if (err.message && err.message.toLowerCase().includes('email')) {
-          CampusInn.FormUtils.showFieldError(document.getElementById('regEmail'), err.message);
-        } else if (err.message && err.message.toLowerCase().includes('roll')) {
-          CampusInn.FormUtils.showFieldError(document.getElementById('regRollNumber'), err.message);
+        const errMsg = err.message || 'Registration failed.';
+        CampusInn.Toast.error(errMsg);
+        if (errMsg.toLowerCase().includes('name')) {
+          CampusInn.FormUtils.showFieldError(fullNameInput || firstNameInput, errMsg);
+        } else if (errMsg.toLowerCase().includes('email')) {
+          CampusInn.FormUtils.showFieldError(document.getElementById('regEmail'), errMsg);
+        } else if (errMsg.toLowerCase().includes('roll')) {
+          CampusInn.FormUtils.showFieldError(document.getElementById('regRollNumber'), errMsg);
+        } else if (errMsg.toLowerCase().includes('password')) {
+          CampusInn.FormUtils.showFieldError(document.getElementById('regPassword'), errMsg);
         }
       } finally {
         CampusInn.FormUtils.setButtonLoading(regSubmitBtn, false);

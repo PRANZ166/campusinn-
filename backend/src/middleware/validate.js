@@ -13,11 +13,48 @@ function sanitizeString(str) {
 }
 
 /**
+ * Unify, trim and validate full name according to universal contract.
+ * Accepts legitimate names containing spaces, hyphens, apostrophes, dots, and unicode/international letters.
+ * Rejects empty names and names shorter than 2 characters after trimming.
+ * Never silently fabricates or hardcodes fallback names.
+ */
+function resolveAndValidateFullName(rawInput, roleLabel = 'Full name') {
+  const { fullName, name, recruiterName, firstName, lastName } = rawInput || {};
+  let resolved = '';
+  if (typeof fullName === 'string' && fullName.trim()) {
+    resolved = fullName.trim();
+  } else if (typeof recruiterName === 'string' && recruiterName.trim()) {
+    resolved = recruiterName.trim();
+  } else if (typeof name === 'string' && name.trim()) {
+    resolved = name.trim();
+  } else if (firstName && typeof firstName === 'string') {
+    resolved = `${firstName.trim()} ${typeof lastName === 'string' ? lastName.trim() : ''}`.trim();
+  }
+
+  if (!resolved || resolved.length < 2) {
+    return { valid: false, error: `${roleLabel} must be at least 2 characters.` };
+  }
+
+  // Accept legitimate names with letters (including unicode \p{L}), spaces, dots, hyphens, apostrophes
+  const NAME_PATTERN = /^[\p{L}\p{M}][\p{L}\p{M}\s.'’\-]*[\p{L}\p{M}.]?$/u;
+  if (!NAME_PATTERN.test(resolved)) {
+    return { valid: false, error: `${roleLabel} must contain valid letters, spaces, hyphens, or apostrophes only.` };
+  }
+
+  const parts = resolved.split(/\s+/);
+  return {
+    valid: true,
+    fullName: resolved,
+    firstName: parts[0] || '',
+    lastName: parts.slice(1).join(' ') || '',
+  };
+}
+
+/**
  * Validate Student Registration Payload
  */
 function validateStudentRegister(req, res, next) {
   const {
-    fullName,
     email,
     password,
     phone,
@@ -25,12 +62,17 @@ function validateStudentRegister(req, res, next) {
     department,
     academicYear,
     semester,
-  } = req.body;
+  } = req.body || {};
 
   const errors = [];
 
-  if (!fullName || typeof fullName !== 'string' || fullName.trim().length < 2) {
-    errors.push('Full name must be at least 2 characters.');
+  const nameCheck = resolveAndValidateFullName(req.body, 'Full name');
+  if (!nameCheck.valid) {
+    errors.push(nameCheck.error);
+  } else {
+    req.body.fullName = nameCheck.fullName;
+    req.body.firstName = nameCheck.firstName;
+    req.body.lastName = nameCheck.lastName;
   }
 
   if (!email || !validateEmail(email)) {
@@ -159,8 +201,13 @@ function validateFacultyRegister(req, res, next) {
 
   const errors = [];
 
-  if (!fullName || typeof fullName !== 'string' || fullName.trim().length < 2) {
-    errors.push('Full name must be at least 2 characters.');
+  const nameCheck = resolveAndValidateFullName(req.body, 'Full name');
+  if (!nameCheck.valid) {
+    errors.push(nameCheck.error);
+  } else {
+    req.body.fullName = nameCheck.fullName;
+    req.body.firstName = nameCheck.firstName;
+    req.body.lastName = nameCheck.lastName;
   }
 
   if (!email || !validateEmail(email)) {
@@ -253,8 +300,13 @@ function validateCoordinatorRegister(req, res, next) {
 
   const errors = [];
 
-  if (!fullName || typeof fullName !== 'string' || fullName.trim().length < 2) {
-    errors.push('Full name must be at least 2 characters.');
+  const nameCheck = resolveAndValidateFullName(req.body, 'Full name');
+  if (!nameCheck.valid) {
+    errors.push(nameCheck.error);
+  } else {
+    req.body.fullName = nameCheck.fullName;
+    req.body.firstName = nameCheck.firstName;
+    req.body.lastName = nameCheck.lastName;
   }
 
   if (!email || !validateEmail(email)) {
@@ -311,10 +363,13 @@ function validateRecruiterRegister(req, res, next) {
   } = req.body || {};
 
   const errors = [];
-  const name = (fullName || recruiterName || '').trim();
-
-  if (!name || name.length < 2) {
-    errors.push('Recruiter name must be at least 2 characters.');
+  const nameCheck = resolveAndValidateFullName(req.body, 'Recruiter name');
+  if (!nameCheck.valid) {
+    errors.push(nameCheck.error);
+  } else {
+    req.body.fullName = nameCheck.fullName;
+    req.body.firstName = nameCheck.firstName;
+    req.body.lastName = nameCheck.lastName;
   }
 
   if (!email || !validateEmail(email)) {

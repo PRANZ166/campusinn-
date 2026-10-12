@@ -43,6 +43,8 @@ function generateTokenAndPayload(user, profile = {}) {
     role: user.role,
     firstName: user.first_name,
     lastName: user.last_name,
+    fullName: [user.first_name, user.last_name].filter(Boolean).join(' '),
+    name: [user.first_name, user.last_name].filter(Boolean).join(' '),
     phone: user.phone,
     avatarUrl: user.avatar_url,
     ...profile,
@@ -80,10 +82,18 @@ router.post('/register/student', validateStudentRegister, async (req, res, next)
       });
     }
 
-    // Split name
-    const parts = (fullName || '').trim().split(/\s+/);
-    const firstName = parts[0] || 'Student';
-    const lastName = parts.slice(1).join(' ') || '';
+    // Name mapping: use validated names without hardcoded fallbacks
+    const resolvedName = (fullName || '').trim();
+    const parts = resolvedName.split(/\s+/);
+    const firstName = req.body.firstName || parts[0];
+    const lastName = req.body.lastName !== undefined ? req.body.lastName : (parts.slice(1).join(' ') || '');
+
+    if (!firstName || firstName.length < 1) {
+      return res.status(400).json({
+        success: false,
+        message: 'Full name must be at least 2 characters.',
+      });
+    }
 
     // Hash password
     const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
@@ -188,10 +198,11 @@ router.post('/register/faculty', validateFacultyRegister, async (req, res, next)
       });
     }
 
-    // 3. Split name
-    const parts = (fullName || '').trim().split(/\s+/);
-    const firstName = parts[0] || 'Faculty';
-    const lastName = parts.slice(1).join(' ') || 'Member';
+    // 3. Name mapping: use validated names without hardcoded fallbacks
+    const resolvedName = (fullName || '').trim();
+    const parts = resolvedName.split(/\s+/);
+    const firstName = req.body.firstName || parts[0];
+    const lastName = req.body.lastName !== undefined ? req.body.lastName : (parts.slice(1).join(' ') || '');
 
     // 4. Hash password securely
     const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
@@ -238,6 +249,8 @@ router.post('/register/faculty', validateFacultyRegister, async (req, res, next)
         status: newUser.status,
         firstName: newUser.first_name,
         lastName: newUser.last_name,
+        fullName: [newUser.first_name, newUser.last_name].filter(Boolean).join(' '),
+        name: [newUser.first_name, newUser.last_name].filter(Boolean).join(' '),
         employeeId: profileRes.rows[0].employee_id,
         department: profileRes.rows[0].department,
         designation: profileRes.rows[0].designation,
@@ -275,10 +288,11 @@ router.post('/register/coordinator', validateCoordinatorRegister, async (req, re
       });
     }
 
-    // 2. Split name
-    const parts = (fullName || '').trim().split(/\s+/);
-    const firstName = parts[0] || 'Coordinator';
-    const lastName = parts.slice(1).join(' ') || '';
+    // 2. Name mapping: use validated names without hardcoded fallbacks
+    const resolvedName = (fullName || '').trim();
+    const parts = resolvedName.split(/\s+/);
+    const firstName = req.body.firstName || parts[0];
+    const lastName = req.body.lastName !== undefined ? req.body.lastName : (parts.slice(1).join(' ') || '');
 
     // 3. Hash password securely
     const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
@@ -322,6 +336,8 @@ router.post('/register/coordinator', validateCoordinatorRegister, async (req, re
         status: newUser.status,
         firstName: newUser.first_name,
         lastName: newUser.last_name,
+        fullName: [newUser.first_name, newUser.last_name].filter(Boolean).join(' '),
+        name: [newUser.first_name, newUser.last_name].filter(Boolean).join(' '),
         department,
         clubName: clubName || 'Student Activities & Clubs',
       },
@@ -361,11 +377,11 @@ router.post('/register/recruiter', validateRecruiterRegister, async (req, res, n
       });
     }
 
-    // 2. Split name
+    // 2. Name mapping: use validated names without hardcoded fallbacks
     const rawName = (fullName || recruiterName || '').trim();
     const parts = rawName.split(/\s+/);
-    const firstName = parts[0] || 'Corporate';
-    const lastName = parts.slice(1).join(' ') || 'Recruiter';
+    const firstName = req.body.firstName || parts[0];
+    const lastName = req.body.lastName !== undefined ? req.body.lastName : (parts.slice(1).join(' ') || '');
 
     // 3. Hash password securely
     const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
@@ -436,6 +452,8 @@ router.post('/register/recruiter', validateRecruiterRegister, async (req, res, n
         status: newUser.status,
         firstName: newUser.first_name,
         lastName: newUser.last_name,
+        fullName: [newUser.first_name, newUser.last_name].filter(Boolean).join(' '),
+        name: [newUser.first_name, newUser.last_name].filter(Boolean).join(' '),
         companyName: cleanCompany,
         designation: designation || 'Campus Talent Acquisition',
       },
