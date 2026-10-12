@@ -31,6 +31,10 @@ const API = (() => {
       if (protocol === 'file:' || (isLocal && port && port !== '3000')) {
         return 'http://localhost:3000/api/v1';
       }
+      // In remote / production environment (e.g. Vercel), route directly to Render backend
+      if (!isLocal) {
+        return 'https://campus-inn-backend.onrender.com/api/v1';
+      }
     }
     return '/api/v1';
   };
@@ -298,16 +302,14 @@ const API = (() => {
       const res = await request(`/events/${encodeURIComponent(eventId)}/rsvp`, {
         method: 'POST'
       });
-      if (res.data) return res;
+      return res;
+    },
 
-      if (ALLOW_DEV_MOCK) {
-        return {
-          data: { success: true, eventId, rsvpAt: new Date().toISOString(), _source: 'DEV_MOCK' },
-          error: null,
-          isMock: true,
-          endpoint: res.endpoint
-        };
-      }
+    async registerHackathon(payload) {
+      const res = await request('/events/register', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
       return res;
     }
   };
@@ -573,6 +575,32 @@ const API = (() => {
     }
   };
 
+  /* ═══════════════════════════════════════════
+     9. NOTIFICATIONS CENTER SERVICE
+     ═══════════════════════════════════════════ */
+  const notifications = {
+    async getAll() {
+      const res = await request('/notifications', { method: 'GET' });
+      return res;
+    },
+    async markAsRead(id) {
+      const res = await request(`/notifications/${encodeURIComponent(id)}/read`, { method: 'PATCH' });
+      return res;
+    },
+    async markAllAsRead() {
+      const res = await request('/notifications/read-all', { method: 'PATCH' });
+      return res;
+    }
+  };
+
+  /* ═══════════════════════════════════════════
+     10. GLOBAL CAMPUS SEARCH SERVICE
+     ═══════════════════════════════════════════ */
+  async function search(query) {
+    const res = await request(`/search?q=${encodeURIComponent(query)}`, { method: 'GET' });
+    return res;
+  }
+
   return {
     BASE_URL,
     missingEndpoints,
@@ -585,7 +613,9 @@ const API = (() => {
     faculty,
     recruiter,
     coordinator,
-    admin
+    admin,
+    notifications,
+    search
   };
 })();
 

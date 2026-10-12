@@ -2,6 +2,8 @@
  * Campus Inn+ — Automated Unit & Integration Tests
  */
 const request = require('supertest');
+const jwt = require('jsonwebtoken');
+const config = require('../src/config');
 const app = require('../src/app');
 
 describe('Campus Inn+ Backend API Suite', () => {
@@ -333,6 +335,173 @@ describe('Campus Inn+ Backend API Suite', () => {
           OAuth2Client.prototype.verifyIdToken = origVerifyIdToken;
         }
       });
+    });
+  });
+
+  describe('CORS & Preflight Regression Suite', () => {
+    it('should allow production Vercel frontend origin with credentials', async () => {
+      const res = await request(app)
+        .get('/api/health')
+        .set('Origin', 'https://campusinn-frontend-9nxrritaj-pranz.vercel.app');
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.headers['access-control-allow-origin']).toEqual('https://campusinn-frontend-9nxrritaj-pranz.vercel.app');
+      expect(res.headers['access-control-allow-credentials']).toEqual('true');
+    });
+
+    it('should allow any Vercel deployment preview domain', async () => {
+      const res = await request(app)
+        .get('/api/health')
+        .set('Origin', 'https://campusinn-frontend-pr-42.vercel.app');
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.headers['access-control-allow-origin']).toEqual('https://campusinn-frontend-pr-42.vercel.app');
+      expect(res.headers['access-control-allow-credentials']).toEqual('true');
+    });
+
+    it('should allow localhost development origin', async () => {
+      const res = await request(app)
+        .get('/api/health')
+        .set('Origin', 'http://localhost:5500');
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.headers['access-control-allow-origin']).toEqual('http://localhost:5500');
+    });
+
+    it('should reject unauthorized origins with 403 Forbidden', async () => {
+      const res = await request(app)
+        .get('/api/health')
+        .set('Origin', 'https://unauthorized-malicious-site.com');
+
+      expect(res.statusCode).toEqual(403);
+      expect(res.body.success).toBe(false);
+      expect(res.body.code).toEqual('CORS_NOT_ALLOWED');
+    });
+
+    it('should respond to OPTIONS preflight with allowed methods and headers', async () => {
+      const res = await request(app)
+        .options('/api/v1/auth/login')
+        .set('Origin', 'https://campusinn-frontend-9nxrritaj-pranz.vercel.app')
+        .set('Access-Control-Request-Method', 'POST')
+        .set('Access-Control-Request-Headers', 'Content-Type, Authorization');
+
+      expect([200, 204]).toContain(res.statusCode);
+      expect(res.headers['access-control-allow-origin']).toEqual('https://campusinn-frontend-9nxrritaj-pranz.vercel.app');
+      expect(res.headers['access-control-allow-methods']).toContain('POST');
+      expect(res.headers['access-control-allow-headers']).toContain('Content-Type');
+    });
+  });
+
+  describe('Notification Center Suite', () => {
+    it('GET /api/v1/notifications without auth should return 401', async () => {
+      const res = await request(app).get('/api/v1/notifications');
+      expect(res.statusCode).toEqual(401);
+      expect(res.body.code).toEqual('AUTH_REQUIRED');
+    });
+
+    it('GET /api/v1/notifications with valid token should return user notifications', async () => {
+      const token = jwt.sign(
+        { sub: 'test-user-id', email: 'test.student@campus.edu.in', role: 'student', firstName: 'Test', lastName: 'User' },
+        config.jwt.secret,
+        { expiresIn: '1h' }
+      );
+
+      const res = await request(app)
+        .get('/api/v1/notifications')
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.success).toBe(true);
+      expect(Array.isArray(res.body.notifications)).toBe(true);
+      expect(typeof res.body.unreadCount).toBe('number');
+    });
+
+    it('PATCH /api/v1/notifications/read-all with valid token should mark all as read', async () => {
+      const token = jwt.sign(
+        { sub: 'test-user-id', email: 'test.student@campus.edu.in', role: 'student' },
+        config.jwt.secret,
+        { expiresIn: '1h' }
+      );
+
+      const res = await request(app)
+        .patch('/api/v1/notifications/read-all')
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.success).toBe(true);
+    });
+  });
+
+  describe('Global Campus Search Suite', () => {
+    it('GET /api/v1/search?q=hackathon should return matched results', async () => {
+      const res = await request(app).get('/api/v1/search?q=hackathon');
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.success).toBe(true);
+      expect(Array.isArray(res.body.results)).toBe(true);
+      expect(res.body.results.length).toBeGreaterThan(0);
+      expect(res.body.query).toEqual('hackathon');
+    });
+
+    it('GET /api/v1/search with empty query should return empty results', async () => {
+      const res = await request(app).get('/api/v1/search?q=');
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.results).toEqual([]);
+    });
+  });
+
+  describe('Hackathon Registration Suite', () => {
+    it('POST /api/v1/events/register without auth should return 401', async () => {
+      const res = await request(app)
+        .post('/api/v1/events/register')
+        .send({ teamName: 'Incomplete Team' });
+
+      expect(res.statusCode).toEqual(401);
+      expect(res.body.code).toEqual('AUTH_REQUIRED');
+    });
+
+    it('POST /api/v1/events/register with missing fields should return 400', async () => {
+      const token = jwt.sign(
+        { sub: 'test-user-id', email: 'aarav.mehta@campus.edu.in', role: 'student' },
+        config.jwt.secret,
+        { expiresIn: '1h' }
+      );
+
+      const res = await request(app)
+        .post('/api/v1/events/register')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ teamName: 'Incomplete Team' });
+
+      expect(res.statusCode).toEqual(400);
+      expect(res.body.success).toBe(false);
+    });
+
+    it('POST /api/v1/events/register with complete payload should persist registration and issue pass token', async () => {
+      const token = jwt.sign(
+        { sub: 'test-user-id', email: 'aarav.mehta@campus.edu.in', role: 'student', firstName: 'Aarav', lastName: 'Mehta' },
+        config.jwt.secret,
+        { expiresIn: '1h' }
+      );
+
+      const res = await request(app)
+        .post('/api/v1/events/register')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          eventName: 'HackBKC 2026',
+          participantName: 'Aarav Mehta',
+          email: 'aarav.mehta@campus.edu.in',
+          phone: '+91 98765 43210',
+          college: 'MET Institute of Engineering',
+          department: 'Computer Engineering',
+          teamName: 'CyberTitans ' + Date.now(),
+          teamMembers: ['Rohan Gupta', 'Pooja Patil'],
+          rulesAgreed: true
+        });
+
+      expect([200, 201]).toContain(res.statusCode);
+      expect(res.body.success).toBe(true);
+      expect(res.body.registration).toBeDefined();
+      expect(res.body.registration.passToken).toMatch(/^MET-PASS-/);
     });
   });
 });

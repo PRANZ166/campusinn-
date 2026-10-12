@@ -166,14 +166,36 @@ const Auth = (() => {
     }
   }
 
+  function sanitizeRedirect(target, fallback = 'index.html') {
+    if (!target || typeof target !== 'string') return fallback;
+    const trimmed = target.trim();
+    if (!trimmed || trimmed === 'login.html') return fallback;
+    if (/^(javascript|data|vbscript):/i.test(trimmed)) return fallback;
+    if (trimmed.startsWith('//')) return fallback;
+    try {
+      if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+        const parsed = new URL(trimmed, window.location.origin);
+        if (parsed.origin !== window.location.origin) {
+          return fallback;
+        }
+        return (parsed.pathname + parsed.search + parsed.hash) || fallback;
+      }
+    } catch (e) {
+      return fallback;
+    }
+    return trimmed;
+  }
+
   /**
    * Protected portal route guard:
    * Redirects immediately to login.html if unauthenticated, preventing any dashboard flashing.
    */
   function requireAuth(allowedRoles) {
     const session = getSession();
+    const curFile = window.location.pathname.split('/').pop() || 'index.html';
+    const redirectUrl = 'login.html?redirect=' + encodeURIComponent(curFile + window.location.search + window.location.hash);
     if (!session) {
-      window.location.replace('login.html');
+      window.location.replace(redirectUrl);
       return false;
     }
     if (allowedRoles && allowedRoles.length > 0) {
@@ -184,11 +206,11 @@ const Auth = (() => {
     }
     // Asynchronously verify server session state
     // Only clear session on explicit 401 (unauthorized), NOT on server errors (500) or network failures
-    if (typeof window.CampusInnAPI !== 'undefined') {
+    if (typeof window.CampusInnAPI !== 'undefined' && window.CampusInnAPI.auth) {
       window.CampusInnAPI.auth.me().then(res => {
         if (!res.data && res.status === 401) {
           clearSession();
-          window.location.replace('login.html');
+          window.location.replace(redirectUrl);
         }
       }).catch(() => {});
     }
@@ -196,7 +218,7 @@ const Auth = (() => {
   }
 
   return { getSession, isAuthenticated, getRole, getUser, getRoleConfig,
-           getDashboardUrl, login, registerStudent, logout, requireAuth, ROLES };
+           getDashboardUrl, login, registerStudent, logout, requireAuth, sanitizeRedirect, ROLES };
 })();
 
 /* ═══════════════════════════════════════════
@@ -1111,13 +1133,478 @@ const HomepageApply = (() => {
 })();
 
 /* ═══════════════════════════════════════════
-   9. PAGE INITIALIZATION
+   9. NOTIFICATION CENTER MODULE
+   ═══════════════════════════════════════════ */
+const NotificationCenter = (() => {
+  let isOpen = false;
+  let activeDropdown = null;
+  let cachedNotifications = [];
+  let unreadCount = 0;
+
+  function getIcon(type) {
+    switch (type) {
+      case 'event': return 'celebration';
+      case 'placement': return 'work';
+      case 'academic': return 'school';
+      case 'alert': return 'warning';
+      default: return 'notifications';
+    }
+  }
+
+  function getIconBg(type) {
+    switch (type) {
+      case 'event': return 'bg-tertiary-fixed text-on-tertiary-fixed';
+      case 'placement': return 'bg-primary-fixed text-on-primary-fixed';
+      case 'academic': return 'bg-secondary-fixed text-on-secondary-fixed';
+      case 'alert': return 'bg-error-container text-on-error-container';
+      default: return 'bg-surface-container-high text-primary';
+    }
+  }
+
+  function formatTime(isoString) {
+    if (!isoString) return 'Recent';
+    try {
+      const diff = Math.floor((Date.now() - new Date(isoString).getTime()) / 1000);
+      if (diff < 60) return 'Just now';
+      if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+      if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+      return `${Math.floor(diff / 86400)}d ago`;
+    } catch {
+      return 'Recent';
+    }
+  }
+
+  function updateBadgeUI(count) {
+    unreadCount = count;
+    document.querySelectorAll('.ci-notif-badge').forEach(badge => {
+      if (count > 0) {
+        badge.textContent = count > 9 ? '9+' : count;
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+    });
+    const pill = document.getElementById('ci-notif-count-pill');
+    if (pill) {
+      pill.textContent = count;
+      pill.className = count > 0
+        ? 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary text-white'
+        : 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-surface-container text-secondary';
+    }
+  }
+
+  function renderList(notifications) {
+    const listEl = document.getElementById('ci-notif-list');
+    if (!listEl) return;
+
+    if (!notifications || notifications.length === 0) {
+      listEl.innerHTML = `
+        <div class="p-8 text-center text-secondary">
+          <span class="material-symbols-outlined text-4xl text-outline mb-1 select-none">notifications_off</span>
+          <p class="font-semibold text-xs text-on-surface">All caught up!</p>
+          <p class="text-[11px] mt-0.5 text-secondary">No unread notifications at this time.</p>
+        </div>`;
+      return;
+    }
+
+    listEl.innerHTML = notifications.map(n => `
+      <div class="ci-notif-item p-3.5 hover:bg-surface-container-low transition-colors cursor-pointer flex items-start gap-3 ${n.isRead ? 'opacity-70' : 'bg-primary/5'}" data-id="${n.id}" data-link="${n.link || ''}">
+        <div class="w-8 h-8 rounded-lg ${getIconBg(n.type)} flex items-center justify-center shrink-0 shadow-xs">
+          <span class="material-symbols-outlined text-[18px]">${getIcon(n.type)}</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center justify-between gap-1">
+            <h4 class="text-xs font-semibold text-on-surface truncate">${escapeHtml(n.title)}</h4>
+            ${!n.isRead ? '<span class="w-2 h-2 rounded-full bg-primary shrink-0" title="Unread"></span>' : ''}
+          </div>
+          <p class="text-[11px] text-secondary mt-0.5 line-clamp-2 leading-relaxed">${escapeHtml(n.message || '')}</p>
+          <span class="text-[10px] text-outline mt-1 block font-medium">${formatTime(n.createdAt)}</span>
+        </div>
+      </div>
+    `).join('');
+
+    // Attach item click handlers
+    listEl.querySelectorAll('.ci-notif-item').forEach(item => {
+      item.addEventListener('click', async () => {
+        const id = item.getAttribute('data-id');
+        const link = item.getAttribute('data-link');
+
+        if (window.CampusInnAPI && window.CampusInnAPI.notifications) {
+          window.CampusInnAPI.notifications.markAsRead(id).catch(() => {});
+        }
+
+        const targetNotif = cachedNotifications.find(n => String(n.id) === String(id));
+        if (targetNotif && !targetNotif.isRead) {
+          targetNotif.isRead = true;
+          updateBadgeUI(Math.max(0, unreadCount - 1));
+          item.classList.add('opacity-70');
+          item.classList.remove('bg-primary/5');
+          item.querySelector('.bg-primary.rounded-full')?.remove();
+        }
+
+        close();
+        if (link && link.trim() && link !== '#') {
+          window.location.href = link;
+        }
+      });
+    });
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  async function fetchNotifications() {
+    const listEl = document.getElementById('ci-notif-list');
+    if (listEl) {
+      listEl.innerHTML = `
+        <div class="p-8 text-center text-secondary">
+          <div class="inline-block animate-spin w-5 h-5 border-2 border-primary border-t-transparent rounded-full mb-2"></div>
+          <p class="text-xs">Loading campus feeds...</p>
+        </div>`;
+    }
+
+    try {
+      if (!Auth.isAuthenticated()) {
+        if (listEl) {
+          listEl.innerHTML = `
+            <div class="p-6 text-center text-secondary">
+              <span class="material-symbols-outlined text-3xl text-primary mb-1">lock</span>
+              <p class="text-xs font-semibold text-on-surface">Authentication Required</p>
+              <p class="text-[11px] text-secondary mt-1">Sign in to view your notifications.</p>
+              <a href="login.html" class="inline-block mt-3 px-4 py-1.5 bg-primary text-white text-xs font-semibold rounded-lg hover:bg-primary-container transition-colors">Sign In</a>
+            </div>`;
+        }
+        return;
+      }
+
+      if (window.CampusInnAPI && window.CampusInnAPI.notifications) {
+        const res = await window.CampusInnAPI.notifications.getAll();
+        if (res.data && res.data.success) {
+          cachedNotifications = res.data.notifications || [];
+          updateBadgeUI(res.data.unreadCount || 0);
+          renderList(cachedNotifications);
+          return;
+        }
+      }
+
+      renderList(cachedNotifications);
+    } catch (err) {
+      if (listEl) {
+        listEl.innerHTML = `
+          <div class="p-6 text-center text-error">
+            <span class="material-symbols-outlined text-3xl mb-1">error</span>
+            <p class="text-xs font-semibold">Failed to load notifications</p>
+            <button id="ci-notif-retry-btn" class="mt-2 text-xs text-primary font-bold underline cursor-pointer">Retry</button>
+          </div>`;
+        document.getElementById('ci-notif-retry-btn')?.addEventListener('click', fetchNotifications);
+      }
+    }
+  }
+
+  function open(dropdownEl, buttonEl) {
+    isOpen = true;
+    activeDropdown = dropdownEl;
+    dropdownEl.classList.remove('hidden');
+    buttonEl?.setAttribute('aria-expanded', 'true');
+    fetchNotifications();
+  }
+
+  function close() {
+    isOpen = false;
+    if (activeDropdown) {
+      activeDropdown.classList.add('hidden');
+    }
+    document.querySelectorAll('button[aria-label*="Notification"]').forEach(btn => {
+      btn.setAttribute('aria-expanded', 'false');
+    });
+  }
+
+  function toggle(dropdownEl, buttonEl) {
+    if (isOpen && activeDropdown === dropdownEl) {
+      close();
+    } else {
+      open(dropdownEl, buttonEl);
+    }
+  }
+
+  function init() {
+    const bellButtons = document.querySelectorAll('button[aria-label="Notifications"], button[aria-label="View Notifications"]');
+    if (bellButtons.length === 0) return;
+
+    bellButtons.forEach(btn => {
+      let badge = btn.querySelector('.ci-notif-badge');
+      if (!badge) {
+        btn.querySelector('span.rounded-full.bg-primary, span.rounded-full.bg-error')?.remove();
+        badge = document.createElement('span');
+        badge.className = 'ci-notif-badge absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-error text-white text-[10px] font-bold flex items-center justify-center leading-none hidden shadow-xs';
+        btn.classList.add('relative');
+        btn.appendChild(badge);
+      }
+
+      let parent = btn.parentElement;
+      if (parent && !parent.classList.contains('relative')) {
+        parent.classList.add('relative');
+      }
+
+      let dropdown = parent ? parent.querySelector('#ci-notification-dropdown') : null;
+      if (!dropdown && parent) {
+        dropdown = document.createElement('div');
+        dropdown.id = 'ci-notification-dropdown';
+        dropdown.className = 'ci-notif-dropdown hidden absolute right-0 top-[calc(100%+8px)] w-80 sm:w-96 max-w-[calc(100vw-24px)] bg-surface-container-lowest rounded-2xl shadow-2xl border border-outline-variant/30 py-3 z-[9999] overflow-hidden backdrop-blur-md';
+        dropdown.innerHTML = `
+          <div class="flex items-center justify-between px-4 pb-2.5 border-b border-surface-container">
+            <div class="flex items-center gap-2">
+              <span class="font-headline-sm font-bold text-sm text-on-surface">Notifications</span>
+              <span id="ci-notif-count-pill" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary/10 text-primary">0</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button id="ci-notif-refresh-btn" type="button" title="Refresh" class="text-secondary hover:text-on-surface p-1 rounded transition-colors flex items-center cursor-pointer">
+                <span class="material-symbols-outlined text-[16px]">refresh</span>
+              </button>
+              <button id="ci-notif-mark-all-btn" type="button" class="text-xs text-primary font-semibold hover:underline cursor-pointer">Mark all read</button>
+            </div>
+          </div>
+          <div id="ci-notif-list" class="max-h-80 overflow-y-auto divide-y divide-surface-container/50">
+          </div>
+        `;
+        parent.appendChild(dropdown);
+
+        dropdown.querySelector('#ci-notif-mark-all-btn')?.addEventListener('click', async () => {
+          if (window.CampusInnAPI && window.CampusInnAPI.notifications) {
+            await window.CampusInnAPI.notifications.markAllAsRead().catch(() => {});
+          }
+          cachedNotifications.forEach(n => { n.isRead = true; });
+          updateBadgeUI(0);
+          renderList(cachedNotifications);
+          Toast.success('All notifications marked as read.');
+        });
+
+        dropdown.querySelector('#ci-notif-refresh-btn')?.addEventListener('click', () => {
+          fetchNotifications();
+        });
+      }
+
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggle(dropdown, btn);
+      });
+    });
+
+    document.addEventListener('click', (e) => {
+      if (isOpen && activeDropdown && !activeDropdown.contains(e.target)) {
+        close();
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && isOpen) {
+        close();
+      }
+    });
+
+    if (Auth.isAuthenticated() && window.CampusInnAPI && window.CampusInnAPI.notifications) {
+      window.CampusInnAPI.notifications.getAll().then(res => {
+        if (res.data && res.data.success) {
+          cachedNotifications = res.data.notifications || [];
+          updateBadgeUI(res.data.unreadCount || 0);
+        }
+      }).catch(() => {});
+    }
+  }
+
+  return { init, open, close, toggle, fetchNotifications };
+})();
+
+/* ═══════════════════════════════════════════
+   10. GLOBAL CAMPUS SEARCH MODULE
+   ═══════════════════════════════════════════ */
+const GlobalSearch = (() => {
+  let searchTimeout = null;
+
+  function init() {
+    const inputs = document.querySelectorAll('input[placeholder*="Search campus..."], input[placeholder*="Search"]');
+    if (inputs.length === 0) return;
+
+    inputs.forEach(input => {
+      if (input.dataset.ciSearchAttached) return;
+      input.dataset.ciSearchAttached = 'true';
+
+      const parent = input.parentElement;
+      if (!parent) return;
+
+      if (!parent.classList.contains('relative') && !parent.classList.contains('ci-search-container')) {
+        parent.classList.add('relative');
+      }
+
+      const clearBtn = document.createElement('button');
+      clearBtn.type = 'button';
+      clearBtn.className = 'ci-search-clear hidden absolute right-2 text-outline hover:text-on-surface p-0.5 rounded transition-colors cursor-pointer';
+      clearBtn.innerHTML = '<span class="material-symbols-outlined text-[16px]">close</span>';
+      parent.appendChild(clearBtn);
+
+      let resultsDropdown = parent.querySelector('.ci-search-results-dropdown');
+      if (!resultsDropdown) {
+        resultsDropdown = document.createElement('div');
+        resultsDropdown.className = 'ci-search-results-dropdown hidden absolute left-0 top-[calc(100%+8px)] w-80 sm:w-96 max-w-[calc(100vw-32px)] bg-surface-container-lowest rounded-2xl shadow-2xl border border-outline-variant/30 py-2 z-[9999] overflow-hidden backdrop-blur-md max-h-96 overflow-y-auto';
+        parent.appendChild(resultsDropdown);
+      }
+
+      function hideResults() {
+        resultsDropdown.classList.add('hidden');
+      }
+
+      function showResults() {
+        resultsDropdown.classList.remove('hidden');
+      }
+
+      clearBtn.addEventListener('click', () => {
+        input.value = '';
+        clearBtn.classList.add('hidden');
+        hideResults();
+        input.focus();
+      });
+
+      input.addEventListener('input', (e) => {
+        const val = e.target.value.trim();
+        if (val) {
+          clearBtn.classList.remove('hidden');
+        } else {
+          clearBtn.classList.add('hidden');
+          hideResults();
+          return;
+        }
+
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(async () => {
+          resultsDropdown.innerHTML = `
+            <div class="p-6 text-center text-secondary text-xs">
+              <div class="inline-block animate-spin w-4 h-4 border-2 border-primary border-t-transparent rounded-full mb-1.5"></div>
+              <p>Searching campus records...</p>
+            </div>`;
+          showResults();
+
+          try {
+            if (window.CampusInnAPI && window.CampusInnAPI.search) {
+              const res = await window.CampusInnAPI.search(val);
+              if (res.data && res.data.success) {
+                renderSearchResults(res.data.results, val, resultsDropdown);
+                return;
+              }
+            }
+            renderSearchResults([], val, resultsDropdown);
+          } catch (err) {
+            resultsDropdown.innerHTML = `
+              <div class="p-4 text-center text-xs text-error">
+                <span class="material-symbols-outlined text-lg mb-1">error</span>
+                <p>Search service temporarily unavailable.</p>
+              </div>`;
+          }
+        }, 250);
+      });
+
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          hideResults();
+        } else if (e.key === 'Enter') {
+          const firstResult = resultsDropdown.querySelector('.ci-search-result-item');
+          if (firstResult) {
+            e.preventDefault();
+            firstResult.click();
+          }
+        }
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!parent.contains(e.target)) {
+          hideResults();
+        }
+      });
+    });
+  }
+
+  function renderSearchResults(results, query, container) {
+    if (!results || results.length === 0) {
+      container.innerHTML = `
+        <div class="p-6 text-center text-secondary text-xs">
+          <span class="material-symbols-outlined text-2xl text-outline mb-1 select-none">search_off</span>
+          <p class="font-semibold text-on-surface">No records found</p>
+          <p class="text-[11px] text-secondary mt-0.5">No results matching "${escapeHtml(query)}"</p>
+        </div>`;
+      return;
+    }
+
+    const grouped = {};
+    results.forEach(r => {
+      const cat = r.category || 'General';
+      if (!grouped[cat]) grouped[cat] = [];
+      grouped[cat].push(r);
+    });
+
+    let html = '';
+    for (const [category, items] of Object.entries(grouped)) {
+      html += `
+        <div class="px-3 pt-2 pb-1 text-[10px] font-bold uppercase tracking-wider text-primary bg-surface-container-low/50">
+          ${escapeHtml(category)} (${items.length})
+        </div>
+        <div class="divide-y divide-surface-container/30">
+          ${items.map(item => `
+            <a href="${item.url || '#'}" class="ci-search-result-item block p-3 hover:bg-surface-container-low transition-colors text-left group">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-xs font-semibold text-on-surface group-hover:text-primary transition-colors truncate">
+                  ${highlightQuery(item.title, query)}
+                </span>
+                ${item.badge ? `<span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-secondary-container text-on-secondary-fixed shrink-0">${escapeHtml(item.badge)}</span>` : ''}
+              </div>
+              ${item.description ? `<p class="text-[11px] text-secondary mt-0.5 line-clamp-1 leading-normal">${escapeHtml(item.description)}</p>` : ''}
+            </a>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    container.innerHTML = html;
+  }
+
+  function highlightQuery(text, query) {
+    if (!text) return '';
+    if (!query) return escapeHtml(text);
+    const escaped = escapeHtml(text);
+    const re = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+    return escaped.replace(re, '<mark class="bg-primary/20 text-primary font-bold px-0.5 rounded">$1</mark>');
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  return { init };
+})();
+
+/* ═══════════════════════════════════════════
+   11. PAGE INITIALIZATION
    ═══════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', () => {
   // Wire navigation links
   Nav.wireLinks();
   // Wire homepage placement apply workflow
   HomepageApply.init();
+  // Wire notification center
+  NotificationCenter.init();
+  // Wire campus global search
+  GlobalSearch.init();
   // Add mobile hamburger
   MobileMenu.addHamburger();
   // Add skip-to-content link
@@ -1131,6 +1618,19 @@ document.addEventListener('DOMContentLoaded', () => {
   // Mark main content
   const main = document.querySelector('main');
   if (main && !main.id) main.id = 'main-content';
+
+  // Asynchronously verify active session against backend
+  if (Auth.isAuthenticated() && window.CampusInnAPI && window.CampusInnAPI.auth) {
+    window.CampusInnAPI.auth.me().then(res => {
+      if (!res.data && res.status === 401) {
+        Auth.clearSession();
+        const page = window.location.pathname.split('/').pop() || 'index.html';
+        if (page === 'index.html' || page === '' || ['student.html', 'faculty.html', 'admin.html', 'placement.html', 'coordinator.html', 'company.html'].includes(page)) {
+          window.location.replace('login.html');
+        }
+      }
+    }).catch(() => {});
+  }
 });
 
 window.CampusInn = {
@@ -1138,6 +1638,8 @@ window.CampusInn = {
   Theme,
   Nav,
   ProfileMenu,
+  NotificationCenter,
+  GlobalSearch,
   HomepageApply,
   Toast,
   MobileMenu,
@@ -1145,3 +1647,4 @@ window.CampusInn = {
   get API() { return window.CampusInnAPI; },
   get DevMock() { return window.CampusInnDevMock; }
 };
+

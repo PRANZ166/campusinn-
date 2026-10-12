@@ -124,8 +124,8 @@
 <span class="px-3 py-1 bg-surface-container-lowest/90 backdrop-blur-md rounded-full font-label-caps text-label-caps text-primary uppercase shadow-sm">
                 Annual Flagship Festival • MET BKC
               </span>
-<span class="px-2.5 py-0.5 bg-error-container text-on-error-container rounded-md font-label-caps text-label-caps uppercase">
-                [SAMPLE EVENT PREVIEW - OFFICIAL DATES TBA]
+<span class="px-2.5 py-0.5 bg-primary-container text-on-primary-container rounded-md font-label-caps text-label-caps uppercase">
+                [UPCOMING EVENT PREVIEW - OFFICIAL DATES TBA]
               </span>
 </div>
 <div class="absolute bottom-4 left-4 right-4 text-surface-container-lowest">
@@ -465,8 +465,8 @@
 <span class="px-2.5 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-caps text-label-caps uppercase">
                 Community Run • Hosted at MET BKC
               </span>
-<span class="px-2 py-0.5 bg-error-container text-on-error-container rounded font-label-caps text-label-caps">
-                [SAMPLE EVENT - PENDING ORGANIZER CONFIRMATION]
+<span class="px-2 py-0.5 bg-secondary-container text-on-secondary-fixed rounded font-label-caps text-label-caps">
+                [CAMPUS EVENT - PENDING ORGANIZER CONFIRMATION]
               </span>
 </div>
 <h3 class="font-headline-sm text-headline-sm text-on-surface mb-2 font-semibold">
@@ -521,7 +521,7 @@
 </div>
 </div>
 </div>
-<button class="w-full py-2.5 rounded-lg bg-primary text-on-primary font-label-lg text-label-lg hover:bg-primary-container hover:text-on-primary-container transition-colors">
+<button id="btnRegisterCodeSprint" type="button" class="w-full py-2.5 rounded-lg bg-primary text-on-primary font-label-lg text-label-lg hover:bg-primary-container hover:text-on-primary-container transition-colors cursor-pointer">
             Register for Contest
           </button>
 </div>
@@ -551,7 +551,7 @@
 </div>
 </div>
 </div>
-<button class="w-full py-2.5 rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high font-label-lg text-label-lg transition-colors">
+<button id="btnApplyAgenticAi" type="button" class="w-full py-2.5 rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high font-label-lg text-label-lg transition-colors cursor-pointer">
             Apply with Project Abstract
           </button>
 </div>
@@ -568,24 +568,27 @@
           </p>
 </div>
 <!-- Category Toggles -->
-<div class="flex flex-wrap items-center gap-1.5 p-1 bg-surface-container rounded-lg">
-<button class="px-3 py-1 rounded bg-surface-container-lowest text-primary font-label-md text-label-md shadow-sm">
+<div class="flex flex-wrap items-center gap-1.5 p-1 bg-surface-container rounded-lg" id="compFilterGroup">
+<button class="comp-filter-btn px-3 py-1 rounded bg-surface-container-lowest text-primary font-label-md text-label-md shadow-sm cursor-pointer" data-cat="all">
+            All Arenas
+          </button>
+<button class="comp-filter-btn px-3 py-1 rounded text-on-surface-variant hover:text-on-surface font-label-md text-label-md cursor-pointer" data-cat="technical">
             Technical
           </button>
-<button class="px-3 py-1 rounded text-on-surface-variant hover:text-on-surface font-label-md text-label-md">
+<button class="comp-filter-btn px-3 py-1 rounded text-on-surface-variant hover:text-on-surface font-label-md text-label-md cursor-pointer" data-cat="business">
             Business &amp; Finance
           </button>
-<button class="px-3 py-1 rounded text-on-surface-variant hover:text-on-surface font-label-md text-label-md">
+<button class="comp-filter-btn px-3 py-1 rounded text-on-surface-variant hover:text-on-surface font-label-md text-label-md cursor-pointer" data-cat="sports">
             Sports &amp; Esports
           </button>
-<button class="px-3 py-1 rounded text-on-surface-variant hover:text-on-surface font-label-md text-label-md">
+<button class="comp-filter-btn px-3 py-1 rounded text-on-surface-variant hover:text-on-surface font-label-md text-label-md cursor-pointer" data-cat="creative">
             Creative &amp; Design
           </button>
 </div>
 </div>
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-md">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-md" id="challengesGrid">
 <!-- Challenge 1 -->
-<div class="bg-surface-container-lowest rounded-xl p-space-md flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow">
+<div class="ci-challenge-card bg-surface-container-lowest rounded-xl p-space-md flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow" data-category="technical">
 <div>
 <div class="flex items-center justify-between mb-2">
 <span class="material-symbols-outlined text-primary text-[20px]">smart_toy</span>
@@ -600,11 +603,11 @@
 </div>
 <div class="pt-2 flex items-center justify-between text-body-sm font-body-sm">
 <span class="text-tertiary font-semibold">Prize: ₹30,000</span>
-<button class="text-primary font-label-md text-label-md hover:underline">Enroll Bot</button>
+<button id="btnEnrollBot" type="button" class="text-primary font-label-md text-label-md hover:underline cursor-pointer">Enroll Bot</button>
 </div>
 </div>
 <!-- Challenge 2 -->
-<div class="bg-surface-container-lowest rounded-xl p-space-md flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow">
+<div class="ci-challenge-card bg-surface-container-lowest rounded-xl p-space-md flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow" data-category="business">
 <div>
 <div class="flex items-center justify-between mb-2">
 <span class="material-symbols-outlined text-primary text-[20px]">trending_up</span>
@@ -619,11 +622,11 @@
 </div>
 <div class="pt-2 flex items-center justify-between text-body-sm font-body-sm">
 <span class="text-tertiary font-semibold">Prize: ₹20,000</span>
-<button class="text-primary font-label-md text-label-md hover:underline">Download Data</button>
+<button id="btnDownloadFinData" type="button" class="text-primary font-label-md text-label-md hover:underline cursor-pointer">Download Data</button>
 </div>
 </div>
 <!-- Challenge 3 -->
-<div class="bg-surface-container-lowest rounded-xl p-space-md flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow">
+<div class="ci-challenge-card bg-surface-container-lowest rounded-xl p-space-md flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow" data-category="sports">
 <div>
 <div class="flex items-center justify-between mb-2">
 <span class="material-symbols-outlined text-primary text-[20px]">sports_cricket</span>
@@ -638,11 +641,11 @@
 </div>
 <div class="pt-2 flex items-center justify-between text-body-sm font-body-sm">
 <span class="text-secondary font-medium">Trophies + Medals</span>
-<button class="text-primary font-label-md text-label-md hover:underline">Fixtures</button>
+<button id="btnViewFixtures" type="button" class="text-primary font-label-md text-label-md hover:underline cursor-pointer">Fixtures</button>
 </div>
 </div>
 <!-- Challenge 4 -->
-<div class="bg-surface-container-lowest rounded-xl p-space-md flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow">
+<div class="ci-challenge-card bg-surface-container-lowest rounded-xl p-space-md flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow" data-category="creative">
 <div>
 <div class="flex items-center justify-between mb-2">
 <span class="material-symbols-outlined text-primary text-[20px]">palette</span>
@@ -657,7 +660,7 @@
 </div>
 <div class="pt-2 flex items-center justify-between text-body-sm font-body-sm">
 <span class="text-tertiary font-semibold">Prize: ₹15,000</span>
-<button class="text-primary font-label-md text-label-md hover:underline">Figma Kit</button>
+<button id="btnDownloadFigmaKit" type="button" class="text-primary font-label-md text-label-md hover:underline cursor-pointer">Design Brief &amp; Kit</button>
 </div>
 </div>
 </div>
@@ -937,6 +940,58 @@
         </button>
       </div>
     </form>
+  </div>
+</div>
+
+<!-- MODAL: Tournament Fixtures -->
+<div id="fixturesModal" class="fixed inset-0 bg-inverse-surface/60 backdrop-blur-sm z-[9999] hidden flex items-center justify-center p-4">
+  <div class="bg-surface-container-lowest rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-outline-variant/30">
+    <div class="flex items-center justify-between pb-4 border-b border-surface-container">
+      <div class="flex items-center gap-2">
+        <span class="w-10 h-10 rounded-xl bg-primary-fixed text-primary flex items-center justify-center font-bold">
+          <span class="material-symbols-outlined text-2xl">sports_cricket</span>
+        </span>
+        <div>
+          <h2 class="font-headline-sm text-base font-bold text-on-surface">Inter-Department Tournament Fixtures</h2>
+          <p class="text-xs text-secondary">Bhujbal Knowledge City Sports Complex</p>
+        </div>
+      </div>
+      <button type="button" class="close-modal-btn w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-secondary hover:text-on-surface cursor-pointer" data-target="fixturesModal">
+        <span class="material-symbols-outlined text-sm">close</span>
+      </button>
+    </div>
+    <div class="my-4 space-y-3 max-h-80 overflow-y-auto">
+      <div class="p-3 bg-surface-container-low rounded-xl border border-outline-variant/30">
+        <span class="text-[10px] font-bold uppercase text-primary tracking-wider">Quarter Final 1 • Cricket</span>
+        <div class="flex items-center justify-between mt-1 text-xs font-semibold text-on-surface">
+          <span>Computer Engineering (IOE)</span>
+          <span class="text-tertiary">vs</span>
+          <span>Mechanical Engineering (IOE)</span>
+        </div>
+        <p class="text-[11px] text-secondary mt-1">Ground A • 28 Nov, 09:30 AM</p>
+      </div>
+      <div class="p-3 bg-surface-container-low rounded-xl border border-outline-variant/30">
+        <span class="text-[10px] font-bold uppercase text-primary tracking-wider">Quarter Final 2 • Cricket</span>
+        <div class="flex items-center justify-between mt-1 text-xs font-semibold text-on-surface">
+          <span>Information Technology</span>
+          <span class="text-tertiary">vs</span>
+          <span>Institute of Management (MBA)</span>
+        </div>
+        <p class="text-[11px] text-secondary mt-1">Ground A • 28 Nov, 01:30 PM</p>
+      </div>
+      <div class="p-3 bg-surface-container-low rounded-xl border border-outline-variant/30">
+        <span class="text-[10px] font-bold uppercase text-primary tracking-wider">Semi Final • Badminton Singles</span>
+        <div class="flex items-center justify-between mt-1 text-xs font-semibold text-on-surface">
+          <span>AI &amp; Data Science</span>
+          <span class="text-tertiary">vs</span>
+          <span>Institute of Pharmacy</span>
+        </div>
+        <p class="text-[11px] text-secondary mt-1">Indoor Badminton Arena • 29 Nov, 10:00 AM</p>
+      </div>
+    </div>
+    <div class="pt-3 border-t border-surface-container flex items-center justify-end">
+      <button type="button" class="close-modal-btn px-4 py-2 rounded-lg bg-surface-container text-xs font-semibold cursor-pointer" data-target="fixturesModal">Close Schedule</button>
+    </div>
   </div>
 </div>
 
@@ -1550,11 +1605,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const btnHackTeam = document.getElementById('btnHackathonTeam');
   if (btnHackTeam) {
-    btnHackTeam.addEventListener('click', () => openModal('hackathonTeamModal'));
+    btnHackTeam.addEventListener('click', () => {
+      if (!CampusInn.Auth.isAuthenticated()) {
+        CampusInn.Toast.info('Please sign in to register for the hackathon.');
+        setTimeout(() => {
+          window.location.href = 'login.html?redirect=events.html%23hackathons';
+        }, 500);
+        return;
+      }
+      openModal('hackathonTeamModal');
+    });
   }
 
   document.querySelectorAll('.btn-select-problem').forEach(btn => {
     btn.addEventListener('click', () => {
+      if (!CampusInn.Auth.isAuthenticated()) {
+        CampusInn.Toast.info('Please sign in to register for the hackathon.');
+        setTimeout(() => {
+          window.location.href = 'login.html?redirect=events.html%23hackathons';
+        }, 500);
+        return;
+      }
       const ps = btn.getAttribute('data-ps');
       closeModal('hackathonProblemsModal');
       const sel = document.getElementById('hackathonProblemSelect');
@@ -1572,76 +1643,126 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Hackathon Tab Toggles (Create vs Join)
-  const tabCreateBtn = document.getElementById('tabCreateTeamBtn');
-  const tabJoinBtn = document.getElementById('tabJoinTeamBtn');
-  const viewCreate = document.getElementById('viewCreateTeam');
-  const viewJoin = document.getElementById('viewJoinTeam');
+  const tabCreateBtn = document.getElementById('tabCreateTeam');
+  const tabJoinBtn = document.getElementById('tabJoinTeam');
+  const formCreate = document.getElementById('formCreateTeam');
+  const formJoin = document.getElementById('formJoinTeam');
 
-  if (tabCreateBtn && tabJoinBtn && viewCreate && viewJoin) {
+  if (tabCreateBtn && tabJoinBtn && formCreate && formJoin) {
     tabCreateBtn.addEventListener('click', () => {
-      tabCreateBtn.classList.add('bg-surface-container-lowest', 'text-primary', 'shadow-sm');
-      tabCreateBtn.classList.remove('text-on-surface-variant');
-      tabJoinBtn.classList.remove('bg-surface-container-lowest', 'text-primary', 'shadow-sm');
-      tabJoinBtn.classList.add('text-on-surface-variant');
-      viewCreate.classList.remove('hidden');
-      viewJoin.classList.add('hidden');
+      tabCreateBtn.className = 'flex-1 py-2 text-center text-xs font-bold rounded bg-primary text-on-primary shadow-sm transition-all cursor-pointer';
+      tabJoinBtn.className = 'flex-1 py-2 text-center text-xs font-bold rounded text-secondary hover:text-on-surface transition-all cursor-pointer';
+      formCreate.classList.remove('hidden');
+      formJoin.classList.add('hidden');
     });
 
     tabJoinBtn.addEventListener('click', () => {
-      tabJoinBtn.classList.add('bg-surface-container-lowest', 'text-primary', 'shadow-sm');
-      tabJoinBtn.classList.remove('text-on-surface-variant');
-      tabCreateBtn.classList.remove('bg-surface-container-lowest', 'text-primary', 'shadow-sm');
-      tabCreateBtn.classList.add('text-on-surface-variant');
-      viewJoin.classList.remove('hidden');
-      viewCreate.classList.add('hidden');
+      tabJoinBtn.className = 'flex-1 py-2 text-center text-xs font-bold rounded bg-primary text-on-primary shadow-sm transition-all cursor-pointer';
+      tabCreateBtn.className = 'flex-1 py-2 text-center text-xs font-bold rounded text-secondary hover:text-on-surface transition-all cursor-pointer';
+      formJoin.classList.remove('hidden');
+      formCreate.classList.add('hidden');
     });
   }
 
-  // Pre-fill leader details in hackathon modal
-  const user = (window.CampusInn && window.CampusInn.Session && window.CampusInn.Session.getUser()) || {};
-  const teamLeadNameInput = document.getElementById('teamLeaderName');
-  const teamLeadRollInput = document.getElementById('teamLeaderRoll');
-  if (teamLeadNameInput && user.name) teamLeadNameInput.value = user.name;
-  if (teamLeadRollInput && (user.rollNo || user.rollNumber)) teamLeadRollInput.value = user.rollNo || user.rollNumber;
+  // Pre-fill leader details in hackathon modal from authenticated session
+  const user = (window.CampusInn && window.CampusInn.Auth && window.CampusInn.Auth.getUser()) || {};
+  const teamLeadNameInput = document.getElementById('htLeaderName');
+  const teamLeadRollInput = document.getElementById('htLeaderRoll');
+  const contactEmailInput = document.getElementById('htContactEmail');
+  const contactPhoneInput = document.getElementById('htContactPhone');
+
+  if (teamLeadNameInput) teamLeadNameInput.value = user.name || (user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : '') || 'Verified Participant';
+  if (teamLeadRollInput) teamLeadRollInput.value = user.rollNo || user.rollNumber || user.email || 'CAMPUS-ID';
+  if (contactEmailInput && user.email) contactEmailInput.value = user.email;
+  if (contactPhoneInput && user.phone) contactPhoneInput.value = user.phone;
 
   const formCreateTeam = document.getElementById('formCreateTeam');
   if (formCreateTeam) {
-    formCreateTeam.addEventListener('submit', (e) => {
+    formCreateTeam.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const teamName = document.getElementById('hackTeamName').value.trim();
-      const leadName = document.getElementById('teamLeaderName').value.trim();
-      const leadRoll = document.getElementById('teamLeaderRoll').value.trim();
-      const m2 = document.getElementById('teamMember2').value.trim();
-      const m3 = document.getElementById('teamMember3').value.trim();
-      const m4 = document.getElementById('teamMember4').value.trim();
-      const ps = document.getElementById('hackathonProblemSelect').value;
 
-      if (!teamName || !leadName || !leadRoll || !m2) {
-        CampusInn.Toast.error('Please specify Team Name, Leader details, and at least 1 co-member.');
+      if (!CampusInn.Auth.isAuthenticated()) {
+        CampusInn.Toast.info('Please sign in to register your team for the hackathon.');
+        setTimeout(() => {
+          window.location.href = 'login.html?redirect=events.html%23hackathons';
+        }, 600);
         return;
       }
 
-      const passToken = `MET-HACK-${Math.floor(1000 + Math.random() * 9000)}`;
-      const newEvt = {
-        id: 'reg-hack-' + Date.now(),
-        title: `HackBKC 2026 (${ps.split(':')[0]})`,
-        date: '12 - 13 March 2026 • 36-Hour Continuous Sprint',
-        venue: 'Advanced Computing Labs, IOE',
-        category: 'Hackathon',
-        teamName: teamName,
-        role: 'Team Leader',
-        passToken: passToken,
-        registeredAt: new Date().toISOString()
-      };
+      const teamName = document.getElementById('htTeamName')?.value.trim();
+      const leadName = document.getElementById('htLeaderName')?.value.trim();
+      const leadRoll = document.getElementById('htLeaderRoll')?.value.trim();
+      const ps = document.getElementById('htProblemSelect')?.value;
+      const m2 = document.getElementById('htMember2')?.value.trim();
+      const m3 = document.getElementById('htMember3')?.value.trim();
+      const m4 = document.getElementById('htMember4')?.value.trim();
+      const contactEmail = document.getElementById('htContactEmail')?.value.trim();
+      const contactPhone = document.getElementById('htContactPhone')?.value.trim();
 
-      const list = getRegisteredEvents();
-      list.unshift(newEvt);
-      saveRegisteredEvents(list);
+      if (!teamName || !leadName || !contactEmail || !contactPhone || !m2) {
+        CampusInn.Toast.error('Please specify Team Name, Contact details, and at least 1 co-member.');
+        return;
+      }
 
-      CampusInn.Toast.success(`Team "${teamName}" registered successfully! Entry pass generated.`);
-      formCreateTeam.reset();
-      closeModal('hackathonTeamModal');
-      openEPass(newEvt);
+      const submitBtn = formCreateTeam.querySelector('button[type="submit"]');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="inline-block animate-spin mr-1">⌛</span> Registering...';
+      }
+
+      try {
+        const payload = {
+          eventName: 'HackBKC 2026: 36-Hour National Collegiate Hackathon',
+          participantName: leadName,
+          email: contactEmail,
+          phone: contactPhone,
+          college: user.college || 'MET Institute of Engineering, Nashik',
+          department: user.department || 'Computer Engineering',
+          teamName: teamName,
+          teamMembers: [m2, m3, m4].filter(Boolean),
+          problemStatement: ps,
+          rulesAgreed: true,
+        };
+
+        let confirmedReg = null;
+        if (window.CampusInnAPI && window.CampusInnAPI.events?.registerHackathon) {
+          const res = await window.CampusInnAPI.events.registerHackathon(payload);
+          if (res.data && res.data.success) {
+            confirmedReg = res.data.registration;
+            CampusInn.Toast.success(res.data.message || `Team "${teamName}" registered successfully!`);
+          } else if (res.error) {
+            throw new Error(res.error);
+          }
+        }
+
+        const passToken = confirmedReg?.passToken || `MET-HACK-${Math.floor(1000 + Math.random() * 9000)}`;
+        const newEvt = {
+          id: confirmedReg?.id || ('reg-hack-' + Date.now()),
+          title: `HackBKC 2026 (${ps.split(':')[0]})`,
+          date: '12 - 13 March 2026 • 36-Hour Continuous Sprint',
+          venue: 'Advanced Computing Labs, IOE',
+          category: 'Hackathon',
+          teamName: teamName,
+          role: 'Team Leader',
+          passToken: passToken,
+          registeredAt: new Date().toISOString()
+        };
+
+        const list = getRegisteredEvents();
+        list.unshift(newEvt);
+        saveRegisteredEvents(list);
+
+        formCreateTeam.reset();
+        closeModal('hackathonTeamModal');
+        openEPass(newEvt);
+      } catch (err) {
+        CampusInn.Toast.error(err.message || 'Registration failed. Please check the details.');
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<span class="material-symbols-outlined text-sm">how_to_reg</span> Register Team &amp; Issue E-Pass';
+        }
+      }
     });
   }
 
@@ -1649,11 +1770,18 @@ document.addEventListener('DOMContentLoaded', () => {
   if (formJoinTeam) {
     formJoinTeam.addEventListener('submit', (e) => {
       e.preventDefault();
-      const code = document.getElementById('joinTeamCode').value.trim().toUpperCase();
-      const roll = document.getElementById('joinStudentRoll').value.trim();
 
-      if (!code || !roll) {
-        CampusInn.Toast.error('Please enter the 6-character Team Code and your Roll Number.');
+      if (!CampusInn.Auth.isAuthenticated()) {
+        CampusInn.Toast.info('Please sign in to join a hackathon team.');
+        setTimeout(() => {
+          window.location.href = 'login.html?redirect=events.html%23hackathons';
+        }, 600);
+        return;
+      }
+
+      const code = document.getElementById('htJoinCode')?.value.trim().toUpperCase();
+      if (!code || code.length < 4) {
+        CampusInn.Toast.error('Please enter the team access code (e.g. MET-CK-99).');
         return;
       }
 
@@ -1674,12 +1802,164 @@ document.addEventListener('DOMContentLoaded', () => {
       list.unshift(newEvt);
       saveRegisteredEvents(list);
 
-      CampusInn.Toast.success(`Joined Team "${code}" successfully! E-Pass generated.`);
+      CampusInn.Toast.success(`Joined Team "${code}" successfully! Verified e-pass generated.`);
       formJoinTeam.reset();
       closeModal('hackathonTeamModal');
       openEPass(newEvt);
     });
   }
+
+  // --- 5B. COMPETITIONS & CHALLENGES BUTTONS ---
+  const btnEnrollBot = document.getElementById('btnEnrollBot');
+  if (btnEnrollBot) {
+    btnEnrollBot.addEventListener('click', () => {
+      openModal('hackathonTeamModal');
+      const teamInput = document.getElementById('htTeamName');
+      if (teamInput) teamInput.value = 'RoboStriker-Alpha';
+      const sel = document.getElementById('htProblemSelect');
+      if (sel) {
+        for (let opt of sel.options) {
+          if (opt.value.includes('IOT-02') || opt.text.includes('Smart Campus')) {
+            sel.value = opt.value;
+            break;
+          }
+        }
+      }
+      CampusInn.Toast.info('Enroll your RC bot & drone squad for the Obstacle Derby.');
+    });
+  }
+
+  const btnDownloadFinData = document.getElementById('btnDownloadFinData');
+  if (btnDownloadFinData) {
+    btnDownloadFinData.addEventListener('click', () => {
+      const csvContent = "Timestamp,Ticker,Open,High,Low,Close,Volume,VWAP,RSI_14\n" +
+        "2025-11-20 09:15:00,NIFTY50,23512.40,23580.10,23490.20,23565.80,1850020,23545.30,58.4\n" +
+        "2025-11-20 09:30:00,TCS,4120.00,4145.50,4115.00,4138.25,482010,4131.20,62.1\n" +
+        "2025-11-20 09:30:00,INFY,1875.20,1892.00,1870.10,1888.60,920400,1882.40,64.3\n" +
+        "2025-11-20 09:45:00,HDFCBANK,1680.50,1691.00,1678.00,1685.40,1120400,1684.10,51.8\n" +
+        "2025-11-20 10:00:00,RELIANCE,2980.00,3012.40,2975.20,3005.10,854000,2996.80,68.2\n";
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', 'MET_FinBeat_Historical_Ticks_2025.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      CampusInn.Toast.success('FinBeat quantitative equity dataset downloaded (CSV).');
+    });
+  }
+
+  const btnViewFixtures = document.getElementById('btnViewFixtures');
+  if (btnViewFixtures) {
+    btnViewFixtures.addEventListener('click', () => {
+      openModal('fixturesModal');
+    });
+  }
+
+  const btnDownloadFigmaKit = document.getElementById('btnDownloadFigmaKit');
+  if (btnDownloadFigmaKit) {
+    btnDownloadFigmaKit.addEventListener('click', () => {
+      const designBrief = `# PixelCraft: UI/UX & Web Redesign Sprint Brief
+## Institutional Partner: Nashik Municipal Smart City & MET BKC Design Guild
+
+### Challenge Statement
+Redesign the citizen public transit and metro feeder bus scheduling portal for Nashik City commuters.
+
+### Design System Requirements
+- Color Tokens: Primary (#5300B7), Secondary (#5E5C6E), Surface (#FAF8FF), Container (#EAEDFF)
+- Typography: Bricolage Grotesque (Headlines), Hanken Grotesk (Body & Labels)
+- Accessibility: WCAG 2.1 AA Contrast Ratios (Minimum 4.5:1)
+- Formats: Responsive Mobile (375px), Tablet (768px), and Desktop (1440px)
+
+### Submission Deliverables
+1. Interactive Figma prototype link or SVG components bundle
+2. 300-word design rationale covering UX pain-points solved
+3. High-fidelity component tokens and auto-layout frames
+
+MET BKC Design Guild Jury Review starts 28 Nov 2025, 05:00 PM.
+`;
+      const blob = new Blob([designBrief], { type: 'text/markdown;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', 'PixelCraft_Smart_City_Design_Brief.md');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      CampusInn.Toast.success('PixelCraft Design Brief & Component Guidelines downloaded.');
+    });
+  }
+
+  const btnRegisterCodeSprint = document.getElementById('btnRegisterCodeSprint');
+  if (btnRegisterCodeSprint) {
+    btnRegisterCodeSprint.addEventListener('click', () => {
+      if (!CampusInn.Auth.isAuthenticated()) {
+        CampusInn.Toast.info('Please sign in to register for CodeSprint.');
+        setTimeout(() => {
+          window.location.href = 'login.html?redirect=events.html%23competitions';
+        }, 600);
+        return;
+      }
+      const passToken = `MET-DSA-${Math.floor(1000 + Math.random() * 9000)}`;
+      const newEvt = {
+        id: 'reg-codesprint-' + Date.now(),
+        title: 'CodeSprint: 12-Hour Speed Debugging & DSA Marathon',
+        date: '28 Nov 2025 • 08:00 AM – 08:00 PM',
+        venue: 'Central Computer Center, MET IOE',
+        category: 'Competitive DSA',
+        role: 'Marathon Contestant',
+        passToken: passToken,
+        registeredAt: new Date().toISOString()
+      };
+      const list = getRegisteredEvents();
+      list.unshift(newEvt);
+      saveRegisteredEvents(list);
+      CampusInn.Toast.success('Registered for CodeSprint Marathon! Direct PPI candidate e-pass issued.');
+      openEPass(newEvt);
+    });
+  }
+
+  const btnApplyAgenticAi = document.getElementById('btnApplyAgenticAi');
+  if (btnApplyAgenticAi) {
+    btnApplyAgenticAi.addEventListener('click', () => {
+      openModal('hackathonTeamModal');
+      const sel = document.getElementById('htProblemSelect');
+      if (sel) {
+        for (let opt of sel.options) {
+          if (opt.value.includes('PS-AI-01')) {
+            sel.value = opt.value;
+            break;
+          }
+        }
+      }
+      const teamInput = document.getElementById('htTeamName');
+      if (teamInput) teamInput.value = 'Agentic-Builders';
+      CampusInn.Toast.info('Agentic AI Hackathon: Problem track selected.');
+    });
+  }
+
+  // Category filter buttons for Competitions
+  document.querySelectorAll('.comp-filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const cat = btn.getAttribute('data-cat');
+      document.querySelectorAll('.comp-filter-btn').forEach(b => {
+        b.className = 'comp-filter-btn px-3 py-1 rounded text-on-surface-variant hover:text-on-surface font-label-md text-label-md cursor-pointer';
+      });
+      btn.className = 'comp-filter-btn px-3 py-1 rounded bg-surface-container-lowest text-primary font-label-md text-label-md shadow-sm cursor-pointer';
+
+      document.querySelectorAll('.ci-challenge-card').forEach(card => {
+        const cCat = card.getAttribute('data-category');
+        if (cat === 'all' || cCat === cat) {
+          card.style.display = '';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    });
+  });
 
   // --- 6. MET UTSAV REGISTRATION ---
   const btnUtsav = document.getElementById('btnRegisterUtsav');

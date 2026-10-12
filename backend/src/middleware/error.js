@@ -17,6 +17,15 @@ function errorHandler(err, req, res, next) {
     console.error(`[Error] ${req.method} ${req.originalUrl}:`, err);
   }
 
+  // Handle CORS origins rejected by policy
+  if (err.message === 'Not allowed by CORS' || err.code === 'CORS_NOT_ALLOWED') {
+    return res.status(403).json({
+      success: false,
+      message: 'Not allowed by CORS: Origin is not permitted to access this Campus Inn+ resource.',
+      code: 'CORS_NOT_ALLOWED',
+    });
+  }
+
   // Handle Database connection offline / refused
   const isDbOffline =
     err.code === 'ECONNREFUSED' ||

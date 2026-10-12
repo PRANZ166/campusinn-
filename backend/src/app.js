@@ -31,6 +31,8 @@ const tpoRoutes = require('./routes/tpo');
 const recruiterRoutes = require('./routes/recruiter');
 const coordinatorRoutes = require('./routes/coordinator');
 const adminRoutes = require('./routes/admin');
+const notificationRoutes = require('./routes/notifications');
+const searchRoutes = require('./routes/search');
 
 const app = express();
 
@@ -51,19 +53,29 @@ app.use(
 );
 
 // 2. CORS
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps, curl, or same-origin)
-      if (!origin || config.cors.origins.includes(origin) || config.isDevelopment()) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
-    credentials: true,
-  })
-);
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps, curl, or same-origin)
+    if (!origin) {
+      return callback(null, true);
+    }
+    if (config.isAllowedOrigin(origin)) {
+      return callback(null, true);
+    }
+    const corsError = new Error('Not allowed by CORS');
+    corsError.status = 403;
+    corsError.code = 'CORS_NOT_ALLOWED';
+    return callback(corsError);
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+  exposedHeaders: ['Set-Cookie'],
+  maxAge: 86400,
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 // 3. Body parsers & Cookie parser
 app.use(express.json({ limit: '5mb' }));
@@ -152,6 +164,8 @@ app.use('/api/v1/tpo', tpoRoutes);
 app.use('/api/v1/recruiter', recruiterRoutes);
 app.use('/api/v1/coordinator', coordinatorRoutes);
 app.use('/api/v1/admin', adminRoutes);
+app.use('/api/v1/notifications', notificationRoutes);
+app.use('/api/v1/search', searchRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

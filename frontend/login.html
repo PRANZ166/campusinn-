@@ -429,7 +429,39 @@
 
 <!-- Interactive Logic for Tab Switching, Auth & Student Registration -->
 <script>
+function sanitizeRedirect(target, fallback = 'index.html') {
+  if (!target || typeof target !== 'string') return fallback;
+  const trimmed = target.trim();
+  if (!trimmed || trimmed === 'login.html') return fallback;
+  if (/^(javascript|data|vbscript):/i.test(trimmed)) return fallback;
+  if (trimmed.startsWith('//')) return fallback;
+  try {
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+      const parsed = new URL(trimmed, window.location.origin);
+      if (parsed.origin !== window.location.origin) {
+        return fallback;
+      }
+      return (parsed.pathname + parsed.search + parsed.hash) || fallback;
+    }
+  } catch (e) {
+    return fallback;
+  }
+  return trimmed;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  // If already authenticated and visiting login.html with a safe redirect parameter
+  if (typeof CampusInn !== 'undefined' && CampusInn.Auth && CampusInn.Auth.isAuthenticated()) {
+    const redirectParam = new URLSearchParams(window.location.search).get('redirect');
+    if (redirectParam && redirectParam !== 'login.html') {
+      const safeTarget = sanitizeRedirect(redirectParam, null);
+      if (safeTarget) {
+        window.location.replace(safeTarget);
+        return;
+      }
+    }
+  }
+
   // Mode Elements (Login vs Register)
   const tabModeLogin = document.getElementById('tabModeLogin');
   const tabModeRegister = document.getElementById('tabModeRegister');
@@ -552,7 +584,9 @@ document.addEventListener('DOMContentLoaded', () => {
       try {
         const session = await CampusInn.Auth.login(idVal, passVal);
         CampusInn.Toast.success(`Authenticated as ${session.name || session.email}. Redirecting...`);
-        const redirectTarget = new URLSearchParams(window.location.search).get('redirect') || 'index.html';
+        const redirectParam = new URLSearchParams(window.location.search).get('redirect');
+        const fallbackTarget = (typeof CampusInn !== 'undefined' && CampusInn.Auth) ? CampusInn.Auth.getDashboardUrl() : 'index.html';
+        const redirectTarget = sanitizeRedirect(redirectParam, fallbackTarget);
         setTimeout(() => {
           window.location.replace(redirectTarget);
         }, 500);
@@ -694,18 +728,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (authPayload.user) {
         localStorage.setItem('ci_auth', JSON.stringify(authPayload.user));
       }
-      let target = urlParams.get('redirect') || 'index.html';
-      // Safety: in production, never redirect to localhost
-      if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-        if (target.includes('localhost') || target.includes('127.0.0.1')) {
-          try {
-            const parsed = new URL(target, window.location.origin);
-            target = parsed.pathname + parsed.search + parsed.hash;
-          } catch (e) {
-            target = 'index.html';
-          }
-        }
-      }
+      const redirectParam = urlParams.get('redirect');
+      const fallbackTarget = (typeof CampusInn !== 'undefined' && CampusInn.Auth) ? CampusInn.Auth.getDashboardUrl() : 'index.html';
+      const target = sanitizeRedirect(redirectParam, fallbackTarget);
       CampusInn.Toast.success(`Signed in as ${authPayload.user.firstName || authPayload.user.email}! Redirecting...`, 3000);
       window.history.replaceState({}, document.title, window.location.pathname);
       setTimeout(() => {
