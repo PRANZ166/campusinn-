@@ -57,11 +57,11 @@ const config = {
   },
 
   isProduction() {
-    return this.env === 'production';
+    return (process.env.NODE_ENV || this.env) === 'production';
   },
 
   isDevelopment() {
-    return this.env === 'development';
+    return (process.env.NODE_ENV || this.env) === 'development';
   },
 };
 

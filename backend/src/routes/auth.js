@@ -341,6 +341,7 @@ router.post('/logout', (req, res) => {
 
 const crypto = require('crypto');
 const { OAuth2Client } = require('google-auth-library');
+const oauthStateStore = require('../services/oauthStateStore');
 
 function getGoogleOAuthClient() {
   if (!config.google.clientId || !config.google.clientSecret) {
@@ -404,36 +405,30 @@ router.get('/google', (req, res) => {
       initiatorOrigin = new URL(req.headers.referer).origin;
     } catch (e) {}
   }
-  if (initiatorOrigin) {
-    res.cookie('ci_oauth_frontend', initiatorOrigin, {
-      httpOnly: true,
-      secure: config.isProduction(),
-      sameSite: 'lax',
-      maxAge: 10 * 60 * 1000,
-      path: '/',
-    });
-  }
+  // Create cryptographically random per-login state token with HMAC signature & server-side storage
+  const stateRecord = oauthStateStore.createState({
+    frontendUrl: initiatorOrigin,
+    redirect: req.query.redirect,
+  });
+  const state = stateRecord.stateToken;
 
-  // Generate cryptographically random state parameter
-  const state = crypto.randomBytes(32).toString('hex');
-
-  // Store state in a short-lived HTTP-only cookie for CSRF validation (10 minutes)
-  res.cookie('ci_oauth_state', state, {
+  const cookieOptions = {
     httpOnly: true,
     secure: config.isProduction(),
-    sameSite: 'lax',
+    sameSite: config.isProduction() ? 'none' : 'lax',
     maxAge: 10 * 60 * 1000,
     path: '/',
-  });
+  };
+
+  if (initiatorOrigin) {
+    res.cookie('ci_oauth_frontend', initiatorOrigin, cookieOptions);
+  }
+
+  // Store state in a short-lived HTTP-only cookie for CSRF validation (10 minutes)
+  res.cookie('ci_oauth_state', state, cookieOptions);
 
   if (req.query.redirect) {
-    res.cookie('ci_oauth_redirect', req.query.redirect, {
-      httpOnly: true,
-      secure: config.isProduction(),
-      sameSite: 'lax',
-      maxAge: 10 * 60 * 1000,
-      path: '/',
-    });
+    res.cookie('ci_oauth_redirect', req.query.redirect, cookieOptions);
   }
 
   const authUrl = oauth2Client.generateAuthUrl({
@@ -562,15 +557,25 @@ router.get('/google/callback', async (req, res) => {
     return res.redirect(`${frontendBase}/login.html?error=${encodeURIComponent('Google authentication was cancelled: ' + error)}`);
   }
 
-  // Validate state parameter to prevent CSRF
+  // Validate state parameter to prevent CSRF using server-side store + HMAC signature + cookie
   const storedState = req.cookies.ci_oauth_state;
   res.clearCookie('ci_oauth_state', { path: '/' });
 
-  if (!state || !storedState || state !== storedState) {
+  const validation = oauthStateStore.verifyAndConsumeState(state, storedState);
+
+  if (!validation.valid) {
     res.clearCookie('ci_oauth_frontend', { path: '/' });
     return res.redirect(
       `${frontendBase}/login.html?error=${encodeURIComponent('Invalid or expired OAuth state parameter. Please try signing in again.')}`
     );
+  }
+
+  // If state record contains initiating frontendUrl, prefer it for redirection
+  if (validation.stateRecord && validation.stateRecord.frontendUrl) {
+    const candidate = validation.stateRecord.frontendUrl.replace(/\/+$/, '');
+    if (!config.isProduction() || (!candidate.includes('localhost') && !candidate.includes('127.0.0.1'))) {
+      frontendBase = candidate;
+    }
   }
 
   if (!code) {
@@ -632,7 +637,7 @@ router.get('/google/callback', async (req, res) => {
 
     // Also pass token via URL fragment or param for frontend localStorage synchronization
     const redirectData = encodeURIComponent(JSON.stringify({ token, user: userPayload }));
-    let returnTo = req.cookies.ci_oauth_redirect;
+    let returnTo = req.cookies.ci_oauth_redirect || (validation.stateRecord && validation.stateRecord.redirect);
     res.clearCookie('ci_oauth_redirect', { path: '/' });
     res.clearCookie('ci_oauth_frontend', { path: '/' });
 

@@ -122,4 +122,99 @@ describe('Campus Inn+ Backend API Suite', () => {
     const cookieHeader = res.headers['set-cookie'].join(';');
     expect(cookieHeader).toContain('ci_session=;');
   });
+
+  describe('OAuth State Validation Suite (RFC 6749 & Production Security)', () => {
+    const oauthStateStore = require('../src/services/oauthStateStore');
+
+    it('1. Valid state succeeds and retains initiating frontendUrl and return path', () => {
+      const record = oauthStateStore.createState({
+        frontendUrl: 'https://campusinn-frontend-9nxrritaj-pranz.vercel.app',
+        redirect: 'student.html',
+      });
+      expect(record.stateToken).toBeDefined();
+      expect(record.nonce).toBeDefined();
+
+      const result = oauthStateStore.verifyAndConsumeState(record.stateToken);
+      expect(result.valid).toBe(true);
+      expect(result.stateRecord.frontendUrl).toEqual('https://campusinn-frontend-9nxrritaj-pranz.vercel.app');
+      expect(result.stateRecord.redirect).toEqual('student.html');
+    });
+
+    it('2. Missing state is rejected both in store and HTTP callback', async () => {
+      expect(oauthStateStore.verifyAndConsumeState(null).valid).toBe(false);
+      expect(oauthStateStore.verifyAndConsumeState('').valid).toBe(false);
+      expect(oauthStateStore.verifyAndConsumeState(undefined).valid).toBe(false);
+
+      const res = await request(app).get('/api/v1/auth/google/callback');
+      expect(res.statusCode).toEqual(302);
+      expect(res.headers.location).toContain('/login.html?error=');
+      expect(res.headers.location).toContain('state');
+    });
+
+    it('3. Mismatched or tampered state is rejected', async () => {
+      const record = oauthStateStore.createState();
+      // Tamper signature
+      const tampered = record.stateToken + 'modified';
+      const result = oauthStateStore.verifyAndConsumeState(tampered);
+      expect(result.valid).toBe(false);
+
+      // Cookie mismatch
+      const mismatchCookie = oauthStateStore.verifyAndConsumeState(record.stateToken, 'different_cookie_token');
+      expect(mismatchCookie.valid).toBe(false);
+      expect(mismatchCookie.error).toEqual('COOKIE_MISMATCH');
+
+      const res = await request(app).get('/api/v1/auth/google/callback?state=completely_fake_state');
+      expect(res.statusCode).toEqual(302);
+      expect(res.headers.location).toContain('Invalid%20or%20expired%20OAuth%20state');
+    });
+
+    it('4. Expired state is rejected', async () => {
+      // Create state already expired 5 seconds ago
+      const expired = oauthStateStore.createState({ ttlMs: -5000 });
+      const result = oauthStateStore.verifyAndConsumeState(expired.stateToken);
+      expect(result.valid).toBe(false);
+      expect(result.error).toEqual('EXPIRED_STATE');
+
+      const res = await request(app).get(`/api/v1/auth/google/callback?state=${encodeURIComponent(expired.stateToken)}`);
+      expect(res.statusCode).toEqual(302);
+      expect(res.headers.location).toContain('Invalid%20or%20expired%20OAuth%20state');
+    });
+
+    it('5. Reused state is strictly rejected upon second consumption', () => {
+      const record = oauthStateStore.createState();
+      const firstUse = oauthStateStore.verifyAndConsumeState(record.stateToken);
+      expect(firstUse.valid).toBe(true);
+
+      // Second consumption must fail
+      const secondUse = oauthStateStore.verifyAndConsumeState(record.stateToken);
+      expect(secondUse.valid).toBe(false);
+    });
+
+    it('6. Cookie and state encoding (URL encoding, quotes) is handled correctly', () => {
+      const record = oauthStateStore.createState();
+      const urlEncodedState = encodeURIComponent(record.stateToken);
+      const quotedCookie = `"${record.nonce}"`;
+
+      const result = oauthStateStore.verifyAndConsumeState(urlEncodedState, quotedCookie);
+      expect(result.valid).toBe(true);
+    });
+
+    it('7. Production HTTPS cookie configuration is correct (SameSite=None, Secure)', async () => {
+      const origEnv = process.env.NODE_ENV;
+      try {
+        process.env.NODE_ENV = 'production';
+        const res = await request(app).get('/api/v1/auth/google');
+        expect(res.statusCode).toEqual(302);
+        const cookies = res.headers['set-cookie'];
+        expect(cookies).toBeDefined();
+        const stateCookie = cookies.find(c => c.startsWith('ci_oauth_state='));
+        expect(stateCookie).toBeDefined();
+        expect(stateCookie.toLowerCase()).toContain('samesite=none');
+        expect(stateCookie.toLowerCase()).toContain('secure');
+        expect(stateCookie.toLowerCase()).toContain('httponly');
+      } finally {
+        process.env.NODE_ENV = origEnv;
+      }
+    });
+  });
 });

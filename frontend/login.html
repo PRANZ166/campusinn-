@@ -723,7 +723,12 @@ document.addEventListener('DOMContentLoaded', () => {
       CampusInn.Toast.info('Connecting to Google Identity Services...', 3000);
       const redirectParam = new URLSearchParams(window.location.search).get('redirect');
       const apiBase = (typeof API !== 'undefined' && API.resolveBaseUrl) ? API.resolveBaseUrl() : '/api/v1';
-      const cleanBase = apiBase.replace(/\/+$/, '');
+      let cleanBase = apiBase.replace(/\/+$/, '');
+      if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+        if (cleanBase === '/api/v1' || cleanBase === '') {
+          cleanBase = 'https://campus-inn-backend.onrender.com/api/v1';
+        }
+      }
       const params = new URLSearchParams();
       if (redirectParam) params.set('redirect', redirectParam);
       params.set('frontend_url', window.location.origin);

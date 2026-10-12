@@ -34,6 +34,9 @@ const adminRoutes = require('./routes/admin');
 
 const app = express();
 
+// Trust reverse proxy (Render, Cloudflare) for secure cookies and accurate client IP
+app.set('trust proxy', 1);
+
 // Path to separated frontend directory (where static HTML, CSS, JS files live)
 const FRONTEND_DIR = fs.existsSync(path.resolve(__dirname, '..', '..', 'frontend'))
   ? path.resolve(__dirname, '..', '..', 'frontend')
