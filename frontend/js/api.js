@@ -5,10 +5,18 @@
  */
 
 const API = (() => {
-  // Configurable base URL (can be overridden by window.CAMPUS_INN_API_URL or environment)
+  // Configurable base URL (can be overridden by window.CAMPUS_INN_API_URL, meta tag, or localStorage)
   const resolveBaseUrl = () => {
     if (typeof window !== 'undefined' && window.CAMPUS_INN_API_URL) {
       return window.CAMPUS_INN_API_URL;
+    }
+    if (typeof document !== 'undefined') {
+      const meta = document.querySelector('meta[name="campus-inn-api-url"]');
+      if (meta && meta.content) return meta.content;
+    }
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const stored = localStorage.getItem('ci_api_url');
+      if (stored) return stored;
     }
     // When served separately (e.g. frontend dev server on port 5500, 5173, etc. or file:)
     if (typeof window !== 'undefined' && window.location) {
