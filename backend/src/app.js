@@ -178,7 +178,8 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// 7. Static file serving for Frontend Assets
+// 7. Static file serving for Uploads & Frontend Assets
+app.use('/uploads', express.static(path.resolve(config.upload.dir)));
 app.use(express.static(FRONTEND_DIR, { index: false }));
 
 // 8. 404 & Global Error Handling for APIs

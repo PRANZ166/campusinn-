@@ -590,4 +590,95 @@ router.post('/drives/:id/apply', authenticate, authorize('student'), async (req,
   }
 });
 
+/**
+ * GET /api/v1/students/events
+ * Returns authenticated student's events, department Freshers event, registrations, and verified passes
+ */
+router.get('/events', authenticate, authorize('student'), async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+
+    // 1. Fetch student's department
+    const spRes = await query(
+      'SELECT roll_number, department, college FROM student_profiles WHERE user_id = $1',
+      [userId]
+    ).catch(() => ({ rows: [] }));
+
+    const studentProfile = spRes.rows[0] || {};
+    const studentDept = studentProfile.department || '';
+
+    // 2. Fetch student registrations
+    const regsRes = await query(
+      `SELECT er.id, er.event_id AS "eventId", er.status, er.roll_number AS "rollNumber",
+              er.department, er.pass_code AS "passCode", er.registered_at AS "registeredAt",
+              e.title AS "eventTitle", e.category, e.venue, e.date_start AS "dateStart",
+              e.is_freshers AS "isFreshers", e.department_name AS "departmentName",
+              ea.status AS "attendanceStatus", ea.verified_at AS "attendanceVerifiedAt",
+              ea.pass_code AS "attendancePassCode"
+       FROM event_registrations er
+       JOIN events e ON e.id = er.event_id
+       LEFT JOIN event_attendance ea ON ea.event_id = e.id AND ea.user_id = er.user_id
+       WHERE er.user_id = $1 AND er.status = 'registered'
+       ORDER BY er.registered_at DESC`,
+      [userId]
+    ).catch(() => ({ rows: [] }));
+
+    // 3. Fetch verified attendance passes
+    const attRes = await query(
+      `SELECT ea.id, ea.event_id AS "eventId", ea.status, ea.roll_number AS "rollNumber",
+              ea.department, ea.verified_at AS "verifiedAt", ea.pass_code AS "passCode",
+              e.title AS "eventTitle", e.venue, e.date_start AS "dateStart"
+       FROM event_attendance ea
+       JOIN events e ON e.id = ea.event_id
+       WHERE ea.user_id = $1
+       ORDER BY ea.verified_at DESC`,
+      [userId]
+    ).catch(() => ({ rows: [] }));
+
+    // 4. Fetch department Freshers event
+    let freshersEvent = null;
+    if (studentDept) {
+      const freshRes = await query(
+        `SELECT e.id, e.title, e.description, e.venue, e.date_start AS "dateStart",
+                e.department_name AS "departmentName", e.capacity,
+                (SELECT COUNT(*) FROM event_registrations WHERE event_id = e.id AND status = 'registered') AS "registeredCount"
+         FROM events e
+         WHERE (e.is_freshers = true OR LOWER(e.title) LIKE '%induction%' OR LOWER(e.title) LIKE '%freshers%')
+           AND (LOWER(e.department_name) = LOWER($1) 
+                OR LOWER($1) LIKE '%' || LOWER(e.department_name) || '%' 
+                OR LOWER(e.department_name) LIKE '%' || LOWER($1) || '%')
+         LIMIT 1`,
+        [studentDept]
+      ).catch(() => ({ rows: [] }));
+
+      if (freshRes.rows.length > 0) {
+        const fe = freshRes.rows[0];
+        const isReg = regsRes.rows.some(r => r.eventId === fe.id);
+        const att = attRes.rows.find(a => a.eventId === fe.id);
+        freshersEvent = {
+          ...fe,
+          registeredCount: parseInt(fe.registeredCount || 0, 10),
+          isRegistered: isReg,
+          isAttendanceMarked: Boolean(att),
+          attendancePassCode: att ? att.passCode : null,
+          verifiedAt: att ? att.verifiedAt : null,
+        };
+      }
+    }
+
+    return res.status(200).json({
+      success: true,
+      studentDepartment: studentDept,
+      studentRollNumber: studentProfile.roll_number || null,
+      registrations: regsRes.rows,
+      registeredEvents: regsRes.rows,
+      attendance: attRes.rows,
+      recordedAttendance: attRes.rows,
+      departmentFreshers: freshersEvent,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
 module.exports = router;

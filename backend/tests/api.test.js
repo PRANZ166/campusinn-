@@ -1837,5 +1837,584 @@ describe('Campus Inn+ Backend API Suite', () => {
       expect(res.body.code).toEqual('PRIVILEGED_ROLE_NOT_SELF_REGISTRABLE');
     });
   });
+
+  describe('Events, Freshers & Attendance Management Suite', () => {
+    let eventsSpy;
+
+    const studentCS = {
+      id: 'std-cs-101',
+      email: 'aarav.cs@met.edu',
+      role: 'student',
+      status: 'active',
+      first_name: 'Aarav',
+      last_name: 'Mehta',
+      roll_number: 'MET2022CS055',
+      department: 'Computer Engineering',
+    };
+
+    const studentMgmt = {
+      id: 'std-mgmt-202',
+      email: 'rohan.mgmt@met.edu',
+      role: 'student',
+      status: 'active',
+      first_name: 'Rohan',
+      last_name: 'Verma',
+      roll_number: 'MET2022MG012',
+      department: 'Management',
+    };
+
+    const coordinatorUser = {
+      id: 'coord-user-303',
+      email: 'priya.coord@met.edu',
+      role: 'coordinator',
+      status: 'active',
+      first_name: 'Priya',
+      last_name: 'Deshmukh',
+      department: 'Computer Engineering',
+    };
+
+    const studentCSToken = jwt.sign(
+      { sub: studentCS.id, id: studentCS.id, email: studentCS.email, role: 'student' },
+      config.jwt.secret,
+      { expiresIn: '1h' }
+    );
+
+    const studentMgmtToken = jwt.sign(
+      { sub: studentMgmt.id, id: studentMgmt.id, email: studentMgmt.email, role: 'student' },
+      config.jwt.secret,
+      { expiresIn: '1h' }
+    );
+
+    const coordinatorToken = jwt.sign(
+      { sub: coordinatorUser.id, id: coordinatorUser.id, email: coordinatorUser.email, role: 'coordinator' },
+      config.jwt.secret,
+      { expiresIn: '1h' }
+    );
+
+    const sampleEvents = [
+      {
+        id: 'evt-techfest-2026',
+        title: 'MET TechFest 2026',
+        category: 'technical',
+        venue: 'BKC Central Auditorium',
+        capacity: 850,
+        registered_count: 10,
+        is_freshers: false,
+        department_name: null,
+        registration_close: null,
+      },
+      {
+        id: 'evt-freshers-comp-2025',
+        title: 'Init 2025: Engineering Induction',
+        category: 'cultural',
+        venue: 'IOE Main Auditorium',
+        capacity: 400,
+        registered_count: 5,
+        is_freshers: true,
+        department_name: 'Computer Engineering',
+        registration_close: null,
+      },
+      {
+        id: 'evt-freshers-mgmt-2025',
+        title: 'Prarambh 2025: Management Social',
+        category: 'cultural',
+        venue: 'MET Banquet Hall',
+        capacity: 250,
+        registered_count: 2,
+        is_freshers: true,
+        department_name: 'Management',
+        registration_close: null,
+      },
+      {
+        id: 'evt-closed-2026',
+        title: 'Closed Hack Workshop',
+        category: 'technical',
+        venue: 'Lab 4',
+        capacity: 100,
+        registered_count: 10,
+        is_freshers: false,
+        department_name: null,
+        registration_close: '2020-01-01T00:00:00Z',
+      },
+      {
+        id: 'evt-full-2026',
+        title: 'Full Capacity Conclave',
+        category: 'technical',
+        venue: 'Seminar Hall',
+        capacity: 1,
+        registered_count: 1,
+        is_freshers: false,
+        department_name: null,
+        registration_close: null,
+      },
+    ];
+
+    const registeredMap = new Map();
+    const attendanceMap = new Map();
+
+    beforeAll(() => {
+      eventsSpy = jest.spyOn(require('../src/db/pool').pool, 'query').mockImplementation((sql, params) => {
+        const sqlStr = typeof sql === 'string' ? sql : (sql && sql.text ? sql.text : '');
+
+        // 1. Auth middleware user lookup
+        if (sqlStr.includes('FROM users WHERE id = $1')) {
+          const uid = params && params[0];
+          if (uid === studentCS.id) {
+            return Promise.resolve({
+              rows: [{
+                id: studentCS.id,
+                email: studentCS.email,
+                role: 'student',
+                status: 'active',
+                firstName: studentCS.first_name,
+                lastName: studentCS.last_name,
+              }],
+            });
+          }
+          if (uid === studentMgmt.id) {
+            return Promise.resolve({
+              rows: [{
+                id: studentMgmt.id,
+                email: studentMgmt.email,
+                role: 'student',
+                status: 'active',
+                firstName: studentMgmt.first_name,
+                lastName: studentMgmt.last_name,
+              }],
+            });
+          }
+          if (uid === coordinatorUser.id) {
+            return Promise.resolve({
+              rows: [{
+                id: coordinatorUser.id,
+                email: coordinatorUser.email,
+                role: 'coordinator',
+                status: 'active',
+                firstName: coordinatorUser.first_name,
+                lastName: coordinatorUser.last_name,
+              }],
+            });
+          }
+          return Promise.resolve({ rows: [] });
+        }
+
+        // 2. Student profile lookup
+        if (sqlStr.includes('student_profiles')) {
+          const uid = params && params[0];
+          if (uid === studentCS.id) {
+            return Promise.resolve({
+              rows: [{
+                roll_number: studentCS.roll_number,
+                department: studentCS.department,
+                college: 'MET Institute of Engineering',
+                first_name: studentCS.first_name,
+                last_name: studentCS.last_name,
+                email: studentCS.email,
+                phone: '+91 9988776655',
+              }],
+            });
+          }
+          if (uid === studentMgmt.id) {
+            return Promise.resolve({
+              rows: [{
+                roll_number: studentMgmt.roll_number,
+                department: studentMgmt.department,
+                college: 'MET Institute of Management',
+                first_name: studentMgmt.first_name,
+                last_name: studentMgmt.last_name,
+                email: studentMgmt.email,
+                phone: '+91 9888877777',
+              }],
+            });
+          }
+          return Promise.resolve({ rows: [] });
+        }
+
+        // 3. Coordinator profile lookup
+        if (sqlStr.includes('FROM coordinator_profiles WHERE user_id = $1')) {
+          return Promise.resolve({
+            rows: [{
+              department: coordinatorUser.department,
+              club_name: 'Tech Committee',
+            }],
+          });
+        }
+
+        // 4. Events listing & detail queries
+        if (sqlStr.includes('SELECT * FROM events WHERE id::text = $1')) {
+          const evId = params && params[0];
+          const found = sampleEvents.find(e => e.id === evId);
+          return Promise.resolve({ rows: found ? [found] : [] });
+        }
+
+        if (sqlStr.includes('SELECT * FROM events') || sqlStr.includes('FROM events e')) {
+          return Promise.resolve({ rows: sampleEvents });
+        }
+
+        // 5. Capacity check
+        if (sqlStr.includes('SELECT COUNT(*) AS total FROM event_registrations')) {
+          const evId = params && params[0];
+          if (evId === 'evt-full-2026') {
+            return Promise.resolve({ rows: [{ total: '1' }] });
+          }
+          const regCount = registeredMap.has(evId) ? '1' : '0';
+          return Promise.resolve({ rows: [{ total: regCount }] });
+        }
+
+        // 6. Duplicate registration check
+        if (sqlStr.includes('FROM event_registrations WHERE event_id = $1 AND user_id = $2')) {
+          const evId = params && params[0];
+          const uId = params && params[1];
+          const key = `${evId}:${uId}`;
+          if (registeredMap.has(key)) {
+            return Promise.resolve({ rows: [registeredMap.get(key)] });
+          }
+          return Promise.resolve({ rows: [] });
+        }
+
+        // 7. Insert event registration
+        if (sqlStr.includes('INSERT INTO event_registrations')) {
+          const evId = params && params[0];
+          const uId = params && params[1];
+          const key = `${evId}:${uId}`;
+          const regRecord = {
+            id: `reg-test-${Date.now()}`,
+            event_id: evId,
+            user_id: uId,
+            status: 'registered',
+            pass_code: params && params[5],
+            registered_at: new Date().toISOString(),
+          };
+          registeredMap.set(key, regRecord);
+          return Promise.resolve({ rows: [regRecord] });
+        }
+
+        // 8. Event attendance check
+        if (sqlStr.includes('event_attendance') && sqlStr.includes('user_id = $2')) {
+          const evId = params && params[0];
+          const uId = params && params[1];
+          const key = `${evId}:${uId}`;
+          if (attendanceMap.has(key)) {
+            const att = attendanceMap.get(key);
+            return Promise.resolve({
+              rows: [{
+                ...att,
+                eventTitle: 'MET TechFest 2026',
+                venue: 'BKC Central Auditorium',
+                first_name: 'Aarav',
+                last_name: 'Mehta',
+              }],
+            });
+          }
+          return Promise.resolve({ rows: [] });
+        }
+
+        // 9. Insert event attendance
+        if (sqlStr.includes('INSERT INTO event_attendance')) {
+          const evId = params && params[0];
+          const uId = params && params[1];
+          const key = `${evId}:${uId}`;
+          const attRecord = {
+            id: `att-test-${Date.now()}`,
+            event_id: evId,
+            user_id: uId,
+            roll_number: params && params[2],
+            department: params && params[3],
+            status: 'verified',
+            pass_code: params && params[5],
+            verified_at: new Date().toISOString(),
+          };
+          attendanceMap.set(key, attRecord);
+          return Promise.resolve({ rows: [attRecord] });
+        }
+
+        // 10. Event photos queries
+        if (sqlStr.includes('FROM event_photos')) {
+          return Promise.resolve({
+            rows: [{
+              id: 'photo-1',
+              file_url: '/uploads/event_photos/sample.jpg',
+              caption: 'Opening Keynote 2026',
+              created_at: new Date().toISOString(),
+            }],
+          });
+        }
+
+        // 11. Coordinator event insert
+        if (sqlStr.includes('INSERT INTO events')) {
+          return Promise.resolve({
+            rows: [{
+              id: 'evt-newly-created',
+              title: params[0],
+              description: params[1],
+              category: params[2],
+              venue: params[5],
+              capacity: params[6],
+              is_published: true,
+            }],
+          });
+        }
+
+        // 12. Student unified event dashboard
+        if (sqlStr.includes('FROM event_registrations er JOIN events e')) {
+          return Promise.resolve({ rows: [] });
+        }
+
+        return Promise.resolve({ rows: [] });
+      });
+    });
+
+    afterAll(() => {
+      if (eventsSpy) eventsSpy.mockRestore();
+    });
+
+    // -------------------------------------------------------------
+    // PART 1 — EVENT REGISTRATION
+    // -------------------------------------------------------------
+    it('1. POST /api/v1/events/:id/register without authentication should return 401', async () => {
+      const res = await request(app).post('/api/v1/events/evt-techfest-2026/register');
+      expect(res.statusCode).toEqual(401);
+      expect(res.body.code).toEqual('AUTH_REQUIRED');
+    });
+
+    it('2. POST /api/v1/events/:id/register by authenticated student should register and issue verified pass token', async () => {
+      const res = await request(app)
+        .post('/api/v1/events/evt-techfest-2026/register')
+        .set('Authorization', `Bearer ${studentCSToken}`)
+        .send({ rulesAgreed: true });
+
+      expect(res.statusCode).toEqual(201);
+      expect(res.body.success).toBe(true);
+      expect(res.body.registration).toBeDefined();
+      expect(res.body.registration.passCode).toMatch(/^MET-PASS-/);
+      expect(res.body.registration.passToken).toMatch(/^MET-PASS-/);
+    });
+
+    it('3. POST /api/v1/events/:id/register duplicate attempt should be rejected with 409', async () => {
+      const res = await request(app)
+        .post('/api/v1/events/evt-techfest-2026/register')
+        .set('Authorization', `Bearer ${studentCSToken}`);
+
+      expect(res.statusCode).toEqual(409);
+      expect(res.body.code).toEqual('DUPLICATE_REGISTRATION');
+    });
+
+    it('4. POST /api/v1/events/:id/register after registration closed should return 400 REGISTRATION_CLOSED', async () => {
+      const res = await request(app)
+        .post('/api/v1/events/evt-closed-2026/register')
+        .set('Authorization', `Bearer ${studentCSToken}`);
+
+      expect(res.statusCode).toEqual(400);
+      expect(res.body.code).toEqual('REGISTRATION_CLOSED');
+    });
+
+    it('5. POST /api/v1/events/:id/register when event capacity reached should return 409 EVENT_FULL', async () => {
+      const res = await request(app)
+        .post('/api/v1/events/evt-full-2026/register')
+        .set('Authorization', `Bearer ${studentCSToken}`);
+
+      expect(res.statusCode).toEqual(409);
+      expect(res.body.code).toEqual('EVENT_FULL');
+    });
+
+    // -------------------------------------------------------------
+    // PART 2 — DEPARTMENT-SPECIFIC FRESHERS
+    // -------------------------------------------------------------
+    it('6. GET /api/v1/events/freshers without auth should return unverified department state', async () => {
+      const res = await request(app).get('/api/v1/events/freshers');
+      expect([200, 401]).toContain(res.statusCode);
+      if (res.statusCode === 200) {
+        expect(res.body.hasVerifiedDepartment).toBe(false);
+      }
+    });
+
+    it('7. Cross-department Freshers registration must be strictly rejected with 403 DEPARTMENT_MISMATCH', async () => {
+      // Management student attempts to register for Computer Engineering Freshers
+      const res = await request(app)
+        .post('/api/v1/events/evt-freshers-comp-2025/register')
+        .set('Authorization', `Bearer ${studentMgmtToken}`)
+        .send({ rulesAgreed: true });
+
+      expect(res.statusCode).toEqual(403);
+      expect(res.body.code).toEqual('DEPARTMENT_MISMATCH');
+    });
+
+    it('8. Department Freshers registration succeeds for verified matching student', async () => {
+      // Computer Engineering student registers for Computer Engineering Freshers
+      const res = await request(app)
+        .post('/api/v1/events/evt-freshers-comp-2025/register')
+        .set('Authorization', `Bearer ${studentCSToken}`)
+        .send({ rulesAgreed: true });
+
+      expect(res.statusCode).toEqual(201);
+      expect(res.body.success).toBe(true);
+      expect(res.body.registration.passCode).toMatch(/^MET-PASS-/);
+    });
+
+    // -------------------------------------------------------------
+    // PART 3 & 4 — FRESHERS ATTENDANCE VERIFICATION & REMOVING DEMO DATA
+    // -------------------------------------------------------------
+    it('9. POST /api/v1/events/verify-attendance without auth should return 401', async () => {
+      const res = await request(app)
+        .post('/api/v1/events/verify-attendance')
+        .send({ eventId: 'evt-freshers-comp-2025', rollNumber: 'MET2022CS055' });
+
+      expect(res.statusCode).toEqual(401);
+    });
+
+    it('10. POST /api/v1/events/verify-attendance with mismatched roll number should be rejected with 400 ROLL_MISMATCH', async () => {
+      const res = await request(app)
+        .post('/api/v1/events/verify-attendance')
+        .set('Authorization', `Bearer ${studentCSToken}`)
+        .send({
+          eventId: 'evt-freshers-comp-2025',
+          rollNumber: 'MET2022CS999', // Mismatched roll number attempt
+        });
+
+      expect(res.statusCode).toEqual(400);
+      expect(res.body.code).toEqual('ROLL_MISMATCH');
+    });
+
+    it('11. POST /api/v1/events/verify-attendance with matching roll number marks real attendance', async () => {
+      const res = await request(app)
+        .post('/api/v1/events/verify-attendance')
+        .set('Authorization', `Bearer ${studentCSToken}`)
+        .send({
+          eventId: 'evt-freshers-comp-2025',
+          rollNumber: 'MET2022CS055', // Correct authenticated roll number
+        });
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.isVerified).toBe(true);
+      expect(res.body.passCode).toMatch(/^MET-ATT-/);
+    });
+
+    it('12. Subsequent attendance verification for same event returns 409 ALREADY_VERIFIED', async () => {
+      const res = await request(app)
+        .post('/api/v1/events/verify-attendance')
+        .set('Authorization', `Bearer ${studentCSToken}`)
+        .send({
+          eventId: 'evt-freshers-comp-2025',
+          rollNumber: 'MET2022CS055',
+        });
+
+      expect(res.statusCode).toEqual(409);
+      expect(res.body.code).toEqual('ALREADY_VERIFIED');
+    });
+
+    // -------------------------------------------------------------
+    // PART 5 & 6 — ATTENDANCE PASS GENERATION
+    // -------------------------------------------------------------
+    it('13. GET /api/v1/events/:id/pass returns verified attendance pass data', async () => {
+      const res = await request(app)
+        .get('/api/v1/events/evt-freshers-comp-2025/pass')
+        .set('Authorization', `Bearer ${studentCSToken}`);
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.pass).toBeDefined();
+      expect(res.body.pass.rollNumber).toEqual('MET2022CS055');
+      expect(res.body.pass.isVerified).toBe(true);
+    });
+
+    it('14. GET /api/v1/events/:id/pass for unverified event returns 404 ATTENDANCE_NOT_FOUND', async () => {
+      const res = await request(app)
+        .get('/api/v1/events/evt-techfest-2026/pass')
+        .set('Authorization', `Bearer ${studentCSToken}`);
+
+      expect(res.statusCode).toEqual(404);
+      expect(res.body.code).toEqual('ATTENDANCE_NOT_FOUND');
+    });
+
+    // -------------------------------------------------------------
+    // PART 7 — COORDINATOR ROLE-BASED ACCESS & EVENT MANAGEMENT
+    // -------------------------------------------------------------
+    it('15. Student cannot create events via coordinator route (403 FORBIDDEN)', async () => {
+      const res = await request(app)
+        .post('/api/v1/coordinator/events')
+        .set('Authorization', `Bearer ${studentCSToken}`)
+        .send({ title: 'Unauthorized Student Event', category: 'cultural' });
+
+      expect(res.statusCode).toEqual(403);
+    });
+
+    it('16. Authorized coordinator can create event with valid payload', async () => {
+      const res = await request(app)
+        .post('/api/v1/coordinator/events')
+        .set('Authorization', `Bearer ${coordinatorToken}`)
+        .send({
+          title: 'MET HackFest 2026',
+          category: 'technical',
+          venue: 'Computing Hub',
+          capacity: 250,
+          dateStart: '2026-11-01T09:00:00+05:30',
+        });
+
+      expect(res.statusCode).toEqual(201);
+      expect(res.body.success).toBe(true);
+      expect(res.body.event).toBeDefined();
+    });
+
+    it('17. Student cannot access coordinator attendance audit records (403 FORBIDDEN)', async () => {
+      const res = await request(app)
+        .get('/api/v1/events/evt-techfest-2026/attendance')
+        .set('Authorization', `Bearer ${studentCSToken}`);
+
+      expect(res.statusCode).toEqual(403);
+    });
+
+    it('18. Coordinator can retrieve real attendance records (never returns demo fabricated data)', async () => {
+      const res = await request(app)
+        .get('/api/v1/events/evt-techfest-2026/attendance')
+        .set('Authorization', `Bearer ${coordinatorToken}`);
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.success).toBe(true);
+      expect(Array.isArray(res.body.attendance)).toBe(true);
+    });
+
+    // -------------------------------------------------------------
+    // PART 8 — PHOTO GALLERY & PERMISSIONS
+    // -------------------------------------------------------------
+    it('19. GET /api/v1/events/:id/photos returns published gallery photos', async () => {
+      const res = await request(app).get('/api/v1/events/evt-techfest-2026/photos');
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.success).toBe(true);
+      expect(Array.isArray(res.body.photos)).toBe(true);
+    });
+
+    it('20. Student cannot upload event photos (403 FORBIDDEN)', async () => {
+      const res = await request(app)
+        .post('/api/v1/events/evt-techfest-2026/photos')
+        .set('Authorization', `Bearer ${studentCSToken}`);
+
+      expect(res.statusCode).toEqual(403);
+    });
+
+    it('21. Student cannot delete event photos (403 FORBIDDEN)', async () => {
+      const res = await request(app)
+        .delete('/api/v1/events/photos/photo-1')
+        .set('Authorization', `Bearer ${studentCSToken}`);
+
+      expect(res.statusCode).toEqual(403);
+    });
+
+    // -------------------------------------------------------------
+    // PART 9 — STUDENT DASHBOARD INTEGRATION
+    // -------------------------------------------------------------
+    it('22. GET /api/v1/students/events returns student registered events, freshers status, and recorded attendance', async () => {
+      const res = await request(app)
+        .get('/api/v1/students/events')
+        .set('Authorization', `Bearer ${studentCSToken}`);
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.studentDepartment).toEqual('Computer Engineering');
+      expect(Array.isArray(res.body.registeredEvents)).toBe(true);
+      expect(Array.isArray(res.body.recordedAttendance)).toBe(true);
+    });
+  });
 });
+
 

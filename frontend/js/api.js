@@ -317,6 +317,11 @@ const API = (() => {
         body: JSON.stringify({ company, title })
       });
       return res;
+    },
+
+    async getEvents() {
+      const res = await request('/students/events');
+      return res;
     }
   };
 
@@ -406,16 +411,77 @@ const API = (() => {
   const events = {
     async getEvents() {
       const res = await request('/events');
-      if (res.data) return res;
+      return res;
+    },
 
-      if (ALLOW_DEV_MOCK && window.CampusInnDevMock) {
-        return {
-          data: window.CampusInnDevMock.events,
-          error: null,
-          isMock: true,
-          endpoint: res.endpoint
-        };
+    async getFreshers() {
+      const res = await request('/events/freshers');
+      return res;
+    },
+
+    async getMyRegistrations() {
+      const res = await request('/events/registrations/me');
+      return res;
+    },
+
+    async register(eventId, payload = {}) {
+      const res = await request(`/events/${encodeURIComponent(eventId)}/register`, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+      return res;
+    },
+
+    async verifyAttendance(eventId, rollNumber) {
+      const res = await request(`/events/${encodeURIComponent(eventId)}/attendance/verify`, {
+        method: 'POST',
+        body: JSON.stringify({ rollNumber })
+      });
+      return res;
+    },
+
+    async getAttendancePass(eventId) {
+      const res = await request(`/events/${encodeURIComponent(eventId)}/attendance/pass`);
+      return res;
+    },
+
+    async getAttendance(eventId) {
+      const res = await request(`/events/${encodeURIComponent(eventId)}/attendance`);
+      return res;
+    },
+
+    async getPhotos(eventId) {
+      const res = await request(`/events/${encodeURIComponent(eventId)}/photos`);
+      return res;
+    },
+
+    async uploadPhoto(eventId, formData) {
+      const url = `${BASE_URL}/events/${encodeURIComponent(eventId)}/photos`;
+      const headers = {};
+      const token = localStorage.getItem('ci_token');
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers,
+          body: formData,
+          credentials: 'include'
+        });
+        const json = await response.json().catch(() => null);
+        if (!response.ok) {
+          return { data: null, error: (json && json.message) || `Upload failed (${response.status})`, status: response.status };
+        }
+        return { data: json, error: null, status: response.status };
+      } catch (err) {
+        return { data: null, error: err.message || 'Network error during photo upload.', status: 0 };
       }
+    },
+
+    async deletePhoto(photoId) {
+      const res = await request(`/events/photos/${encodeURIComponent(photoId)}`, {
+        method: 'DELETE'
+      });
       return res;
     },
 
@@ -595,6 +661,40 @@ const API = (() => {
      7. COORDINATOR & GUILDS SERVICE
      ═══════════════════════════════════════════ */
   const coordinator = {
+    async getEvents() {
+      const res = await request('/coordinator/events');
+      return res;
+    },
+
+    async createEvent(payload) {
+      const res = await request('/coordinator/events', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+      return res;
+    },
+
+    async updateEvent(eventId, payload) {
+      const res = await request(`/coordinator/events/${encodeURIComponent(eventId)}`, {
+        method: 'PUT',
+        body: JSON.stringify(payload)
+      });
+      return res;
+    },
+
+    async getAttendance(eventId) {
+      const res = await request(`/events/${encodeURIComponent(eventId)}/attendance`);
+      return res;
+    },
+
+    async markAttendance(eventId, payload) {
+      const res = await request(`/coordinator/events/${encodeURIComponent(eventId)}/attendance/mark`, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+      return res;
+    },
+
     async getHackathonTeams() {
       const res = await request('/coordinator/hackathons/teams');
       if (res.data) return res;
@@ -628,21 +728,7 @@ const API = (() => {
     },
 
     async launchEvent(payload) {
-      const res = await request('/coordinator/events', {
-        method: 'POST',
-        body: JSON.stringify(payload)
-      });
-      if (res.data) return res;
-
-      if (ALLOW_DEV_MOCK) {
-        return {
-          data: { success: true, eventId: 'EVT-' + Date.now(), _source: 'DEV_MOCK' },
-          error: null,
-          isMock: true,
-          endpoint: res.endpoint
-        };
-      }
-      return res;
+      return this.createEvent(payload);
     }
   };
 

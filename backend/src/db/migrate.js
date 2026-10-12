@@ -612,6 +612,106 @@ CREATE INDEX IF NOT EXISTS idx_recruiter_profiles_user ON recruiter_profiles (us
 CREATE INDEX IF NOT EXISTS idx_recruiter_profiles_company ON recruiter_profiles (company_id);
 `;
 
+const MIGRATION_006_SQL = `
+INSERT INTO departments (name, college)
+VALUES 
+  ('Computer Engineering', 'MET Institute of Engineering, Nashik'),
+  ('Information Technology', 'MET Institute of Engineering, Nashik'),
+  ('Computer Applications', 'MET Institute of Technology, Nashik'),
+  ('Management', 'MET Institute of Management, Nashik'),
+  ('Pharmacy', 'MET Institute of Pharmacy, Nashik')
+ON CONFLICT (name, college) DO NOTHING;
+
+DO $$ BEGIN
+  ALTER TABLE events ADD COLUMN IF NOT EXISTS department_name VARCHAR(150);
+EXCEPTION WHEN duplicate_column THEN NULL;
+END $$;
+
+DO $$ BEGIN
+  ALTER TABLE events ADD COLUMN IF NOT EXISTS registration_open TIMESTAMPTZ DEFAULT NOW() - INTERVAL '1 day';
+EXCEPTION WHEN duplicate_column THEN NULL;
+END $$;
+
+DO $$ BEGIN
+  ALTER TABLE events ADD COLUMN IF NOT EXISTS registration_close TIMESTAMPTZ DEFAULT NOW() + INTERVAL '30 days';
+EXCEPTION WHEN duplicate_column THEN NULL;
+END $$;
+
+DO $$ BEGIN
+  ALTER TABLE events ADD COLUMN IF NOT EXISTS is_freshers BOOLEAN NOT NULL DEFAULT false;
+EXCEPTION WHEN duplicate_column THEN NULL;
+END $$;
+
+DO $$ BEGIN
+  ALTER TABLE events ADD COLUMN IF NOT EXISTS max_participants INTEGER DEFAULT 500;
+EXCEPTION WHEN duplicate_column THEN NULL;
+END $$;
+
+DO $$ BEGIN
+  ALTER TABLE events ADD COLUMN IF NOT EXISTS event_type VARCHAR(50) DEFAULT 'other';
+EXCEPTION WHEN duplicate_column THEN NULL;
+END $$;
+
+DO $$ BEGIN
+  ALTER TABLE events ADD COLUMN IF NOT EXISTS questions JSONB DEFAULT '[]';
+EXCEPTION WHEN duplicate_column THEN NULL;
+END $$;
+
+DO $$ BEGIN
+  ALTER TABLE event_registrations ADD COLUMN IF NOT EXISTS status VARCHAR(50) NOT NULL DEFAULT 'registered';
+EXCEPTION WHEN duplicate_column THEN NULL;
+END $$;
+
+DO $$ BEGIN
+  ALTER TABLE event_registrations ADD COLUMN IF NOT EXISTS roll_number VARCHAR(50);
+EXCEPTION WHEN duplicate_column THEN NULL;
+END $$;
+
+DO $$ BEGIN
+  ALTER TABLE event_registrations ADD COLUMN IF NOT EXISTS department VARCHAR(150);
+EXCEPTION WHEN duplicate_column THEN NULL;
+END $$;
+
+DO $$ BEGIN
+  ALTER TABLE event_registrations ADD COLUMN IF NOT EXISTS team_name VARCHAR(100);
+EXCEPTION WHEN duplicate_column THEN NULL;
+END $$;
+
+DO $$ BEGIN
+  ALTER TABLE event_registrations ADD COLUMN IF NOT EXISTS pass_code VARCHAR(64);
+EXCEPTION WHEN duplicate_column THEN NULL;
+END $$;
+
+CREATE TABLE IF NOT EXISTS event_attendance (
+  id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  event_id        UUID NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+  user_id         UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  roll_number     VARCHAR(50) NOT NULL,
+  department      VARCHAR(150) NOT NULL,
+  status          VARCHAR(50) NOT NULL DEFAULT 'present',
+  verified_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  marked_by       UUID REFERENCES users(id),
+  pass_code       VARCHAR(64) NOT NULL UNIQUE,
+  attendance_notes TEXT,
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  UNIQUE(event_id, user_id)
+);
+
+CREATE TABLE IF NOT EXISTS event_photos (
+  id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  event_id        UUID NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+  uploaded_by     UUID NOT NULL REFERENCES users(id),
+  file_url        TEXT NOT NULL,
+  storage_key     TEXT,
+  caption         VARCHAR(300),
+  is_published    BOOLEAN NOT NULL DEFAULT true,
+  file_size       INTEGER,
+  mime_type       VARCHAR(100),
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+`;
+
 const MIGRATIONS = [
   {
     name: '001_initial_schema',
@@ -637,6 +737,11 @@ const MIGRATIONS = [
     name: '005_multi_role_onboarding_and_profiles',
     sqlFile: '005_multi_role_onboarding_and_profiles.sql',
     fallbackSql: MIGRATION_005_SQL,
+  },
+  {
+    name: '006_events_freshers_attendance_and_gallery',
+    sqlFile: '006_events_freshers_attendance_and_gallery.sql',
+    fallbackSql: MIGRATION_006_SQL,
   },
 ];
 
