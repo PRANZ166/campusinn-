@@ -5,10 +5,16 @@
  */
 
 const API = (() => {
+  // Built-in build-time injected API URL (populated during Vercel build if env var is provided)
+  const INJECTED_API_URL = '';
+
   // Configurable base URL (can be overridden by window.CAMPUS_INN_API_URL, meta tag, or localStorage)
   const resolveBaseUrl = () => {
     if (typeof window !== 'undefined' && window.CAMPUS_INN_API_URL) {
       return window.CAMPUS_INN_API_URL;
+    }
+    if (INJECTED_API_URL) {
+      return INJECTED_API_URL;
     }
     if (typeof document !== 'undefined') {
       const meta = document.querySelector('meta[name="campus-inn-api-url"]');
