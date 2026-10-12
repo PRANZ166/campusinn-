@@ -3,6 +3,7 @@
  */
 const request = require('supertest');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 const config = require('../src/config');
 const emailService = require('../src/services/email');
 const app = require('../src/app');
@@ -551,6 +552,95 @@ describe('Campus Inn+ Backend API Suite', () => {
       querySpy.mockRestore();
     });
 
+    it('POST /api/v1/auth/forgot-password with valid registered email should generate token and dispatch reset email with correct production reset link', async () => {
+      const isConfiguredSpy = jest.spyOn(emailService, 'isConfigured').mockReturnValue(true);
+      const sendEmailSpy = jest.spyOn(emailService, 'sendPasswordResetEmail').mockResolvedValue({ success: true, messageId: 'test-msg-1' });
+
+      const querySpy = jest.spyOn(require('../src/db/pool').pool, 'query').mockImplementation((sql) => {
+        if (typeof sql === 'string' && sql.includes('FROM users WHERE LOWER(email) = $1')) {
+          return Promise.resolve({
+            rows: [{ id: 'user_priya_1', email: 'priya.sharma@met.edu', first_name: 'Priya', status: 'active' }]
+          });
+        }
+        if (typeof sql === 'string' && sql.includes('FROM password_reset_tokens WHERE user_id = $1 AND created_at >')) {
+          return Promise.resolve({ rows: [] });
+        }
+        return Promise.resolve({ rows: [] });
+      });
+
+      const res = await request(app)
+        .post('/api/v1/auth/forgot-password')
+        .send({ email: 'priya.sharma@met.edu' });
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.success).toBe(true);
+      expect(sendEmailSpy).toHaveBeenCalledTimes(1);
+      const emailArgs = sendEmailSpy.mock.calls[0][0];
+      expect(emailArgs.to).toEqual('priya.sharma@met.edu');
+      expect(emailArgs.firstName).toEqual('Priya');
+      expect(emailArgs.resetUrl).toMatch(/campusinn-frontend.*\.vercel\.app\/reset-password\.html\?token=[a-f0-9]{64}|localhost.*\/reset-password\.html\?token=[a-f0-9]{64}/);
+      expect(emailArgs.expiresInMinutes).toEqual(15);
+
+      isConfiguredSpy.mockRestore();
+      sendEmailSpy.mockRestore();
+      querySpy.mockRestore();
+    });
+
+    it('POST /api/v1/auth/forgot-password should apply anti-flood duplicate suppression for rapid requests within 60 seconds', async () => {
+      const isConfiguredSpy = jest.spyOn(emailService, 'isConfigured').mockReturnValue(true);
+      const sendEmailSpy = jest.spyOn(emailService, 'sendPasswordResetEmail').mockResolvedValue({ success: true });
+
+      const querySpy = jest.spyOn(require('../src/db/pool').pool, 'query').mockImplementation((sql) => {
+        if (typeof sql === 'string' && sql.includes('FROM users WHERE LOWER(email) = $1')) {
+          return Promise.resolve({
+            rows: [{ id: 'user_priya_1', email: 'priya.sharma@met.edu', first_name: 'Priya', status: 'active' }]
+          });
+        }
+        if (typeof sql === 'string' && sql.includes('password_reset_tokens') && sql.includes('created_at >')) {
+          return Promise.resolve({ rows: [{ id: 'existing_token_id' }] });
+        }
+        return Promise.resolve({ rows: [] });
+      });
+
+      const res = await request(app)
+        .post('/api/v1/auth/forgot-password')
+        .send({ email: 'priya.sharma@met.edu' });
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.success).toBe(true);
+      expect(sendEmailSpy).not.toHaveBeenCalled();
+
+      isConfiguredSpy.mockRestore();
+      sendEmailSpy.mockRestore();
+      querySpy.mockRestore();
+    });
+
+    it('POST /api/v1/auth/forgot-password should handle SMTP delivery failures safely with 503 EMAIL_DELIVERY_FAILED', async () => {
+      const isConfiguredSpy = jest.spyOn(emailService, 'isConfigured').mockReturnValue(true);
+      const sendEmailSpy = jest.spyOn(emailService, 'sendPasswordResetEmail').mockRejectedValue(new Error('SMTP connection timeout'));
+
+      const querySpy = jest.spyOn(require('../src/db/pool').pool, 'query').mockImplementation((sql) => {
+        if (typeof sql === 'string' && sql.includes('FROM users WHERE LOWER(email) = $1')) {
+          return Promise.resolve({
+            rows: [{ id: 'user_priya_1', email: 'priya.sharma@met.edu', first_name: 'Priya', status: 'active' }]
+          });
+        }
+        return Promise.resolve({ rows: [] });
+      });
+
+      const res = await request(app)
+        .post('/api/v1/auth/forgot-password')
+        .send({ email: 'priya.sharma@met.edu' });
+
+      expect(res.statusCode).toEqual(503);
+      expect(res.body.code).toEqual('EMAIL_DELIVERY_FAILED');
+      expect(res.body.message).toContain('Unable to deliver password reset email');
+
+      isConfiguredSpy.mockRestore();
+      sendEmailSpy.mockRestore();
+      querySpy.mockRestore();
+    });
+
     it('POST /api/v1/auth/reset-password with missing token should return 400', async () => {
       const res = await request(app)
         .post('/api/v1/auth/reset-password')
@@ -597,6 +687,64 @@ describe('Campus Inn+ Backend API Suite', () => {
       querySpy.mockRestore();
     });
 
+    it('POST /api/v1/auth/reset-password with expired token should return 400 TOKEN_EXPIRED', async () => {
+      const querySpy = jest.spyOn(require('../src/db/pool').pool, 'query').mockImplementation((text) => {
+        if (typeof text === 'string' && text.includes('FROM password_reset_tokens')) {
+          return Promise.resolve({
+            rows: [{
+              id: 'token_id_expired',
+              user_id: 'user_123',
+              expires_at: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
+              consumed_at: null,
+              status: 'active',
+            }],
+          });
+        }
+        return Promise.resolve({ rows: [] });
+      });
+
+      const res = await request(app)
+        .post('/api/v1/auth/reset-password')
+        .send({
+          token: 'expired_test_token_1234567890abcdef',
+          newPassword: 'BrandNewPassword123',
+          confirmPassword: 'BrandNewPassword123',
+        });
+
+      expect(res.statusCode).toEqual(400);
+      expect(res.body.code).toEqual('TOKEN_EXPIRED');
+      querySpy.mockRestore();
+    });
+
+    it('POST /api/v1/auth/reset-password with already consumed token should return 400 TOKEN_ALREADY_USED', async () => {
+      const querySpy = jest.spyOn(require('../src/db/pool').pool, 'query').mockImplementation((text) => {
+        if (typeof text === 'string' && text.includes('FROM password_reset_tokens')) {
+          return Promise.resolve({
+            rows: [{
+              id: 'token_id_consumed',
+              user_id: 'user_123',
+              expires_at: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+              consumed_at: new Date(Date.now() - 2 * 60 * 1000).toISOString(),
+              status: 'active',
+            }],
+          });
+        }
+        return Promise.resolve({ rows: [] });
+      });
+
+      const res = await request(app)
+        .post('/api/v1/auth/reset-password')
+        .send({
+          token: 'reused_test_token_1234567890abcdef',
+          newPassword: 'BrandNewPassword123',
+          confirmPassword: 'BrandNewPassword123',
+        });
+
+      expect(res.statusCode).toEqual(400);
+      expect(res.body.code).toEqual('TOKEN_ALREADY_USED');
+      querySpy.mockRestore();
+    });
+
     it('POST /api/v1/auth/reset-password with valid token should update password and return 200', async () => {
       const validToken = 'valid_test_token_1234567890abcdef';
       const userId = 'user_reset_test_123';
@@ -627,6 +775,50 @@ describe('Campus Inn+ Backend API Suite', () => {
       expect(res.statusCode).toEqual(200);
       expect(res.body.success).toBe(true);
       expect(res.body.message).toContain('successfully reset');
+      querySpy.mockRestore();
+    });
+
+    it('Password Reset Verification: new password hashes securely and old password no longer matches', async () => {
+      const oldPassword = 'OldInitialPassword123';
+      const newPassword = 'BrandNewSecurePassword123';
+      const oldHash = await bcrypt.hash(oldPassword, 10);
+
+      expect(await bcrypt.compare(oldPassword, oldHash)).toBe(true);
+      expect(await bcrypt.compare(newPassword, oldHash)).toBe(false);
+
+      let savedNewHash = null;
+      const querySpy = jest.spyOn(require('../src/db/pool').pool, 'query').mockImplementation((text, params) => {
+        if (typeof text === 'string' && text.includes('FROM password_reset_tokens')) {
+          return Promise.resolve({
+            rows: [{
+              id: 'token_id_hash_test',
+              user_id: 'user_hash_test_123',
+              expires_at: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+              consumed_at: null,
+              status: 'active',
+            }],
+          });
+        }
+        if (typeof text === 'string' && text.includes('UPDATE users SET password_hash = $1')) {
+          savedNewHash = params[0];
+          return Promise.resolve({ rowCount: 1 });
+        }
+        return Promise.resolve({ rows: [] });
+      });
+
+      const res = await request(app)
+        .post('/api/v1/auth/reset-password')
+        .send({
+          token: 'valid_hash_token_1234567890abcdef',
+          newPassword: newPassword,
+          confirmPassword: newPassword,
+        });
+
+      expect(res.statusCode).toEqual(200);
+      expect(savedNewHash).toBeDefined();
+      expect(await bcrypt.compare(newPassword, savedNewHash)).toBe(true);
+      expect(await bcrypt.compare(oldPassword, savedNewHash)).toBe(false);
+
       querySpy.mockRestore();
     });
   });
