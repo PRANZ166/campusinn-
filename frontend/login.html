@@ -1167,17 +1167,23 @@ document.addEventListener('DOMContentLoaded', () => {
           password
         };
         const res = await CampusInn.Auth.registerStudent(payload);
-        if (res && res.error) {
-          throw new Error(res.error);
-        }
-        if (!res || !res.data || !res.data.success) {
-          throw new Error((res && res.error) || 'Student registration failed.');
+        const isSuccess = Boolean(
+          res && (res.success === true || (res.data && res.data.success === true))
+        );
+        if (!isSuccess) {
+          throw new Error((res && (res.error || res.message)) || 'Student registration failed.');
         }
 
         CampusInn.Toast.success('Student account created successfully!');
-        displayLoginBanner('Account Created Successfully', `Welcome ${fullName}! Your student account (${rollNumber}) has been registered. Please enter your password to sign in.`);
-        if (identifierInput) identifierInput.value = email;
-        if (passwordInput) { passwordInput.value = ''; passwordInput.focus(); }
+        displayLoginBanner(
+          'Account Created Successfully',
+          `Welcome ${fullName}! Your student account (${rollNumber}) has been registered. Please enter your password to sign in.`
+        );
+        if (identifierInput) identifierInput.value = rollNumber || email;
+        if (passwordInput) {
+          passwordInput.value = '';
+          passwordInput.focus();
+        }
         studentForm.reset();
         showMode('login', 'student');
       } catch (err) {
@@ -1217,8 +1223,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const confirmPassword = document.getElementById('regFacConfirmPassword')?.value;
 
       let hasError = false;
-      if (!fullName) {
-        CampusInn.FormUtils.showFieldError(document.getElementById('regFacFullName'), 'Full name is required.');
+      const NAME_PATTERN = /^[\p{L}\p{M}][\p{L}\p{M}\s.'’\-]*[\p{L}\p{M}.]?$/u;
+      if (!fullName || fullName.length < 2) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('regFacFullName'), 'Full name must be at least 2 characters.');
+        hasError = true;
+      } else if (!NAME_PATTERN.test(fullName)) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('regFacFullName'), 'Full name must contain valid letters, spaces, hyphens, or apostrophes only.');
         hasError = true;
       }
       if (!employeeId) {
@@ -1253,7 +1263,7 @@ document.addEventListener('DOMContentLoaded', () => {
           'Faculty Registration Submitted (Status: PENDING)',
           `Welcome ${fullName}! Your faculty profile (${employeeId}) has been registered and is awaiting administrator verification. You may log in once approved.`
         );
-        if (identifierInput) identifierInput.value = email;
+        if (identifierInput) identifierInput.value = employeeId || email;
         if (passwordInput) { passwordInput.value = ''; }
         facultyForm.reset();
         showMode('login', 'faculty');
@@ -1287,8 +1297,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const confirmPassword = document.getElementById('regCoordConfirmPassword')?.value;
 
       let hasError = false;
-      if (!fullName) {
-        CampusInn.FormUtils.showFieldError(document.getElementById('regCoordFullName'), 'Full name is required.');
+      const NAME_PATTERN = /^[\p{L}\p{M}][\p{L}\p{M}\s.'’\-]*[\p{L}\p{M}.]?$/u;
+      if (!fullName || fullName.length < 2) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('regCoordFullName'), 'Full name must be at least 2 characters.');
+        hasError = true;
+      } else if (!NAME_PATTERN.test(fullName)) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('regCoordFullName'), 'Full name must contain valid letters, spaces, hyphens, or apostrophes only.');
         hasError = true;
       }
       if (!email || !/@(?:[a-zA-Z0-9-]+\.)*(?:met\.edu|campus\.edu\.in|edu\.in|ac\.in|edu)$/i.test(email)) {
@@ -1349,8 +1363,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const confirmPassword = document.getElementById('regRecConfirmPassword')?.value;
 
       let hasError = false;
-      if (!fullName) {
-        CampusInn.FormUtils.showFieldError(document.getElementById('regRecFullName'), 'Recruiter name is required.');
+      const NAME_PATTERN = /^[\p{L}\p{M}][\p{L}\p{M}\s.'’\-]*[\p{L}\p{M}.]?$/u;
+      if (!fullName || fullName.length < 2) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('regRecFullName'), 'Recruiter name must be at least 2 characters.');
+        hasError = true;
+      } else if (!NAME_PATTERN.test(fullName)) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('regRecFullName'), 'Recruiter name must contain valid letters, spaces, hyphens, or apostrophes only.');
         hasError = true;
       }
       if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {

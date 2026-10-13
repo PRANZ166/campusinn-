@@ -39,9 +39,12 @@ global.document = {
   addEventListener: () => {}
 };
 
-const jsDir = fs.existsSync(path.join(rootDir, 'frontend', 'js'))
-  ? path.join(rootDir, 'frontend', 'js')
-  : path.join(rootDir, 'js');
+const candidateDirs = [
+  path.join(rootDir, 'frontend', 'js'),
+  path.join(rootDir, '..', 'frontend', 'js'),
+  path.join(rootDir, 'js')
+];
+const jsDir = candidateDirs.find(d => fs.existsSync(d)) || path.join(rootDir, 'js');
 eval(fs.readFileSync(path.join(jsDir, 'mock-data.js'), 'utf8'));
 eval(fs.readFileSync(path.join(jsDir, 'api.js'), 'utf8'));
 eval(fs.readFileSync(path.join(jsDir, 'shared.js'), 'utf8'));

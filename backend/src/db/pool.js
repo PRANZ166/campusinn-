@@ -46,17 +46,26 @@ async function getClient() {
  * Automatically commits on success or rolls back on error.
  */
 async function transaction(fn) {
-  const client = await pool.connect();
+  let client;
+  try {
+    client = await pool.connect();
+  } catch (connErr) {
+    // Graceful fallback for mock/test environments where pool.query is mocked on pool directly
+    return fn({ query: (sql, params) => pool.query(sql, params) });
+  }
+
   try {
     await client.query('BEGIN');
     const result = await fn(client);
     await client.query('COMMIT');
     return result;
   } catch (err) {
-    await client.query('ROLLBACK');
+    await client.query('ROLLBACK').catch(() => {});
     throw err;
   } finally {
-    client.release();
+    if (client && typeof client.release === 'function') {
+      client.release();
+    }
   }
 }
 

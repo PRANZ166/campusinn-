@@ -1873,6 +1873,21 @@ describe('Campus Inn+ Backend API Suite', () => {
           return Promise.resolve({ rows: [] });
         }
 
+        if (sqlStr.includes('LOWER(u.username) = $1') || sqlStr.includes('LOWER(username) = $1')) {
+          const uName = (params && params[0] !== undefined ? String(params[0]).trim().toUpperCase() : '');
+          if (uName === 'ORPHAN_ROLL') {
+            return Promise.resolve({ rows: [{ id: 'orphan-user-id', profile_id: null }] });
+          }
+          if (registeredRolls.has(uName)) {
+            return Promise.resolve({ rows: [{ id: 'existing-user-id', profile_id: 'existing-student-profile-id' }] });
+          }
+          return Promise.resolve({ rows: [] });
+        }
+
+        if (sqlStr.includes('DELETE FROM users')) {
+          return Promise.resolve({ rowCount: 1, rows: [] });
+        }
+
         if (sqlStr.includes('INSERT INTO users')) {
           registeredEmails.add(p0);
           return Promise.resolve({
@@ -2121,6 +2136,62 @@ describe('Campus Inn+ Backend API Suite', () => {
       expect(res.statusCode).toEqual(201);
       expect(res.body.success).toBe(true);
       expect(res.body.user.email).toEqual('pranav.zalte@met.edu');
+    });
+
+    it('13. Registration response payload contains both top-level and data wrapper properties for frontend compatibility', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/register/student')
+        .send({
+          fullName: 'Tanvi Joshi',
+          email: 'tanvi.joshi@met.edu',
+          password: 'Password@123',
+          phone: '9820123468',
+          rollNumber: '2022CS9012',
+          department: 'Computer Engineering',
+        });
+
+      expect(res.statusCode).toEqual(201);
+      expect(res.body.success).toBe(true);
+      expect(res.body.token).toBeDefined();
+      expect(res.body.user).toBeDefined();
+      expect(res.body.data).toBeDefined();
+      expect(res.body.data.success).toBe(true);
+      expect(res.body.data.token).toBeDefined();
+      expect(res.body.data.user).toBeDefined();
+    });
+
+    it('14. Recovery from incomplete registration cleans up orphan record and succeeds', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/register/student')
+        .send({
+          fullName: 'Recovered Student',
+          email: 'recovered.student@met.edu',
+          password: 'Password@123',
+          phone: '9820123469',
+          rollNumber: 'ORPHAN_ROLL',
+          department: 'Computer Engineering',
+        });
+
+      expect(res.statusCode).toEqual(201);
+      expect(res.body.success).toBe(true);
+      expect(res.body.user.fullName).toEqual('Recovered Student');
+    });
+
+    it('15. Mononym name (e.g. "Kavya") registers cleanly with empty string lastName and valid first_name', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/register/student')
+        .send({
+          fullName: 'Kavya',
+          email: 'kavya.single@met.edu',
+          password: 'Password@123',
+          phone: '9820123470',
+          rollNumber: '2022CS9013',
+          department: 'Computer Engineering',
+        });
+
+      expect(res.statusCode).toEqual(201);
+      expect(res.body.success).toBe(true);
+      expect(res.body.user.firstName).toEqual('Kavya');
     });
   });
 

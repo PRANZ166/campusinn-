@@ -6,7 +6,7 @@ const crypto = require('crypto');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const config = require('../config');
-const { query } = require('../db/pool');
+const { query, transaction } = require('../db/pool');
 const { authenticate } = require('../middleware/auth');
 const {
   validateLogin,
@@ -93,17 +93,29 @@ router.post('/register/student', validateStudentRegister, async (req, res, next)
 
     // 2. Assign unique username (derived from roll number or explicit username)
     const cleanUsername = (req.body.username || cleanRoll).trim().toLowerCase();
-    const existingUser = await query('SELECT id FROM users WHERE LOWER(username) = $1', [cleanUsername]);
+    const existingUser = await query(
+      `SELECT u.id, sp.id AS profile_id
+       FROM users u
+       LEFT JOIN student_profiles sp ON sp.user_id = u.id
+       WHERE LOWER(u.username) = $1`,
+      [cleanUsername]
+    );
     if (existingUser.rows.length > 0) {
-      return res.status(409).json({
-        success: false,
-        message: `An account with username "${cleanUsername}" already exists.`,
-        code: 'DUPLICATE_USERNAME',
-      });
+      const row = existingUser.rows[0];
+      if (row.profile_id) {
+        return res.status(409).json({
+          success: false,
+          message: `A student account with roll number "${cleanRoll}" already exists.`,
+          code: 'DUPLICATE_ROLL_NUMBER',
+        });
+      } else {
+        // Safe recovery from incomplete/aborted registration: purge orphan record
+        await query('DELETE FROM users WHERE id = $1 AND role = $2', [row.id, 'student']).catch(() => {});
+      }
     }
 
     // Name mapping: use validated names without hardcoded fallbacks
-    const resolvedName = (fullName || '').trim();
+    const resolvedName = (req.body.fullName || fullName || '').trim();
     const parts = resolvedName.split(/\s+/);
     const firstName = req.body.firstName || parts[0];
     const lastName = req.body.lastName !== undefined ? req.body.lastName : (parts.slice(1).join(' ') || '');
@@ -118,34 +130,60 @@ router.post('/register/student', validateStudentRegister, async (req, res, next)
     // Hash password
     const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
 
-    // Insert user (email is normalized; shared email across separate accounts permitted)
-    const userRes = await query(
-      `INSERT INTO users (email, password_hash, role, first_name, last_name, phone, username)
-       VALUES ($1, $2, 'student', $3, $4, $5, $6)
-       RETURNING id, email, role, first_name, last_name, phone, username`,
-      [normalizedEmail, passwordHash, firstName, lastName, phone || null, cleanUsername]
-    );
-    const newUser = userRes.rows[0];
+    // Insert user and student profile within atomic transaction
+    let newUser;
+    let sp;
+    try {
+      await transaction(async (client) => {
+        const userRes = await client.query(
+          `INSERT INTO users (email, password_hash, role, first_name, last_name, phone, username)
+           VALUES ($1, $2, 'student', $3, $4, $5, $6)
+           RETURNING id, email, role, first_name, last_name, phone, username`,
+          [normalizedEmail, passwordHash, firstName, lastName, phone ? phone.trim() : null, cleanUsername]
+        );
+        newUser = userRes.rows[0];
 
-    // Insert student profile
-    const profileRes = await query(
-      `INSERT INTO student_profiles (
-         user_id, roll_number, college, department, program, academic_year, semester, role_label
-       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-       RETURNING *`,
-      [
-        newUser.id,
-        cleanRoll,
-        college || 'MET Institute of Engineering, Nashik',
-        department || 'Computer Engineering',
-        program || 'B.Tech CSE',
-        academicYear || 'Final Year (2024-2025)',
-        semester || 'Semester 8',
-        `${academicYear || 'Final Year'} ${program || 'B.Tech CSE'}`,
-      ]
-    );
+        const profileRes = await client.query(
+          `INSERT INTO student_profiles (
+             user_id, roll_number, college, department, program, academic_year, semester, role_label
+           ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+           RETURNING *`,
+          [
+            newUser.id,
+            cleanRoll,
+            college || 'MET Institute of Engineering, Nashik',
+            department || 'Computer Engineering',
+            program || 'B.Tech CSE',
+            academicYear || 'Final Year (2024-2025)',
+            semester || 'Semester 8',
+            `${academicYear || 'Final Year'} ${program || 'B.Tech CSE'}`,
+          ]
+        );
+        sp = profileRes.rows[0] || {};
+      });
+    } catch (dbErr) {
+      if (dbErr.code === '23505') {
+        const constraint = (dbErr.constraint || '').toLowerCase();
+        if (constraint.includes('roll') || constraint.includes('student_profiles')) {
+          return res.status(409).json({
+            success: false,
+            message: `A student account with roll number "${cleanRoll}" already exists.`,
+            code: 'DUPLICATE_ROLL_NUMBER',
+          });
+        }
+        if (constraint.includes('username')) {
+          return res.status(409).json({
+            success: false,
+            message: `An account with username "${cleanUsername}" already exists.`,
+            code: 'DUPLICATE_USERNAME',
+          });
+        }
+      }
+      throw dbErr;
+    }
 
-    const sp = profileRes.rows[0] || {};
+    await query('INSERT INTO user_settings (user_id) VALUES ($1) ON CONFLICT DO NOTHING', [newUser.id]).catch(() => {});
+
     const { token, user } = generateTokenAndPayload(newUser, {
       rollNumber: sp.roll_number,
       college: sp.college,
@@ -171,6 +209,11 @@ router.post('/register/student', validateStudentRegister, async (req, res, next)
       message: 'Student account registered successfully.',
       token,
       user,
+      data: {
+        token,
+        user,
+        success: true,
+      },
     });
   } catch (err) {
     next(err);
