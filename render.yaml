@@ -21,6 +21,10 @@ services:
         value: 24h
       - key: COOKIE_SECRET
         generateValue: true
+      - key: ADMIN_OPERATOR_SECRET
+        generateValue: true
+      - key: ADMIN_BOOTSTRAP_SECRET
+        generateValue: true
       - key: FRONTEND_URL
         value: https://campusinn-frontend-9nxrritaj-pranz.vercel.app
       - key: GOOGLE_CALLBACK_URL

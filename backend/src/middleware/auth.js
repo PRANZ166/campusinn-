@@ -41,7 +41,7 @@ async function authenticate(req, res, next) {
     // Verify user in database if DB is reachable
     try {
       const result = await query(
-        'SELECT id, email, role, status, first_name AS "firstName", last_name AS "lastName", phone, avatar_url AS "avatarUrl" FROM users WHERE id = $1',
+        'SELECT id, email, role, status, first_name AS "firstName", last_name AS "lastName", phone, avatar_url AS "avatarUrl", token_version AS "tokenVersion" FROM users WHERE id = $1',
         [decoded.sub || decoded.id]
       );
 
@@ -55,11 +55,23 @@ async function authenticate(req, res, next) {
 
       const user = result.rows[0];
 
+      // Check token version to invalidate superseded sessions after administrative changes
+      const userTokenVersion = user.tokenVersion !== undefined ? user.tokenVersion : user.token_version;
+      if (decoded.tokenVersion && userTokenVersion && decoded.tokenVersion < userTokenVersion) {
+        return res.status(401).json({
+          success: false,
+          message: 'Session has been invalidated following administrative role or security updates. Please log in again.',
+          code: 'SESSION_REVOKED',
+        });
+      }
+
       if (user.status !== 'active') {
         return res.status(403).json({
           success: false,
-          message: `Account is ${user.status}. Access denied.`,
-          code: 'ACCOUNT_SUSPENDED',
+          message: user.status === 'pending'
+            ? 'Your account registration is pending institutional verification or administrator approval.'
+            : `Account is ${user.status}. Access denied.`,
+          code: user.status === 'pending' ? 'ACCOUNT_PENDING' : 'ACCOUNT_SUSPENDED',
         });
       }
 

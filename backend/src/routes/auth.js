@@ -32,6 +32,7 @@ function generateTokenAndPayload(user, profile = {}) {
     id: user.id,
     email: user.email,
     role: user.role,
+    tokenVersion: user.token_version || user.tokenVersion || 1,
   };
 
   const token = jwt.sign(payload, config.jwt.secret, {
@@ -560,8 +561,10 @@ router.post('/register/tpo', (req, res) => {
  */
 router.post('/bootstrap/admin', async (req, res, next) => {
   try {
-    const operatorSecret = req.headers['x-admin-bootstrap-secret'] || (req.body && req.body.bootstrapSecret);
-    const configuredSecret = process.env.ADMIN_BOOTSTRAP_SECRET;
+    const operatorSecret = req.headers['x-admin-operator-secret'] ||
+      req.headers['x-admin-bootstrap-secret'] ||
+      (req.body && (req.body.bootstrapSecret || req.body.operatorSecret));
+    const configuredSecret = process.env.ADMIN_BOOTSTRAP_SECRET || process.env.ADMIN_OPERATOR_SECRET;
 
     if (!configuredSecret || !operatorSecret || operatorSecret !== configuredSecret) {
       return res.status(403).json({
@@ -677,7 +680,7 @@ router.post('/login', validateLogin, async (req, res, next) => {
     // Unambiguous Account Identification Strategy:
     // 1. Check student_profiles roll_number (strictly unique per student)
     let userResult = await query(
-      `SELECT u.id, u.email, u.password_hash, u.role, u.status, u.first_name, u.last_name, u.phone, u.avatar_url, u.username
+      `SELECT u.id, u.email, u.password_hash, u.role, u.status, u.first_name, u.last_name, u.phone, u.avatar_url, u.username, COALESCE(u.token_version, 1) AS token_version
        FROM users u
        JOIN student_profiles sp ON sp.user_id = u.id
        WHERE LOWER(sp.roll_number) = $1`,
@@ -687,7 +690,7 @@ router.post('/login', validateLogin, async (req, res, next) => {
     // 2. Check faculty_profiles employee_id (strictly unique per faculty member)
     if (userResult.rows.length === 0) {
       userResult = await query(
-        `SELECT u.id, u.email, u.password_hash, u.role, u.status, u.first_name, u.last_name, u.phone, u.avatar_url, u.username
+        `SELECT u.id, u.email, u.password_hash, u.role, u.status, u.first_name, u.last_name, u.phone, u.avatar_url, u.username, COALESCE(u.token_version, 1) AS token_version
          FROM users u
          JOIN faculty_profiles fp ON fp.user_id = u.id
          WHERE LOWER(fp.employee_id) = $1`,
@@ -698,7 +701,7 @@ router.post('/login', validateLogin, async (req, res, next) => {
     // 3. Check unique username in users table
     if (userResult.rows.length === 0) {
       userResult = await query(
-        `SELECT u.id, u.email, u.password_hash, u.role, u.status, u.first_name, u.last_name, u.phone, u.avatar_url, u.username
+        `SELECT u.id, u.email, u.password_hash, u.role, u.status, u.first_name, u.last_name, u.phone, u.avatar_url, u.username, COALESCE(u.token_version, 1) AS token_version
          FROM users u
          WHERE LOWER(u.username) = $1`,
         [lowerId]
@@ -708,7 +711,7 @@ router.post('/login', validateLogin, async (req, res, next) => {
     // 4. Check email address across accounts
     if (userResult.rows.length === 0) {
       const emailMatches = await query(
-        `SELECT u.id, u.email, u.password_hash, u.role, u.status, u.first_name, u.last_name, u.phone, u.avatar_url, u.username
+        `SELECT u.id, u.email, u.password_hash, u.role, u.status, u.first_name, u.last_name, u.phone, u.avatar_url, u.username, COALESCE(u.token_version, 1) AS token_version
          FROM users u
          WHERE LOWER(u.email) = $1`,
         [lowerId]

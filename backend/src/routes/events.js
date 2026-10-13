@@ -10,6 +10,7 @@ const multer = require('multer');
 const config = require('../config');
 const { query } = require('../db/pool');
 const { authenticate, optionalAuth, authorize } = require('../middleware/auth');
+const { canCoordinatorManageEvent } = require('../utils/coordinatorAccess');
 
 const router = express.Router();
 
@@ -840,6 +841,24 @@ router.get('/:id/pass', authenticate, handleAttendancePass);
 router.get('/:id/attendance', authenticate, authorize('coordinator', 'admin', 'faculty'), async (req, res, next) => {
   try {
     const eventId = req.params.id;
+
+    // Check event exists and coordinator scope
+    const evCheck = await query('SELECT * FROM events WHERE id::text = $1', [eventId]);
+    if (evCheck.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Event not found.' });
+    }
+
+    if (req.user.role === 'coordinator') {
+      const accessCheck = await canCoordinatorManageEvent(req.user, evCheck.rows[0]);
+      if (!accessCheck.allowed) {
+        return res.status(403).json({
+          success: false,
+          message: 'Coordinators can only access attendance records for events within their assigned department or created events.',
+          code: 'FORBIDDEN_COORDINATOR_SCOPE',
+        });
+      }
+    }
+
     const records = await query(
       `SELECT ea.id, ea.roll_number AS "rollNumber", ea.department, ea.status,
               ea.verified_at AS "verifiedAt", ea.pass_code AS "passCode",
@@ -850,7 +869,7 @@ router.get('/:id/attendance', authenticate, authorize('coordinator', 'admin', 'f
        LEFT JOIN users marker ON marker.id = ea.marked_by
        WHERE ea.event_id = $1
        ORDER BY ea.verified_at DESC`,
-      [eventId]
+      [evCheck.rows[0].id]
     ).catch(() => ({ rows: [] }));
 
     return res.status(200).json({
@@ -914,7 +933,7 @@ router.post(
       }
 
       // Check event exists
-      const evCheck = await query('SELECT id, title, created_by FROM events WHERE id::text = $1', [eventId]);
+      const evCheck = await query('SELECT * FROM events WHERE id::text = $1', [eventId]);
       if (evCheck.rows.length === 0) {
         // Remove uploaded file to avoid dangling storage
         try { fs.unlinkSync(file.path); } catch (e) {}
@@ -923,6 +942,19 @@ router.post(
           message: 'Event not found.',
           code: 'EVENT_NOT_FOUND',
         });
+      }
+
+      // Enforce coordinator scope
+      if (req.user.role === 'coordinator') {
+        const accessCheck = await canCoordinatorManageEvent(req.user, evCheck.rows[0]);
+        if (!accessCheck.allowed) {
+          try { fs.unlinkSync(file.path); } catch (e) {}
+          return res.status(403).json({
+            success: false,
+            message: 'Coordinators can only upload photos for events within their assigned department or created events.',
+            code: 'FORBIDDEN_COORDINATOR_SCOPE',
+          });
+        }
       }
 
       // File URL relative path
@@ -962,12 +994,32 @@ router.post(
 router.delete('/photos/:photoId', authenticate, authorize('coordinator', 'admin'), async (req, res, next) => {
   try {
     const photoId = req.params.photoId;
-    const photoRes = await query('SELECT storage_key FROM event_photos WHERE id::text = $1', [photoId]);
+    const photoRes = await query(
+      `SELECT ep.id, ep.storage_key, ep.uploaded_by, e.created_by, e.department_name
+       FROM event_photos ep
+       LEFT JOIN events e ON e.id = ep.event_id
+       WHERE ep.id::text = $1`,
+      [photoId]
+    );
     if (photoRes.rows.length === 0) {
       return res.status(404).json({ success: false, message: 'Photo not found.' });
     }
 
-    const storageKey = photoRes.rows[0].storage_key;
+    const photo = photoRes.rows[0];
+    if (req.user.role === 'coordinator') {
+      const isUploader = photo.uploaded_by && String(photo.uploaded_by) === String(req.user.id);
+      const eventObj = { created_by: photo.created_by, department_name: photo.department_name };
+      const accessCheck = await canCoordinatorManageEvent(req.user, eventObj);
+      if (!isUploader && !accessCheck.allowed) {
+        return res.status(403).json({
+          success: false,
+          message: 'You are not authorized to remove photos for events outside your assigned department.',
+          code: 'FORBIDDEN_COORDINATOR_SCOPE',
+        });
+      }
+    }
+
+    const storageKey = photo.storage_key;
     if (storageKey && fs.existsSync(storageKey)) {
       try { fs.unlinkSync(storageKey); } catch (e) {}
     }

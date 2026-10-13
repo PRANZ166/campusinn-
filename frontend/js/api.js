@@ -832,6 +832,86 @@ const API = (() => {
         method: 'PATCH',
         body: JSON.stringify({ status })
       });
+    },
+
+    async getPending() {
+      return await request('/admin/pending');
+    },
+
+    async getUsers(params = {}) {
+      const qs = new URLSearchParams();
+      if (params.role) qs.set('role', params.role);
+      if (params.status) qs.set('status', params.status);
+      if (params.search) qs.set('search', params.search);
+      if (params.limit) qs.set('limit', params.limit);
+      if (params.offset) qs.set('offset', params.offset);
+      const queryStr = qs.toString();
+      return await request('/admin/users' + (queryStr ? '?' + queryStr : ''));
+    },
+
+    async getCoordinators() {
+      return await request('/admin/coordinators');
+    },
+
+    async approveUser(id, payload = {}) {
+      return await request(`/admin/users/${encodeURIComponent(id)}/approve`, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+    },
+
+    async rejectUser(id, payload = {}) {
+      return await request(`/admin/users/${encodeURIComponent(id)}/reject`, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+    },
+
+    async updateUserStatus(id, status) {
+      return await request(`/admin/users/${encodeURIComponent(id)}/status`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status })
+      });
+    },
+
+    async grantAdmin(id, payload = { confirm: true }) {
+      return await request(`/admin/users/${encodeURIComponent(id)}/grant-admin`, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+    },
+
+    async revokeAdmin(id, payload = { confirm: true, fallbackRole: 'faculty' }) {
+      return await request(`/admin/users/${encodeURIComponent(id)}/revoke-admin`, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+    },
+
+    async getAuditLog(params = {}) {
+      const qs = new URLSearchParams();
+      if (params.limit) qs.set('limit', params.limit);
+      if (params.offset) qs.set('offset', params.offset);
+      const queryStr = qs.toString();
+      return await request('/admin/audit-log' + (queryStr ? '?' + queryStr : ''));
+    },
+
+    async getReplaceStatus() {
+      return await request('/admin/replace/status');
+    },
+
+    async initiateAdminReplacement(payload) {
+      return await request('/admin/replace/initiate', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+    },
+
+    async confirmAdminReplacement(payload) {
+      return await request('/admin/replace/confirm', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
     }
   };
 

@@ -6,6 +6,7 @@
 const express = require('express');
 const { query } = require('../db/pool');
 const { authenticate, authorize } = require('../middleware/auth');
+const { getCoordinatorProfile, canCoordinatorManageEvent, departmentsMatch } = require('../utils/coordinatorAccess');
 
 const router = express.Router();
 
@@ -89,8 +90,19 @@ router.get('/events', authenticate, authorize('coordinator', 'admin'), async (re
     const userId = req.user.id;
     const isAdmin = req.user.role === 'admin';
 
-    const whereClause = isAdmin ? '' : 'WHERE e.created_by = $1';
-    const params = isAdmin ? [] : [userId];
+    let whereClause = '';
+    let params = [];
+
+    if (!isAdmin) {
+      const coordProfile = await getCoordinatorProfile(userId);
+      if (coordProfile && coordProfile.department) {
+        whereClause = 'WHERE e.created_by = $1 OR (e.department_name IS NOT NULL AND LOWER(e.department_name) LIKE $2)';
+        params = [userId, `%${coordProfile.department.toLowerCase().trim()}%`];
+      } else {
+        whereClause = 'WHERE e.created_by = $1';
+        params = [userId];
+      }
+    }
 
     const eventsRes = await query(
       `SELECT e.id, e.title, e.description, 
@@ -132,7 +144,7 @@ router.get('/events', authenticate, authorize('coordinator', 'admin'), async (re
  */
 router.post('/events', authenticate, authorize('coordinator', 'admin'), async (req, res, next) => {
   try {
-    const {
+    let {
       title,
       description,
       category,
@@ -153,6 +165,23 @@ router.post('/events', authenticate, authorize('coordinator', 'admin'), async (r
         message: 'Event title is required (minimum 3 characters).',
         code: 'MISSING_TITLE',
       });
+    }
+
+    // Department scope enforcement for coordinators
+    if (req.user.role === 'coordinator') {
+      const coordProfile = await getCoordinatorProfile(req.user.id);
+      if (coordProfile && coordProfile.department) {
+        if (departmentName && !departmentsMatch(coordProfile.department, departmentName)) {
+          return res.status(403).json({
+            success: false,
+            message: `Scope Restriction: You are authorized as coordinator for ${coordProfile.department}. You cannot create events for ${departmentName}.`,
+            code: 'FORBIDDEN_COORDINATOR_SCOPE',
+          });
+        }
+        if (!departmentName) {
+          departmentName = coordProfile.department;
+        }
+      }
     }
 
     // Freshers rule: Must specify exactly ONE department
@@ -222,17 +251,18 @@ router.put('/events/:id', authenticate, authorize('coordinator', 'admin'), async
       registrationClose,
     } = req.body;
 
-    // Check authorization: must be creator or admin
-    const evCheck = await query('SELECT id, created_by, title FROM events WHERE id::text = $1', [eventId]);
+    // Check authorization: must be creator, match coordinator's department, or admin
+    const evCheck = await query('SELECT id, created_by, title, department_name FROM events WHERE id::text = $1', [eventId]);
     if (evCheck.rows.length === 0) {
       return res.status(404).json({ success: false, message: 'Event not found.' });
     }
 
-    if (req.user.role !== 'admin' && evCheck.rows[0].created_by !== req.user.id) {
+    const accessCheck = await canCoordinatorManageEvent(req.user, evCheck.rows[0]);
+    if (!accessCheck.allowed) {
       return res.status(403).json({
         success: false,
-        message: 'You are not authorized to edit events created by other coordinators.',
-        code: 'UNAUTHORIZED_EVENT_MANAGEMENT',
+        message: 'You are not authorized to edit events outside your assigned department or events created by other coordinators.',
+        code: 'FORBIDDEN_COORDINATOR_SCOPE',
       });
     }
 
@@ -293,6 +323,16 @@ router.post('/events/:id/attendance/mark', authenticate, authorize('coordinator'
       return res.status(404).json({ success: false, message: 'Event not found.' });
     }
     const event = evRes.rows[0];
+
+    // Enforce coordinator department & event scope
+    const accessCheck = await canCoordinatorManageEvent(req.user, event);
+    if (!accessCheck.allowed) {
+      return res.status(403).json({
+        success: false,
+        message: 'You are not authorized to mark attendance for events outside your assigned department.',
+        code: 'FORBIDDEN_COORDINATOR_SCOPE',
+      });
+    }
 
     // Look up student
     let userRecord = null;

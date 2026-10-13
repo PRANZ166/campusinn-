@@ -729,6 +729,14 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_student_profiles_roll ON student_profiles 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_faculty_profiles_emp_id ON faculty_profiles (LOWER(employee_id)) WHERE employee_id IS NOT NULL;
 `;
 
+const MIGRATION_008_SQL = `
+ALTER TABLE users ADD COLUMN IF NOT EXISTS token_version INT NOT NULL DEFAULT 1;
+CREATE INDEX IF NOT EXISTS idx_audit_action_created ON audit_log (action, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_audit_created ON audit_log (created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_audit_actor_created ON audit_log (actor_id, created_at DESC);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_coordinator_profiles_user_id ON coordinator_profiles (user_id);
+`;
+
 const MIGRATIONS = [
   {
     name: '001_initial_schema',
@@ -764,6 +772,11 @@ const MIGRATIONS = [
     name: '007_allow_shared_emails_and_account_identifiers',
     sqlFile: '007_allow_shared_emails_and_account_identifiers.sql',
     fallbackSql: MIGRATION_007_SQL,
+  },
+  {
+    name: '008_admin_authorization_and_session_security',
+    sqlFile: '008_admin_authorization_and_session_security.sql',
+    fallbackSql: MIGRATION_008_SQL,
   },
 ];
 
