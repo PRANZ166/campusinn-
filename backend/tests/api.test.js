@@ -3048,6 +3048,592 @@ describe('Campus Inn+ Backend API Suite', () => {
       }
     });
   });
+
+  describe('Administrator Provisioning & Authorization Suite', () => {
+    let adminSpy;
+    let originalBootstrapSecret;
+    let adminPassHash;
+    const testAdminId = 'adm-test-1111';
+    let adminToken;
+
+    beforeAll(async () => {
+      originalBootstrapSecret = process.env.ADMIN_BOOTSTRAP_SECRET;
+      process.env.ADMIN_BOOTSTRAP_SECRET = 'SuperSecretBootstrapKey_2026!';
+      adminPassHash = await bcrypt.hash('AdminSecret123', 10);
+      adminToken = jwt.sign(
+        { sub: testAdminId, id: testAdminId, email: 'lead.admin@institution.edu', role: 'admin' },
+        config.jwt.secret,
+        { expiresIn: '1h' }
+      );
+    });
+
+    afterAll(() => {
+      process.env.ADMIN_BOOTSTRAP_SECRET = originalBootstrapSecret;
+    });
+
+    it('1. First administrator can be provisioned by an authorized operator when no administrator exists', async () => {
+      let adminCreated = false;
+      adminSpy = jest.spyOn(require('../src/db/pool').pool, 'query').mockImplementation((sql, params) => {
+        const sqlStr = typeof sql === 'string' ? sql : (sql && sql.text ? sql.text : '');
+        if (sqlStr.includes("WHERE role = 'admin'")) {
+          // No administrator exists yet
+          return Promise.resolve({ rows: [] });
+        }
+        if (sqlStr.includes('INSERT INTO users')) {
+          adminCreated = true;
+          return Promise.resolve({
+            rows: [{
+              id: testAdminId,
+              email: params[0],
+              role: 'admin',
+              status: 'active',
+              first_name: params[2],
+              last_name: params[3],
+              created_at: new Date().toISOString(),
+            }],
+          });
+        }
+        return Promise.resolve({ rows: [] });
+      });
+
+      try {
+        const res = await request(app)
+          .post('/api/v1/auth/bootstrap/admin')
+          .set('x-admin-bootstrap-secret', 'SuperSecretBootstrapKey_2026!')
+          .send({
+            email: 'first.admin@institution.edu',
+            password: 'StrongAdminPass123',
+            fullName: 'Executive Administrator',
+          });
+
+        expect(res.statusCode).toEqual(201);
+        expect(res.body.success).toBe(true);
+        expect(res.body.admin).toBeDefined();
+        expect(res.body.admin.role).toEqual('admin');
+        expect(res.body.admin.email).toEqual('first.admin@institution.edu');
+        expect(adminCreated).toBe(true);
+      } finally {
+        adminSpy.mockRestore();
+      }
+    });
+
+    it('2. Unauthorized first-admin creation is rejected when operator secret is invalid or missing', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/bootstrap/admin')
+        .send({
+          email: 'rogue.admin@institution.edu',
+          password: 'StrongAdminPass123',
+          fullName: 'Rogue Admin',
+        });
+
+      expect(res.statusCode).toEqual(403);
+      expect(res.body.success).toBe(false);
+      expect(res.body.code).toEqual('BOOTSTRAP_UNAUTHORIZED');
+    });
+
+    it('3. A second bootstrap attempt is rejected once an administrator already exists (409 Conflict)', async () => {
+      adminSpy = jest.spyOn(require('../src/db/pool').pool, 'query').mockImplementation((sql) => {
+        const sqlStr = typeof sql === 'string' ? sql : (sql && sql.text ? sql.text : '');
+        if (sqlStr.includes("WHERE role = 'admin'")) {
+          // Existing administrator found
+          return Promise.resolve({ rows: [{ id: testAdminId, email: 'lead.admin@institution.edu' }] });
+        }
+        return Promise.resolve({ rows: [] });
+      });
+
+      try {
+        const res = await request(app)
+          .post('/api/v1/auth/bootstrap/admin')
+          .set('x-admin-bootstrap-secret', 'SuperSecretBootstrapKey_2026!')
+          .send({
+            email: 'second.admin@institution.edu',
+            password: 'StrongAdminPass123',
+            fullName: 'Second Admin',
+          });
+
+        expect(res.statusCode).toEqual(409);
+        expect(res.body.success).toBe(false);
+        expect(res.body.code).toEqual('ADMIN_ALREADY_PROVISIONED');
+      } finally {
+        adminSpy.mockRestore();
+      }
+    });
+
+    it('4. Weak password for bootstrap admin is rejected', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/bootstrap/admin')
+        .set('x-admin-bootstrap-secret', 'SuperSecretBootstrapKey_2026!')
+        .send({
+          email: 'valid.admin@institution.edu',
+          password: 'weak',
+          fullName: 'Valid Admin',
+        });
+
+      expect(res.statusCode).toEqual(400);
+      expect(res.body.code).toEqual('WEAK_PASSWORD');
+    });
+
+    it('5. Ordinary student cannot access administrator provisioning endpoint (403)', async () => {
+      const studentToken = jwt.sign(
+        { sub: 'std-1', id: 'std-1', email: 'student@met.edu', role: 'student' },
+        config.jwt.secret,
+        { expiresIn: '1h' }
+      );
+
+      const res = await request(app)
+        .post('/api/v1/admin/provision')
+        .set('Authorization', `Bearer ${studentToken}`)
+        .send({
+          email: 'sub.admin@institution.edu',
+          password: 'StrongPassword123',
+          role: 'admin',
+        });
+
+      expect(res.statusCode).toEqual(403);
+    });
+
+    it('6. Authorized administrator can login with valid email and password', async () => {
+      adminSpy = jest.spyOn(require('../src/db/pool').pool, 'query').mockImplementation((sql, params) => {
+        const sqlStr = typeof sql === 'string' ? sql : (sql && sql.text ? sql.text : '');
+        const p0 = (params && params[0] !== undefined ? String(params[0]).trim().toLowerCase() : '');
+        if (sqlStr.includes('LOWER(u.email) = $1') && p0 === 'lead.admin@institution.edu') {
+          return Promise.resolve({
+            rows: [{
+              id: testAdminId,
+              email: 'lead.admin@institution.edu',
+              password_hash: adminPassHash,
+              role: 'admin',
+              status: 'active',
+              first_name: 'Lead',
+              last_name: 'Administrator',
+            }],
+          });
+        }
+        return Promise.resolve({ rows: [] });
+      });
+
+      try {
+        const res = await request(app)
+          .post('/api/v1/auth/login')
+          .send({
+            identifier: 'lead.admin@institution.edu',
+            password: 'AdminSecret123',
+            role: 'admin',
+          });
+
+        expect(res.statusCode).toEqual(200);
+        expect(res.body.success).toBe(true);
+        expect(res.body.token).toBeDefined();
+        expect(res.body.user.role).toEqual('admin');
+        expect(res.body.user.email).toEqual('lead.admin@institution.edu');
+      } finally {
+        adminSpy.mockRestore();
+      }
+    });
+
+    it('7. Authorized administrator can provision additional administrators via /api/v1/admin/provision', async () => {
+      let provisioned = false;
+      adminSpy = jest.spyOn(require('../src/db/pool').pool, 'query').mockImplementation((sql, params) => {
+        const sqlStr = typeof sql === 'string' ? sql : (sql && sql.text ? sql.text : '');
+        if (sqlStr.includes('FROM users WHERE id = $1')) {
+          return Promise.resolve({
+            rows: [{ id: testAdminId, email: 'lead.admin@institution.edu', role: 'admin', status: 'active' }],
+          });
+        }
+        if (sqlStr.includes('INSERT INTO users')) {
+          provisioned = true;
+          return Promise.resolve({
+            rows: [{
+              id: 'adm-sub-2',
+              email: params[0],
+              role: params[2],
+              status: 'active',
+              first_name: params[3],
+              last_name: params[4],
+              phone: params[5],
+              created_at: new Date().toISOString(),
+            }],
+          });
+        }
+        return Promise.resolve({ rows: [] });
+      });
+
+      try {
+        const res = await request(app)
+          .post('/api/v1/admin/provision')
+          .set('Authorization', `Bearer ${adminToken}`)
+          .send({
+            email: 'deputy.admin@institution.edu',
+            password: 'DeputyPass123',
+            fullName: 'Deputy Admin',
+            role: 'admin',
+          });
+
+        expect(res.statusCode).toEqual(201);
+        expect(res.body.success).toBe(true);
+        expect(res.body.user.role).toEqual('admin');
+        expect(res.body.user.email).toEqual('deputy.admin@institution.edu');
+        expect(provisioned).toBe(true);
+      } finally {
+        adminSpy.mockRestore();
+      }
+    });
+
+    it('8. Subsequent admin provisioning rejects invalid role', async () => {
+      adminSpy = jest.spyOn(require('../src/db/pool').pool, 'query').mockImplementation((sql) => {
+        const sqlStr = typeof sql === 'string' ? sql : (sql && sql.text ? sql.text : '');
+        if (sqlStr.includes('FROM users WHERE id = $1')) {
+          return Promise.resolve({
+            rows: [{ id: testAdminId, email: 'lead.admin@institution.edu', role: 'admin', status: 'active' }],
+          });
+        }
+        return Promise.resolve({ rows: [] });
+      });
+
+      try {
+        const res = await request(app)
+          .post('/api/v1/admin/provision')
+          .set('Authorization', `Bearer ${adminToken}`)
+          .send({
+            email: 'bad.role@institution.edu',
+            password: 'DeputyPass123',
+            role: 'student',
+          });
+
+        expect(res.statusCode).toEqual(400);
+        expect(res.body.code).toEqual('INVALID_ROLE');
+      } finally {
+        adminSpy.mockRestore();
+      }
+    });
+  });
+
+  describe('Simplified Faculty Login Suite', () => {
+    let facultySpy;
+    let extFacultyPassHash;
+    const extFaculty = {
+      id: 'fac-ext-101',
+      email: 'dr.smith@external-research.org',
+      role: 'faculty',
+      status: 'active',
+      first_name: 'Dr. John',
+      last_name: 'Smith',
+      employee_id: 'EXT-FAC-01',
+      department: 'Robotics & AI',
+      designation: 'Visiting Professor',
+    };
+
+    beforeAll(async () => {
+      extFacultyPassHash = await bcrypt.hash('VisitingFaculty123', 10);
+    });
+
+    it('1. Authorized faculty member logs in successfully with legitimate non-educational email domain', async () => {
+      facultySpy = jest.spyOn(require('../src/db/pool').pool, 'query').mockImplementation((sql, params) => {
+        const sqlStr = typeof sql === 'string' ? sql : (sql && sql.text ? sql.text : '');
+        const p0 = (params && params[0] !== undefined ? String(params[0]).trim().toLowerCase() : '');
+
+        if (sqlStr.includes('faculty_profiles') && sqlStr.includes('employee_id = $1') && p0 === 'ext-fac-01') {
+          return Promise.resolve({ rows: [{ ...extFaculty, password_hash: extFacultyPassHash }] });
+        }
+        if (sqlStr.includes('LOWER(u.email) = $1') && p0 === 'dr.smith@external-research.org') {
+          return Promise.resolve({ rows: [{ ...extFaculty, password_hash: extFacultyPassHash }] });
+        }
+        if (sqlStr.includes('SELECT * FROM faculty_profiles WHERE user_id = $1')) {
+          return Promise.resolve({ rows: [extFaculty] });
+        }
+        return Promise.resolve({ rows: [] });
+      });
+
+      try {
+        const res = await request(app)
+          .post('/api/v1/auth/login')
+          .send({
+            identifier: 'dr.smith@external-research.org',
+            password: 'VisitingFaculty123',
+            role: 'faculty',
+          });
+
+        expect(res.statusCode).toEqual(200);
+        expect(res.body.success).toBe(true);
+        expect(res.body.user.role).toEqual('faculty');
+        expect(res.body.user.email).toEqual('dr.smith@external-research.org');
+        expect(res.body.user.department).toEqual('Robotics & AI');
+      } finally {
+        facultySpy.mockRestore();
+      }
+    });
+
+    it('2. Faculty login with invalid password returns 401 INVALID_PASSWORD', async () => {
+      facultySpy = jest.spyOn(require('../src/db/pool').pool, 'query').mockImplementation((sql, params) => {
+        const sqlStr = typeof sql === 'string' ? sql : (sql && sql.text ? sql.text : '');
+        const p0 = (params && params[0] !== undefined ? String(params[0]).trim().toLowerCase() : '');
+        if (sqlStr.includes('LOWER(u.email) = $1') && p0 === 'dr.smith@external-research.org') {
+          return Promise.resolve({ rows: [{ ...extFaculty, password_hash: extFacultyPassHash }] });
+        }
+        return Promise.resolve({ rows: [] });
+      });
+
+      try {
+        const res = await request(app)
+          .post('/api/v1/auth/login')
+          .send({
+            identifier: 'dr.smith@external-research.org',
+            password: 'WrongPassword999',
+            role: 'faculty',
+          });
+
+        expect(res.statusCode).toEqual(401);
+        expect(res.body.code).toEqual('INVALID_PASSWORD');
+      } finally {
+        facultySpy.mockRestore();
+      }
+    });
+
+    it('3. Faculty login with unknown account returns 401 INVALID_CREDENTIALS', async () => {
+      facultySpy = jest.spyOn(require('../src/db/pool').pool, 'query').mockImplementation(() => {
+        return Promise.resolve({ rows: [] });
+      });
+
+      try {
+        const res = await request(app)
+          .post('/api/v1/auth/login')
+          .send({
+            identifier: 'unknown.faculty@somewhere.net',
+            password: 'VisitingFaculty123',
+            role: 'faculty',
+          });
+
+        expect(res.statusCode).toEqual(401);
+        expect(res.body.code).toEqual('INVALID_CREDENTIALS');
+        expect(res.body.message).toContain('verify your faculty email or ID');
+      } finally {
+        facultySpy.mockRestore();
+      }
+    });
+
+    it('4. Suspended faculty account is restricted with 403 ACCOUNT_SUSPENDED', async () => {
+      facultySpy = jest.spyOn(require('../src/db/pool').pool, 'query').mockImplementation((sql, params) => {
+        const sqlStr = typeof sql === 'string' ? sql : (sql && sql.text ? sql.text : '');
+        const p0 = (params && params[0] !== undefined ? String(params[0]).trim().toLowerCase() : '');
+        if (sqlStr.includes('LOWER(u.email) = $1') && p0 === 'dr.smith@external-research.org') {
+          return Promise.resolve({ rows: [{ ...extFaculty, status: 'suspended', password_hash: extFacultyPassHash }] });
+        }
+        return Promise.resolve({ rows: [] });
+      });
+
+      try {
+        const res = await request(app)
+          .post('/api/v1/auth/login')
+          .send({
+            identifier: 'dr.smith@external-research.org',
+            password: 'VisitingFaculty123',
+            role: 'faculty',
+          });
+
+        expect(res.statusCode).toEqual(403);
+        expect(res.body.code).toEqual('ACCOUNT_SUSPENDED');
+      } finally {
+        facultySpy.mockRestore();
+      }
+    });
+
+    it('5. Faculty login using unique employee ID succeeds without ambiguity', async () => {
+      facultySpy = jest.spyOn(require('../src/db/pool').pool, 'query').mockImplementation((sql, params) => {
+        const sqlStr = typeof sql === 'string' ? sql : (sql && sql.text ? sql.text : '');
+        const p0 = (params && params[0] !== undefined ? String(params[0]).trim().toLowerCase() : '');
+        if (sqlStr.includes('faculty_profiles') && sqlStr.includes('fp.employee_id') && p0 === 'ext-fac-01') {
+          return Promise.resolve({ rows: [{ ...extFaculty, password_hash: extFacultyPassHash }] });
+        }
+        if (sqlStr.includes('SELECT * FROM faculty_profiles WHERE user_id = $1')) {
+          return Promise.resolve({ rows: [extFaculty] });
+        }
+        return Promise.resolve({ rows: [] });
+      });
+
+      try {
+        const res = await request(app)
+          .post('/api/v1/auth/login')
+          .send({
+            identifier: 'EXT-FAC-01',
+            password: 'VisitingFaculty123',
+            role: 'faculty',
+          });
+
+        expect(res.statusCode).toEqual(200);
+        expect(res.body.success).toBe(true);
+        expect(res.body.user.role).toEqual('faculty');
+      } finally {
+        facultySpy.mockRestore();
+      }
+    });
+  });
+
+  describe('Simplified HR Recruiter Login Suite', () => {
+    let recSpy;
+    let recPassHash;
+    const activeCompany = {
+      id: 'comp-tech-99',
+      name: 'Global Tech Innovations',
+      verification_status: 'approved',
+      status: 'active',
+    };
+    const suspendedCompany = {
+      id: 'comp-susp-88',
+      name: 'Suspended Corp',
+      verification_status: 'suspended',
+      status: 'suspended',
+    };
+    const activeRecruiter = {
+      id: 'rec-user-1',
+      email: 'recruiter@globaltech.com',
+      role: 'recruiter',
+      status: 'active',
+      first_name: 'Anita',
+      last_name: 'Desai',
+    };
+
+    beforeAll(async () => {
+      recPassHash = await bcrypt.hash('RecruiterPass123', 10);
+    });
+
+    it('1. Authorized recruiter logs in using simple email and password without company code or company ID', async () => {
+      recSpy = jest.spyOn(require('../src/db/pool').pool, 'query').mockImplementation((sql, params) => {
+        const sqlStr = typeof sql === 'string' ? sql : (sql && sql.text ? sql.text : '');
+        const p0 = (params && params[0] !== undefined ? String(params[0]).trim().toLowerCase() : '');
+
+        if (sqlStr.includes('LOWER(u.email) = $1') && p0 === 'recruiter@globaltech.com') {
+          return Promise.resolve({ rows: [{ ...activeRecruiter, password_hash: recPassHash }] });
+        }
+        if (sqlStr.includes('FROM recruiter_profiles rp')) {
+          return Promise.resolve({
+            rows: [{
+              user_id: activeRecruiter.id,
+              company_id: activeCompany.id,
+              company_name: activeCompany.name,
+              designation: 'Head of Talent Acquisition',
+              role_label: 'Corporate Recruiter',
+              verification_status: activeCompany.verification_status,
+              company_status: activeCompany.status,
+            }],
+          });
+        }
+        return Promise.resolve({ rows: [] });
+      });
+
+      try {
+        const res = await request(app)
+          .post('/api/v1/auth/login')
+          .send({
+            identifier: 'recruiter@globaltech.com',
+            password: 'RecruiterPass123',
+            role: 'recruiter',
+          });
+
+        expect(res.statusCode).toEqual(200);
+        expect(res.body.success).toBe(true);
+        expect(res.body.token).toBeDefined();
+        expect(res.body.user.role).toEqual('recruiter');
+        expect(res.body.user.companyName).toEqual('Global Tech Innovations');
+        expect(res.body.user.companyId).toEqual('comp-tech-99');
+      } finally {
+        recSpy.mockRestore();
+      }
+    });
+
+    it('2. Incorrect recruiter password is rejected with 401 INVALID_PASSWORD', async () => {
+      recSpy = jest.spyOn(require('../src/db/pool').pool, 'query').mockImplementation((sql, params) => {
+        const sqlStr = typeof sql === 'string' ? sql : (sql && sql.text ? sql.text : '');
+        const p0 = (params && params[0] !== undefined ? String(params[0]).trim().toLowerCase() : '');
+        if (sqlStr.includes('LOWER(u.email) = $1') && p0 === 'recruiter@globaltech.com') {
+          return Promise.resolve({ rows: [{ ...activeRecruiter, password_hash: recPassHash }] });
+        }
+        return Promise.resolve({ rows: [] });
+      });
+
+      try {
+        const res = await request(app)
+          .post('/api/v1/auth/login')
+          .send({
+            identifier: 'recruiter@globaltech.com',
+            password: 'WrongPassword999',
+            role: 'recruiter',
+          });
+
+        expect(res.statusCode).toEqual(401);
+        expect(res.body.code).toEqual('INVALID_PASSWORD');
+      } finally {
+        recSpy.mockRestore();
+      }
+    });
+
+    it('3. Pending recruiter account awaiting approval is rejected with 403 ACCOUNT_PENDING', async () => {
+      recSpy = jest.spyOn(require('../src/db/pool').pool, 'query').mockImplementation((sql, params) => {
+        const sqlStr = typeof sql === 'string' ? sql : (sql && sql.text ? sql.text : '');
+        const p0 = (params && params[0] !== undefined ? String(params[0]).trim().toLowerCase() : '');
+        if (sqlStr.includes('LOWER(u.email) = $1') && p0 === 'pending.recruiter@company.com') {
+          return Promise.resolve({
+            rows: [{ ...activeRecruiter, status: 'pending', email: 'pending.recruiter@company.com', password_hash: recPassHash }],
+          });
+        }
+        return Promise.resolve({ rows: [] });
+      });
+
+      try {
+        const res = await request(app)
+          .post('/api/v1/auth/login')
+          .send({
+            identifier: 'pending.recruiter@company.com',
+            password: 'RecruiterPass123',
+            role: 'recruiter',
+          });
+
+        expect(res.statusCode).toEqual(403);
+        expect(res.body.code).toEqual('ACCOUNT_PENDING');
+      } finally {
+        recSpy.mockRestore();
+      }
+    });
+
+    it('4. Suspended corporate partner restricts recruiter login with 403 COMPANY_SUSPENDED', async () => {
+      recSpy = jest.spyOn(require('../src/db/pool').pool, 'query').mockImplementation((sql, params) => {
+        const sqlStr = typeof sql === 'string' ? sql : (sql && sql.text ? sql.text : '');
+        const p0 = (params && params[0] !== undefined ? String(params[0]).trim().toLowerCase() : '');
+        if (sqlStr.includes('LOWER(u.email) = $1') && p0 === 'recruiter@suspended.com') {
+          return Promise.resolve({
+            rows: [{ ...activeRecruiter, email: 'recruiter@suspended.com', password_hash: recPassHash }],
+          });
+        }
+        if (sqlStr.includes('FROM recruiter_profiles rp')) {
+          return Promise.resolve({
+            rows: [{
+              user_id: activeRecruiter.id,
+              company_id: suspendedCompany.id,
+              company_name: suspendedCompany.name,
+              verification_status: suspendedCompany.verification_status,
+              company_status: suspendedCompany.status,
+            }],
+          });
+        }
+        return Promise.resolve({ rows: [] });
+      });
+
+      try {
+        const res = await request(app)
+          .post('/api/v1/auth/login')
+          .send({
+            identifier: 'recruiter@suspended.com',
+            password: 'RecruiterPass123',
+            role: 'recruiter',
+          });
+
+        expect(res.statusCode).toEqual(403);
+        expect(res.body.code).toEqual('COMPANY_SUSPENDED');
+      } finally {
+        recSpy.mockRestore();
+      }
+    });
+  });
 });
+
 
 

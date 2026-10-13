@@ -244,4 +244,88 @@ router.post('/broadcasts', authenticate, authorize('admin'), async (req, res, ne
   }
 });
 
+/**
+ * POST /api/v1/admin/provision
+ * Authorized Administrator Provisioning of subsequent College Admin or Placement Officer (TPO) accounts
+ */
+router.post('/provision', authenticate, authorize('admin'), async (req, res, next) => {
+  try {
+    const { email, password, fullName, firstName: reqFirstName, lastName: reqLastName, role = 'admin', phone } = req.body || {};
+    const cleanEmail = (email || '').trim().toLowerCase();
+    const cleanRole = (role || '').trim().toLowerCase();
+
+    if (!['admin', 'tpo'].includes(cleanRole)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Role must be either "admin" or "tpo".',
+        code: 'INVALID_ROLE',
+      });
+    }
+
+    if (!cleanEmail || !validator.isEmail(cleanEmail)) {
+      return res.status(400).json({
+        success: false,
+        message: 'A valid email address is required.',
+        code: 'INVALID_EMAIL',
+      });
+    }
+
+    if (!password || typeof password !== 'string' || password.length < 8) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password must be at least 8 characters long.',
+        code: 'WEAK_PASSWORD',
+      });
+    }
+
+    const hasLetter = /[a-zA-Z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    if (!hasLetter || !hasNumber) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password must contain at least one letter and one number.',
+        code: 'WEAK_PASSWORD',
+      });
+    }
+
+    let firstName = reqFirstName;
+    let lastName = reqLastName;
+    if (!firstName && fullName) {
+      const parts = fullName.trim().split(/\s+/);
+      firstName = parts[0] || (cleanRole === 'admin' ? 'Administrator' : 'Officer');
+      lastName = parts.slice(1).join(' ') || '';
+    }
+    if (!firstName) firstName = cleanRole === 'admin' ? 'Administrator' : 'Officer';
+    if (lastName === undefined) lastName = '';
+
+    const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
+
+    const userRes = await query(
+      `INSERT INTO users (email, password_hash, role, status, first_name, last_name, phone, created_at, updated_at)
+       VALUES ($1, $2, $3, 'active', $4, $5, $6, NOW(), NOW())
+       RETURNING id, email, role, status, first_name, last_name, phone, created_at`,
+      [cleanEmail, passwordHash, cleanRole, firstName, lastName, phone ? phone.trim() : null]
+    );
+
+    const newUser = userRes.rows[0];
+
+    await query('INSERT INTO user_settings (user_id) VALUES ($1) ON CONFLICT DO NOTHING', [newUser.id]).catch(() => {});
+
+    return res.status(201).json({
+      success: true,
+      message: `${cleanRole === 'admin' ? 'College Admin' : 'Placement Officer'} account provisioned successfully.`,
+      user: {
+        id: newUser.id,
+        email: newUser.email,
+        role: newUser.role,
+        status: newUser.status,
+        fullName: `${newUser.first_name} ${newUser.last_name}`.trim(),
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
 module.exports = router;
+

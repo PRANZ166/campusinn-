@@ -470,7 +470,7 @@ const Nav = (() => {
     // Update user info in sidebars
     if (isAuth && user) {
       document.querySelectorAll('[data-bind="user-name"]').forEach(el => {
-        el.textContent = user.name || user.identifier;
+        el.textContent = user.fullName || user.name || user.email || user.identifier || 'User';
       });
       document.querySelectorAll('[data-bind="user-role"]').forEach(el => {
         el.textContent = user.roleLabel || '';

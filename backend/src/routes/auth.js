@@ -4,6 +4,7 @@
 const express = require('express');
 const crypto = require('crypto');
 const bcrypt = require('bcrypt');
+const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const config = require('../config');
 const { query, transaction } = require('../db/pool');
@@ -552,6 +553,118 @@ router.post('/register/tpo', (req, res) => {
 });
 
 /**
+ * POST /api/v1/auth/bootstrap/admin
+ * Authorized Operator First-Admin Bootstrap Endpoint.
+ * Strictly a one-time bootstrap operation protected by server operator secret.
+ * Once any administrator exists, subsequent calls are permanently rejected with 409 Conflict.
+ */
+router.post('/bootstrap/admin', async (req, res, next) => {
+  try {
+    const operatorSecret = req.headers['x-admin-bootstrap-secret'] || (req.body && req.body.bootstrapSecret);
+    const configuredSecret = process.env.ADMIN_BOOTSTRAP_SECRET;
+
+    if (!configuredSecret || !operatorSecret || operatorSecret !== configuredSecret) {
+      return res.status(403).json({
+        success: false,
+        message: 'Unauthorized bootstrap attempt. Operator authorization secret is invalid or not configured on the server.',
+        code: 'BOOTSTRAP_UNAUTHORIZED',
+      });
+    }
+
+    const { email, password, fullName } = req.body || {};
+    const cleanEmail = (email || '').trim().toLowerCase();
+    const cleanName = (fullName || 'College Administrator').trim();
+
+    if (!cleanEmail || !validator.isEmail(cleanEmail)) {
+      return res.status(400).json({
+        success: false,
+        message: 'A valid administrator email address is required.',
+        code: 'INVALID_EMAIL',
+      });
+    }
+
+    if (!password || typeof password !== 'string' || password.length < 8) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password must be at least 8 characters long.',
+        code: 'WEAK_PASSWORD',
+      });
+    }
+
+    const hasLetter = /[a-zA-Z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    if (!hasLetter || !hasNumber) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password must contain at least one letter and one number.',
+        code: 'WEAK_PASSWORD',
+      });
+    }
+
+    const result = await transaction(async (client) => {
+      // 1. One-time guarantee: Check if ANY administrator already exists
+      const existingAdmin = await client.query(
+        "SELECT id, email FROM users WHERE role = 'admin' LIMIT 1"
+      );
+
+      if (existingAdmin.rows.length > 0) {
+        return {
+          aborted: true,
+          reason: 'ADMIN_ALREADY_EXISTS',
+        };
+      }
+
+      const parts = cleanName.split(/\s+/);
+      const firstName = parts[0] || 'College';
+      const lastName = parts.slice(1).join(' ') || 'Administrator';
+      const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
+
+      const userRes = await client.query(
+        `INSERT INTO users (
+           email, password_hash, role, status, first_name, last_name, created_at, updated_at
+         ) VALUES ($1, $2, 'admin', 'active', $3, $4, NOW(), NOW())
+         RETURNING id, email, role, status, first_name, last_name, created_at`,
+        [cleanEmail, passwordHash, firstName, lastName]
+      );
+
+      const newAdmin = userRes.rows[0];
+
+      await client.query(
+        'INSERT INTO user_settings (user_id) VALUES ($1) ON CONFLICT DO NOTHING',
+        [newAdmin.id]
+      ).catch(() => {});
+
+      return {
+        aborted: false,
+        admin: newAdmin,
+      };
+    });
+
+    if (result.aborted) {
+      return res.status(409).json({
+        success: false,
+        message: 'Administrator account already exists. Bootstrap provisioning is permanently disabled once an initial administrator has been provisioned.',
+        code: 'ADMIN_ALREADY_PROVISIONED',
+      });
+    }
+
+    return res.status(201).json({
+      success: true,
+      message: 'Initial College Admin account provisioned successfully.',
+      admin: {
+        id: result.admin.id,
+        email: result.admin.email,
+        role: result.admin.role,
+        status: result.admin.status,
+        fullName: `${result.admin.first_name} ${result.admin.last_name}`.trim(),
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
  * POST /api/v1/auth/login
  */
 router.post('/login', validateLogin, async (req, res, next) => {
@@ -638,12 +751,17 @@ router.post('/login', validateLogin, async (req, res, next) => {
     }
 
     if (userResult.rows.length === 0) {
-      const isFacultyReq = requestedRole === 'faculty';
+      let failMsg = 'Invalid credentials. Please verify your roll number, username, or college email.';
+      if (requestedRole === 'faculty') {
+        failMsg = 'Invalid credentials. Please verify your faculty email or ID.';
+      } else if (requestedRole === 'recruiter') {
+        failMsg = 'Invalid credentials. Please verify your corporate email or password.';
+      } else if (requestedRole === 'admin') {
+        failMsg = 'Invalid credentials. Please verify your administrator email or password.';
+      }
       return res.status(401).json({
         success: false,
-        message: isFacultyReq
-          ? 'Invalid credentials. Please verify your faculty email or ID.'
-          : 'Invalid credentials. Please verify your roll number, username, or college email.',
+        message: failMsg,
         code: 'INVALID_CREDENTIALS',
       });
     }
@@ -744,7 +862,7 @@ router.post('/login', validateLogin, async (req, res, next) => {
       }
     } else if (user.role === 'recruiter') {
       const rp = await query(
-        `SELECT rp.*, c.name AS company_name, c.logo_url
+        `SELECT rp.*, c.name AS company_name, c.logo_url, c.verification_status, c.status AS company_status
          FROM recruiter_profiles rp
          LEFT JOIN companies c ON c.id = rp.company_id
          WHERE rp.user_id = $1`,
@@ -752,6 +870,13 @@ router.post('/login', validateLogin, async (req, res, next) => {
       );
       if (rp.rows.length > 0) {
         const p = rp.rows[0];
+        if (p.company_id && (p.verification_status === 'suspended' || p.company_status === 'suspended')) {
+          return res.status(403).json({
+            success: false,
+            message: 'The corporate partner profile associated with this recruiter account has been suspended by the placement administration.',
+            code: 'COMPANY_SUSPENDED',
+          });
+        }
         profileData = {
           companyId: p.company_id,
           companyName: p.company_name,

@@ -117,23 +117,23 @@
         <span class="material-symbols-outlined text-[20px] shrink-0">school</span>
         <span class="font-label-md text-label-md truncate">Student</span>
       </button>
-      <button class="role-tab flex items-center justify-center sm:justify-start gap-2 px-2.5 sm:px-4 py-2.5 sm:py-3 rounded-xl text-left transition-all font-semibold bg-surface-container text-on-surface hover:bg-surface-variant" data-cta="Sign In to Faculty Portal" data-placeholder="dr.sharma@campus.edu.in" data-role="faculty" data-role-label="Faculty" type="button">
+      <button class="role-tab flex items-center justify-center sm:justify-start gap-2 px-2.5 sm:px-4 py-2.5 sm:py-3 rounded-xl text-left transition-all font-semibold bg-surface-container text-on-surface hover:bg-surface-variant" data-cta="Sign In to Faculty Portal" data-placeholder="faculty@example.com or Employee ID" data-role="faculty" data-role-label="Faculty" type="button">
         <span class="material-symbols-outlined text-[20px] shrink-0">badge</span>
         <span class="font-label-md text-label-md truncate">Faculty</span>
       </button>
-      <button class="role-tab flex items-center justify-center sm:justify-start gap-2 px-2.5 sm:px-4 py-2.5 sm:py-3 rounded-xl text-left transition-all font-semibold bg-surface-container text-on-surface hover:bg-surface-variant" data-cta="Sign In to Admin Console" data-placeholder="admin@campus.edu.in" data-role="admin" data-role-label="College Admin" type="button">
+      <button class="role-tab flex items-center justify-center sm:justify-start gap-2 px-2.5 sm:px-4 py-2.5 sm:py-3 rounded-xl text-left transition-all font-semibold bg-surface-container text-on-surface hover:bg-surface-variant" data-cta="Sign In to Admin Console" data-placeholder="admin@example.com" data-role="admin" data-role-label="College Admin" type="button">
         <span class="material-symbols-outlined text-[20px] shrink-0">admin_panel_settings</span>
         <span class="font-label-md text-label-md truncate">Admin</span>
       </button>
-      <button class="role-tab flex items-center justify-center sm:justify-start gap-2 px-2.5 sm:px-4 py-2.5 sm:py-3 rounded-xl text-left transition-all font-semibold bg-surface-container text-on-surface hover:bg-surface-variant" data-cta="Sign In to Placement Office" data-placeholder="tpo@campus.edu.in" data-role="tpo" data-role-label="Placement Officer" type="button">
+      <button class="role-tab flex items-center justify-center sm:justify-start gap-2 px-2.5 sm:px-4 py-2.5 sm:py-3 rounded-xl text-left transition-all font-semibold bg-surface-container text-on-surface hover:bg-surface-variant" data-cta="Sign In to Placement Office" data-placeholder="tpo@example.com" data-role="tpo" data-role-label="Placement Officer" type="button">
         <span class="material-symbols-outlined text-[20px] shrink-0">work</span>
         <span class="font-label-md text-label-md truncate">Placement</span>
       </button>
-      <button class="role-tab flex items-center justify-center sm:justify-start gap-2 px-2.5 sm:px-4 py-2.5 sm:py-3 rounded-xl text-left transition-all font-semibold bg-surface-container text-on-surface hover:bg-surface-variant" data-cta="Sign In to Guild Hub" data-placeholder="cultural@campus.edu.in" data-role="coordinator" data-role-label="Event / Club Coordinator" type="button">
+      <button class="role-tab flex items-center justify-center sm:justify-start gap-2 px-2.5 sm:px-4 py-2.5 sm:py-3 rounded-xl text-left transition-all font-semibold bg-surface-container text-on-surface hover:bg-surface-variant" data-cta="Sign In to Guild Hub" data-placeholder="coordinator@example.com" data-role="coordinator" data-role-label="Event / Club Coordinator" type="button">
         <span class="material-symbols-outlined text-[20px] shrink-0">celebration</span>
         <span class="font-label-md text-label-md truncate">Clubs &amp; Events</span>
       </button>
-      <button class="role-tab flex items-center justify-center sm:justify-start gap-2 px-2.5 sm:px-4 py-2.5 sm:py-3 rounded-xl text-left transition-all font-semibold bg-surface-container text-on-surface hover:bg-surface-variant" data-cta="Sign In to Recruiter ATS" data-placeholder="hr@company.com" data-role="recruiter" data-role-label="Company / HR" type="button">
+      <button class="role-tab flex items-center justify-center sm:justify-start gap-2 px-2.5 sm:px-4 py-2.5 sm:py-3 rounded-xl text-left transition-all font-semibold bg-surface-container text-on-surface hover:bg-surface-variant" data-cta="Sign In to Recruiter ATS" data-placeholder="recruiter@company.com" data-role="recruiter" data-role-label="Company / HR" type="button">
         <span class="material-symbols-outlined text-[20px] shrink-0">apartment</span>
         <span class="font-label-md text-label-md truncate">Recruiter / HR</span>
       </button>
@@ -462,7 +462,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
           <div class="flex flex-col gap-1">
             <label class="font-label-md text-label-md text-on-surface" for="regFacEmail">Institutional Email (@met.edu) *</label>
-            <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regFacEmail" placeholder="dr.deshmukh@met.edu" required type="email">
+            <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regFacEmail" placeholder="faculty@university.edu" required type="email">
           </div>
           <div class="flex flex-col gap-1">
             <label class="font-label-md text-label-md text-on-surface" for="regFacPhone">Mobile / Contact Phone</label>
@@ -829,33 +829,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const ROLE_CONFIGS = {
     student: {
-      label: 'Student Roll No. or Institutional Email',
-      placeholder: 'rollno@campus.edu.in or 2022CS8901',
+      label: 'Student Roll No. or Email Address',
+      placeholder: '2023CS9999 or student@campus.edu.in',
       cta: 'Sign In to Student Portal',
     },
     faculty: {
-      label: 'Faculty Employee ID or Institutional Email',
-      placeholder: 'FAC042 or dr.sharma@campus.edu.in',
+      label: 'Email Address or Employee ID',
+      placeholder: 'faculty@example.com or Employee ID',
       cta: 'Sign In to Faculty Portal',
     },
     admin: {
-      label: 'Authorized College Admin Email',
-      placeholder: 'admin@campus.edu.in',
+      label: 'Administrator Email',
+      placeholder: 'admin@example.com',
       cta: 'Sign In to Admin Console',
     },
     tpo: {
-      label: 'Placement Officer Institutional Email',
-      placeholder: 'tpo@campus.edu.in',
+      label: 'Placement Officer Email',
+      placeholder: 'tpo@example.com',
       cta: 'Sign In to Placement Office',
     },
     coordinator: {
-      label: 'Coordinator Institutional Email',
-      placeholder: 'coordinator@campus.edu.in',
+      label: 'Coordinator Email',
+      placeholder: 'coordinator@example.com',
       cta: 'Sign In to Guild Hub',
     },
     recruiter: {
-      label: 'Corporate Recruiter Email',
-      placeholder: 'hr@company.com',
+      label: 'Email Address',
+      placeholder: 'recruiter@company.com',
       cta: 'Sign In to Recruiter ATS',
     },
   };
