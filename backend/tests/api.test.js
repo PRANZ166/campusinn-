@@ -13,6 +13,18 @@ describe('Campus Inn+ Backend API Suite', () => {
     const res = await request(app).get('/api/health');
     expect(res.statusCode).toEqual(200);
     expect(res.body.status).toEqual('healthy');
+    expect(res.body.database).toBeDefined();
+  });
+
+  it('GET /health should return 200, healthy status, and database status without leaking secrets', async () => {
+    const res = await request(app).get('/health');
+    expect(res.statusCode).toEqual(200);
+    expect(res.body.status).toEqual('healthy');
+    expect(res.body.database).toBeDefined();
+    expect(res.body.timestamp).toBeDefined();
+    expect(JSON.stringify(res.body)).not.toContain('password');
+    expect(JSON.stringify(res.body)).not.toContain('postgres://');
+    expect(JSON.stringify(res.body)).not.toContain('postgresql://');
   });
 
   it('GET /api/v1/events should return campus events', async () => {

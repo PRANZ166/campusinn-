@@ -31,7 +31,12 @@ const API = (() => {
       if (protocol === 'file:' || (isLocal && port && port !== '3000')) {
         return 'http://localhost:3000/api/v1';
       }
-      // In remote / production environment (e.g. Vercel), route directly to Render backend
+      // When hosted on Vercel (*.vercel.app), use relative '/api/v1' to route through
+      // Vercel's edge rewrites directly to Render, eliminating cross-origin CORS latency
+      if (hostname && typeof hostname.endsWith === 'function' && hostname.endsWith('.vercel.app')) {
+        return '/api/v1';
+      }
+      // In remote / production environment (e.g. Render backend directly or other origin), route directly to Render backend
       if (!isLocal) {
         return 'https://campus-inn-backend.onrender.com/api/v1';
       }
@@ -51,7 +56,7 @@ const API = (() => {
    * Handles timeout, error catching, loading states, and endpoint audit
    */
   async function request(endpoint, options = {}) {
-    const url = `${BASE_URL}${endpoint}`;
+    let url = `${BASE_URL}${endpoint}`;
     const headers = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
@@ -64,17 +69,41 @@ const API = (() => {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
-    try {
+    const executeFetch = async (targetUrl) => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 30000);
+      try {
+        const response = await fetch(targetUrl, {
+          ...options,
+          headers,
+          credentials: 'include',
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        return response;
+      } catch (e) {
+        clearTimeout(timeoutId);
+        throw e;
+      }
+    };
 
-      const response = await fetch(url, {
-        ...options,
-        headers,
-        credentials: 'include',
-        signal: controller.signal
-      });
-      clearTimeout(timeoutId);
+    try {
+      let response;
+      try {
+        response = await executeFetch(url);
+      } catch (fetchErr) {
+        // Fallback: If running on Vercel and relative /api/v1 failed with a network error,
+        // retry directly against the production Render backend URL.
+        const isRelative = url.startsWith('/api/');
+        if (isRelative && typeof window !== 'undefined' && window.location && window.location.hostname && typeof window.location.hostname.endsWith === 'function' && window.location.hostname.endsWith('.vercel.app')) {
+          const directUrl = `https://campus-inn-backend.onrender.com${url}`;
+          console.warn(`[Campus Inn+ API] Proxy request ${url} encountered network issue (${fetchErr.message}). Retrying via direct Render endpoint...`);
+          response = await executeFetch(directUrl);
+          url = directUrl;
+        } else {
+          throw fetchErr;
+        }
+      }
 
       if (!response.ok) {
         if (response.status === 404) {
@@ -94,7 +123,12 @@ const API = (() => {
       let errorMessage = err.message || 'Network request failed';
       if (err.name === 'AbortError') {
         errorMessage = 'Server response timed out. The backend server may be waking up from cold start; please retry in a few seconds.';
-      } else if (errorMessage === 'Failed to fetch') {
+      } else if (
+        errorMessage === 'Failed to fetch' ||
+        (err.name === 'TypeError' && typeof err.message === 'string' && err.message.toLowerCase().includes('fetch')) ||
+        errorMessage.includes('NetworkError') ||
+        errorMessage.includes('Load failed')
+      ) {
         errorMessage = 'Unable to reach backend server. Please verify your connection or retry in a moment.';
       }
       return {

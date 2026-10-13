@@ -68,7 +68,7 @@ const config = {
   rateLimit: {
     windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS, 10) || 15 * 60 * 1000,
     max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS, 10) || 100,
-    loginMax: parseInt(process.env.LOGIN_RATE_LIMIT_MAX, 10) || 10,
+    loginMax: parseInt(process.env.LOGIN_RATE_LIMIT_MAX, 10) || 60,
   },
 
   cookie: {

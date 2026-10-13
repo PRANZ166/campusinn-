@@ -3,6 +3,10 @@
   "trailingSlash": false,
   "rewrites": [
     {
+      "source": "/health",
+      "destination": "https://campus-inn-backend.onrender.com/health"
+    },
+    {
       "source": "/api/:match*",
       "destination": "https://campus-inn-backend.onrender.com/api/:match*"
     }

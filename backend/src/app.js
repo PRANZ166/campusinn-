@@ -20,6 +20,7 @@ const rateLimit = require('express-rate-limit');
 const jwt = require('jsonwebtoken');
 
 const config = require('./config');
+const { pool } = require('./db/pool');
 const { errorHandler, notFoundHandler } = require('./middleware/error');
 
 // Import routes
@@ -69,7 +70,17 @@ const corsOptions = {
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+  allowedHeaders: [
+    'Content-Type',
+    'Authorization',
+    'X-Requested-With',
+    'Accept',
+    'Origin',
+    'x-admin-operator-secret',
+    'x-admin-bootstrap-secret',
+    'X-Admin-Operator-Secret',
+    'X-Admin-Bootstrap-Secret',
+  ],
   exposedHeaders: ['Set-Cookie'],
   maxAge: 86400,
 };
@@ -169,10 +180,18 @@ app.use('/api/v1/admin', adminRoutes);
 app.use('/api/v1/notifications', notificationRoutes);
 app.use('/api/v1/search', searchRoutes);
 
-// Health check endpoint
-app.get('/api/health', (req, res) => {
+// Health check endpoints (both /health and /api/health with database connectivity verification)
+app.get(['/health', '/api/health'], async (req, res) => {
+  let dbStatus = 'healthy';
+  try {
+    await pool.query('SELECT 1 AS alive');
+  } catch (err) {
+    dbStatus = 'unreachable';
+  }
+
   res.status(200).json({
     status: 'healthy',
+    database: dbStatus,
     timestamp: new Date().toISOString(),
     env: config.env,
   });
