@@ -19,6 +19,7 @@ const {
   validateResetPassword,
 } = require('../middleware/validate');
 const emailService = require('../services/email');
+const { notifyAllAdmins } = require('../services/notificationService');
 
 const router = express.Router();
 const SALT_ROUNDS = 12;
@@ -304,6 +305,14 @@ router.post('/register/faculty', validateFacultyRegister, async (req, res, next)
 
     await query('INSERT INTO user_settings (user_id) VALUES ($1) ON CONFLICT DO NOTHING', [newUser.id]).catch(() => {});
 
+    // Notify administrators of pending faculty registration awaiting institutional verification
+    await notifyAllAdmins(
+      `New Faculty Registration: ${firstName} ${lastName}`,
+      `${firstName} ${lastName} has submitted an institutional faculty registration (${cleanEmpId}, ${department || 'Computer Engineering & IT'}). Administrator approval is required to activate portal privileges.`,
+      'academic',
+      'admin.html#pending'
+    ).catch(() => {});
+
     return res.status(201).json({
       success: true,
       message: 'Faculty registration submitted successfully. Your account is pending administrator approval before portal access is activated.',
@@ -392,6 +401,14 @@ router.post('/register/coordinator', validateCoordinatorRegister, async (req, re
     });
 
     await query('INSERT INTO user_settings (user_id) VALUES ($1) ON CONFLICT DO NOTHING', [newUser.id]).catch(() => {});
+
+    // Notify administrators of pending event coordinator request
+    await notifyAllAdmins(
+      `New Event Coordinator Request: ${firstName} ${lastName}`,
+      `${firstName} ${lastName} requested coordinator authorization for ${department || 'Central Campus Guild'} (${clubName || 'Student Activities & Clubs'}). Review and grant scoped permissions.`,
+      'event',
+      'admin.html#pending'
+    ).catch(() => {});
 
     return res.status(201).json({
       success: true,
@@ -510,6 +527,14 @@ router.post('/register/recruiter', validateRecruiterRegister, async (req, res, n
     }
 
     await query('INSERT INTO user_settings (user_id) VALUES ($1) ON CONFLICT DO NOTHING', [newUser.id]).catch(() => {});
+
+    // Notify administrators of corporate partner verification request
+    await notifyAllAdmins(
+      `New Corporate Partner Verification Request: ${cleanCompany}`,
+      `${firstName} ${lastName} from ${cleanCompany} has submitted corporate partner credentials awaiting administrative verification.`,
+      'placement',
+      'admin.html#pending'
+    ).catch(() => {});
 
     return res.status(201).json({
       success: true,

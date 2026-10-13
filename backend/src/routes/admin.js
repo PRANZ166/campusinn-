@@ -39,20 +39,7 @@ async function recordAuditLog(actorId, action, entityType, entityId, details = {
   }
 }
 
-/**
- * Dispatch an in-app notification to a specific user
- */
-async function createNotification(userId, title, message, type = 'info', link = null) {
-  try {
-    await query(
-      `INSERT INTO notifications (user_id, title, message, type, link, is_read, created_at)
-       VALUES ($1, $2, $3, $4, $5, false, NOW())`,
-      [userId, title, message, type, link]
-    );
-  } catch (err) {
-    console.warn('[Notification] Warning: could not create notification:', err.message);
-  }
-}
+const { createNotification, notifyAllAdmins } = require('../services/notificationService');
 
 /**
  * Helper: Check whether request has authorized operator credentials
@@ -295,6 +282,24 @@ router.post('/users/:id/approve', authenticate, authorize('admin'), async (req, 
 
     const targetUser = userRes.rows[0];
 
+    // 1. Self-approval prohibition
+    if (req.user && req.user.id === targetUser.id) {
+      return res.status(403).json({
+        success: false,
+        message: 'Self-approval is strictly prohibited. An administrator cannot approve their own account.',
+        code: 'SELF_APPROVAL_PROHIBITED',
+      });
+    }
+
+    // 2. Prevent duplicate approval
+    if (targetUser.status === 'active') {
+      return res.status(409).json({
+        success: false,
+        message: 'Target user account has already been approved and is currently active.',
+        code: 'ALREADY_APPROVED',
+      });
+    }
+
     const result = await transaction(async (client) => {
       // 1. Activate user
       const updated = await client.query(
@@ -353,6 +358,14 @@ router.post('/users/:id/approve', authenticate, authorize('admin'), async (req, 
       'login.html'
     );
 
+    // Notify administrators of verified approval
+    await notifyAllAdmins(
+      `Registration Approved: ${targetUser.email}`,
+      `Account for ${result.first_name} ${result.last_name} (${targetUser.role}) was approved by ${req.user.email}.`,
+      'info',
+      'admin.html#users'
+    ).catch(() => {});
+
     return res.status(200).json({
       success: true,
       message: `Account for ${result.first_name} ${result.last_name} (${result.email}) approved successfully.`,
@@ -389,7 +402,25 @@ router.post('/users/:id/reject', authenticate, authorize('admin'), async (req, r
 
     const targetUser = userRes.rows[0];
 
-    // Safety check: Cannot reject the acting admin or the last active admin
+    // Safety check: Cannot reject oneself
+    if (req.user && req.user.id === targetUser.id) {
+      return res.status(403).json({
+        success: false,
+        message: 'Administrators cannot reject or suspend their own active administrator account.',
+        code: 'CANNOT_REJECT_SELF',
+      });
+    }
+
+    // Prevent re-rejecting already finalized/suspended account
+    if (targetUser.status === 'suspended') {
+      return res.status(409).json({
+        success: false,
+        message: 'Target user account has already been rejected/suspended.',
+        code: 'ALREADY_FINALIZED',
+      });
+    }
+
+    // Safety check: Cannot reject the last active admin
     if (targetUser.role === 'admin') {
       const activeAdminCountRes = await query("SELECT COUNT(*) AS count FROM users WHERE role = 'admin' AND status = 'active'");
       const count = parseInt(activeAdminCountRes.rows[0].count, 10);
@@ -441,6 +472,14 @@ router.post('/users/:id/reject', authenticate, authorize('admin'), async (req, r
       `Your account registration was not approved: ${reason}`,
       'error'
     );
+
+    // Notify administrators of rejection event
+    await notifyAllAdmins(
+      `Registration Rejected: ${targetUser.email}`,
+      `Account registration for ${targetUser.email} (${targetUser.role}) was rejected by ${req.user.email}. Reason: ${reason}`,
+      'info',
+      'admin.html#users'
+    ).catch(() => {});
 
     return res.status(200).json({
       success: true,
@@ -575,6 +614,15 @@ router.post('/users/:id/grant-admin', authenticate, authorize('admin'), async (r
 
     const targetUser = userRes.rows[0];
 
+    // Prevent self-delegation
+    if (req.user && req.user.id === targetUser.id) {
+      return res.status(403).json({
+        success: false,
+        message: 'Self-delegation is prohibited. An administrator cannot re-grant privileges to themselves.',
+        code: 'SELF_DELEGATION_PROHIBITED',
+      });
+    }
+
     if (targetUser.role === 'admin') {
       return res.status(400).json({
         success: false,
@@ -614,6 +662,14 @@ router.post('/users/:id/grant-admin', authenticate, authorize('admin'), async (r
       'You have been granted College Administrator privileges across Campus Inn+ by the executive office.',
       'info'
     );
+
+    // Notify other administrators of new admin delegation
+    await notifyAllAdmins(
+      `Administrator Role Granted: ${updatedUser.email}`,
+      `College Administrator privileges granted to ${updatedUser.first_name} ${updatedUser.last_name} by ${req.user.email}.`,
+      'info',
+      'admin.html#admin-security'
+    ).catch(() => {});
 
     return res.status(200).json({
       success: true,
@@ -712,6 +768,14 @@ router.post('/users/:id/revoke-admin', authenticate, authorize('admin'), async (
       `Your College Administrator privileges have been revoked by the executive administration. Your role has been adjusted to ${cleanFallback}.`,
       'warning'
     );
+
+    // Notify other administrators of revocation
+    await notifyAllAdmins(
+      `Administrator Role Revoked: ${targetUser.email}`,
+      `College Administrator privileges for ${targetUser.email} were revoked by ${req.user.email}. Fallback role: ${cleanFallback}.`,
+      'warning',
+      'admin.html#admin-security'
+    ).catch(() => {});
 
     return res.status(200).json({
       success: true,
