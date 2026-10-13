@@ -1493,19 +1493,32 @@ describe('Campus Inn+ Backend API Suite', () => {
       expect(res.body.requiresApproval).toBe(true);
     });
 
-    it('15. Faculty self-registration rejects non-institutional email addresses', async () => {
+    it('15. Faculty self-registration accepts standard email addresses regardless of educational domain', async () => {
       const res = await request(app)
         .post('/api/v1/auth/register/faculty')
         .send({
-          fullName: 'Fake User',
-          email: 'fake.user@gmail.com',
+          fullName: 'Prof. External Teacher',
+          email: 'external.teacher@gmail.com',
           password: 'Password123',
-          employeeId: 'EMP999',
-          department: 'IT',
+          employeeId: 'EMP_EXT_999',
+          department: 'Computer Engineering',
+          designation: 'Visiting Faculty',
         });
 
-      expect(res.statusCode).toEqual(400);
-      expect(res.body.code).toEqual('INVALID_INSTITUTIONAL_EMAIL');
+      expect([201, 200]).toContain(res.statusCode);
+      expect(res.body.success).toBe(true);
+
+      // Verify malformed email format is rejected
+      const badRes = await request(app)
+        .post('/api/v1/auth/register/faculty')
+        .send({
+          fullName: 'Bad Format',
+          email: 'not-an-email',
+          password: 'Password123',
+          employeeId: 'EMP_BAD_999',
+          department: 'IT',
+        });
+      expect(badRes.statusCode).toEqual(400);
     });
 
     it('16. Faculty data isolation: authenticated faculty member can view their own profile only', async () => {
@@ -1711,18 +1724,31 @@ describe('Campus Inn+ Backend API Suite', () => {
       expect(res.body.user.email).toEqual('vikram.coordinator@met.edu');
     });
 
-    it('2. Coordinator self-registration rejects non-institutional email addresses', async () => {
+    it('2. Coordinator self-registration accepts standard email addresses regardless of educational domain', async () => {
       const res = await request(app)
         .post('/api/v1/auth/register/coordinator')
         .send({
-          fullName: 'External Person',
-          email: 'vikram@gmail.com',
+          fullName: 'Vikram Club Lead',
+          email: 'vikram.lead@gmail.com',
           password: 'Password123',
           department: 'Cultural',
+          clubName: 'Music Society',
         });
 
-      expect(res.statusCode).toEqual(400);
-      expect(res.body.code).toEqual('INVALID_INSTITUTIONAL_EMAIL');
+      expect([201, 200]).toContain(res.statusCode);
+      expect(res.body.success).toBe(true);
+
+      // Verify malformed email format is rejected
+      const badRes = await request(app)
+        .post('/api/v1/auth/register/coordinator')
+        .send({
+          fullName: 'Bad Format',
+          email: 'not-an-email',
+          password: 'Password123',
+          department: 'Cultural',
+          clubName: 'Music Society',
+        });
+      expect(badRes.statusCode).toEqual(400);
     });
 
     it('3. Coordinator self-registration allows shared institutional email and creates pending account', async () => {

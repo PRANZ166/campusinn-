@@ -211,17 +211,7 @@ function validateFacultyRegister(req, res, next) {
   }
 
   if (!email || !validateEmail(email)) {
-    errors.push('A valid institutional email address is required.');
-  } else {
-    const cleanEmail = email.trim().toLowerCase();
-    const isInstitutional = /@(?:[a-zA-Z0-9-]+\.)*(?:met\.edu|campus\.edu\.in|edu\.in|ac\.in|edu)$/i.test(cleanEmail);
-    if (!isInstitutional) {
-      return res.status(400).json({
-        success: false,
-        message: 'Faculty registration requires an accredited institutional email address (e.g., @met.edu, @campus.edu.in).',
-        code: 'INVALID_INSTITUTIONAL_EMAIL',
-      });
-    }
+    errors.push('A valid email address is required.');
   }
 
   if (!password || typeof password !== 'string' || password.length < 8) {
@@ -310,17 +300,7 @@ function validateCoordinatorRegister(req, res, next) {
   }
 
   if (!email || !validateEmail(email)) {
-    errors.push('A valid institutional email address is required.');
-  } else {
-    const cleanEmail = email.trim().toLowerCase();
-    const isInstitutional = /@(?:[a-zA-Z0-9-]+\.)*(?:met\.edu|campus\.edu\.in|edu\.in|ac\.in|edu)$/i.test(cleanEmail);
-    if (!isInstitutional) {
-      return res.status(400).json({
-        success: false,
-        message: 'Coordinator registration requires an accredited institutional email address (e.g., @met.edu, @campus.edu.in).',
-        code: 'INVALID_INSTITUTIONAL_EMAIL',
-      });
-    }
+    errors.push('A valid email address is required.');
   }
 
   if (!password || typeof password !== 'string' || password.length < 8) {

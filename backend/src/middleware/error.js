@@ -59,6 +59,31 @@ function errorHandler(err, req, res, next) {
     });
   }
 
+  // Handle PostgreSQL unique constraint violations (code 23505)
+  if (err.code === '23505') {
+    const detail = `${err.constraint || ''} ${err.detail || ''} ${err.message || ''}`.toLowerCase();
+    let message = 'A record with these unique details already exists.';
+    let code = 'DUPLICATE_RECORD';
+    if (detail.includes('roll')) {
+      message = 'A student account with this roll number already exists. Please sign in or verify your roll number.';
+      code = 'DUPLICATE_ROLL_NUMBER';
+    } else if (detail.includes('email')) {
+      message = 'An account with this email address already exists. Please sign in or use a different email.';
+      code = 'DUPLICATE_EMAIL';
+    } else if (detail.includes('employee_id')) {
+      message = 'A faculty member with this employee ID already exists.';
+      code = 'DUPLICATE_EMPLOYEE_ID';
+    } else if (detail.includes('username')) {
+      message = 'An account with this username or identifier already exists.';
+      code = 'DUPLICATE_USERNAME';
+    }
+    return res.status(409).json({
+      success: false,
+      message,
+      code,
+    });
+  }
+
   res.status(statusCode).json({
     success: false,
     message: err.message || 'Internal server error occurred.',

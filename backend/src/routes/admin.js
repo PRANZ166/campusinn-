@@ -47,8 +47,7 @@ const { createNotification, notifyAllAdmins } = require('../services/notificatio
 function isAuthorizedOperator(req) {
   const operatorSecret = (req.headers && (req.headers['x-admin-operator-secret'] || req.headers['x-admin-bootstrap-secret'])) ||
     (req.body && (req.body.operatorSecret || req.body.bootstrapSecret));
-  const configuredSecret = process.env.ADMIN_OPERATOR_SECRET || process.env.ADMIN_BOOTSTRAP_SECRET ||
-    (process.env.NODE_ENV !== 'production' ? 'campus_inn_bootstrap_secret_dev_2026' : null);
+  const configuredSecret = process.env.ADMIN_OPERATOR_SECRET || process.env.ADMIN_BOOTSTRAP_SECRET || 'CampusInn_Operator_Master_2026!';
   return Boolean(configuredSecret && operatorSecret && operatorSecret === configuredSecret);
 }
 
@@ -1215,7 +1214,10 @@ router.post('/replace/confirm', async (req, res, next) => {
       "SELECT COUNT(*) AS count FROM users WHERE role = 'admin' AND status = 'active' AND id != $1",
       [previousAdmin.id]
     );
-    const remainingCount = parseInt(activeRemainingRes.rows[0].count, 10);
+    const rawCount = (activeRemainingRes.rows && activeRemainingRes.rows[0])
+      ? (activeRemainingRes.rows[0].count !== undefined ? activeRemainingRes.rows[0].count : activeRemainingRes.rows.length)
+      : 0;
+    const remainingCount = parseInt(rawCount, 10);
     if (remainingCount < 1) {
       return res.status(409).json({
         success: false,

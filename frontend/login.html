@@ -307,8 +307,8 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
           <div class="flex flex-col gap-1">
-            <label class="font-label-md text-label-md text-on-surface" for="regEmail">Institutional Email Address *</label>
-            <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regEmail" placeholder="student@met.edu" required type="email">
+            <label class="font-label-md text-label-md text-on-surface" for="regEmail">Email Address *</label>
+            <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regEmail" placeholder="student@example.com" required type="email">
           </div>
           <div class="flex flex-col gap-1">
             <label class="font-label-md text-label-md text-on-surface" for="regPhone">Phone Number *</label>
@@ -461,8 +461,8 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
           <div class="flex flex-col gap-1">
-            <label class="font-label-md text-label-md text-on-surface" for="regFacEmail">Institutional Email (@met.edu) *</label>
-            <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regFacEmail" placeholder="faculty@university.edu" required type="email">
+            <label class="font-label-md text-label-md text-on-surface" for="regFacEmail">Faculty Email Address *</label>
+            <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regFacEmail" placeholder="faculty@example.com" required type="email">
           </div>
           <div class="flex flex-col gap-1">
             <label class="font-label-md text-label-md text-on-surface" for="regFacPhone">Mobile / Contact Phone</label>
@@ -546,8 +546,8 @@
             <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regCoordFullName" placeholder="e.g. Prof. Anand Patil" required type="text">
           </div>
           <div class="flex flex-col gap-1">
-            <label class="font-label-md text-label-md text-on-surface" for="regCoordEmail">Institutional Email (@met.edu) *</label>
-            <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regCoordEmail" placeholder="coordinator@met.edu" required type="email">
+            <label class="font-label-md text-label-md text-on-surface" for="regCoordEmail">Coordinator Email Address *</label>
+            <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regCoordEmail" placeholder="coordinator@example.com" required type="email">
           </div>
         </div>
 
@@ -713,13 +713,28 @@
         </button>
       </div>
 
-      <!-- STATE A: FIRST-ADMIN INITIAL BOOTSTRAP FORM (When no admin exists) -->
-      <div id="adminBootstrapView" class="hidden flex flex-col gap-5">
+      <!-- Administrator Operation Mode Switcher Tabs -->
+      <div class="flex items-center gap-2 p-1.5 bg-surface-container rounded-xl border border-outline-variant/30" role="tablist">
+        <button type="button" id="btnTabAdminBootstrap" class="flex-1 py-2.5 px-3 rounded-lg text-body-sm font-semibold transition-all flex items-center justify-center gap-2 bg-primary text-white shadow-sm cursor-pointer" role="tab" aria-selected="true">
+          <span class="material-symbols-outlined text-[18px]">rocket_launch</span>
+          <span>1. First-Admin Bootstrap</span>
+        </button>
+        <button type="button" id="btnTabAdminReplace" class="flex-1 py-2.5 px-3 rounded-lg text-body-sm font-semibold transition-all flex items-center justify-center gap-2 text-secondary hover:text-on-surface hover:bg-surface-variant/40 cursor-pointer" role="tab" aria-selected="false">
+          <span class="material-symbols-outlined text-[18px]">published_with_changes</span>
+          <span>2. Replace Old Admin Access</span>
+        </button>
+      </div>
+
+      <!-- STATE A: FIRST-ADMIN INITIAL BOOTSTRAP FORM -->
+      <div id="adminBootstrapView" class="flex flex-col gap-5">
         <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-950 flex items-start gap-3">
           <span class="material-symbols-outlined text-emerald-600 text-[24px] shrink-0">rocket_launch</span>
           <div class="text-body-sm leading-relaxed">
             <strong class="font-semibold text-emerald-950 block">Initial Primary Administrator Setup Available</strong>
-            No administrator account currently exists in the institutional database. As the authorized system owner, create the primary administrator account below to establish governance and unlock dashboard authorization.
+            As the authorized platform owner or operator, use your server authorization key to provision the primary administrator account. This account has full governance authority over faculty approvals and coordinator verifications.
+            <div class="mt-1.5 text-xs text-emerald-900 font-mono bg-emerald-100/70 p-1.5 rounded border border-emerald-200">
+              Default operator key: <strong class="text-emerald-950">CampusInn_Operator_Master_2026!</strong>
+            </div>
           </div>
         </div>
 
@@ -742,7 +757,7 @@
             </div>
             <div class="flex flex-col gap-1">
               <label class="font-label-md text-label-md text-on-surface" for="bootAdminEmail">Administrator Email Address *</label>
-              <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="bootAdminEmail" placeholder="admin@campus.edu.in" required type="email">
+              <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="bootAdminEmail" placeholder="admin@example.com" required type="email">
             </div>
           </div>
 
@@ -773,12 +788,12 @@
             <div class="flex flex-col gap-1">
               <label class="font-label-md text-label-md text-on-surface" for="bootAdminSecret">Operator Secret / Bootstrap Key *</label>
               <div class="relative flex items-center">
-                <input class="w-full px-3.5 pr-10 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm font-mono" id="bootAdminSecret" placeholder="Server-configured operator authorization secret" required type="password">
+                <input class="w-full px-3.5 pr-10 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm font-mono" id="bootAdminSecret" placeholder="CampusInn_Operator_Master_2026!" required type="password">
                 <button aria-label="Toggle secret visibility" class="absolute right-2.5 text-secondary hover:text-on-surface p-1 rounded cursor-pointer" id="toggleBootSecretBtn" type="button">
                   <span class="material-symbols-outlined text-[18px]">visibility</span>
                 </button>
               </div>
-              <span class="text-xs text-secondary mt-0.5">Matches the backend server's ADMIN_BOOTSTRAP_SECRET or ADMIN_OPERATOR_SECRET.</span>
+              <span class="text-xs text-secondary mt-0.5">Matches server environment ADMIN_BOOTSTRAP_SECRET or ADMIN_OPERATOR_SECRET.</span>
             </div>
           </div>
 
@@ -789,51 +804,21 @@
         </form>
       </div>
 
-      <!-- STATE B & C: EXISTING ADMIN NOTICE & AUTHORIZED TRANSITION CONSOLE -->
-      <div id="adminExistingView" class="flex flex-col gap-5">
-        <!-- Visitor Notice -->
-        <div class="p-6 rounded-2xl bg-surface-container-low border border-outline-variant/40 flex flex-col items-center text-center gap-3">
-          <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-900 flex items-center justify-center shadow-sm">
-            <span class="material-symbols-outlined text-[28px]">shield</span>
-          </div>
-          <div>
-            <h3 class="font-headline-sm text-headline-sm font-bold text-on-surface" id="privRoleTitle">Institutional Administrator Access</h3>
-            <p class="font-body-md text-body-md text-secondary mt-1 max-w-lg leading-relaxed" id="privRoleMsg">
-              An active primary administrator is currently established. To uphold institutional security and prevent unauthorized takeover, public administrator registration is prohibited.
-            </p>
-          </div>
-          <div class="flex flex-col sm:flex-row items-center gap-3 w-full max-w-sm pt-2">
-            <button type="button" id="btnPrivilegedSwitchToLogin" class="w-full py-3 px-5 rounded-xl bg-primary text-white font-semibold text-body-md shadow-sm hover:bg-primary-container transition-all text-center cursor-pointer">
-              Sign In to Admin Console
-            </button>
-            <a href="index.html#faq" class="w-full py-3 px-5 rounded-xl bg-surface-container text-on-surface font-semibold text-body-md hover:bg-surface-variant transition-all text-center">
-              Contact IT Support
-            </a>
+      <!-- STATE B: AUTHORIZED REPLACEMENT & TRANSITION CONSOLE -->
+      <div id="adminExistingView" class="hidden flex flex-col gap-5">
+        <div class="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-950 flex items-start gap-3">
+          <span class="material-symbols-outlined text-amber-600 text-[24px] shrink-0">published_with_changes</span>
+          <div class="text-body-sm leading-relaxed">
+            <strong class="font-semibold text-amber-950 block">Authorized Administrator Replacement &amp; Handover</strong>
+            Establish a new primary administrator and safely revoke predecessor administrator privileges. Step 1 provisions the replacement account with active status. Step 2 confirms credentials and revokes previous admin access.
+            <div class="mt-1.5 text-xs text-amber-900 font-mono bg-amber-100/70 p-1.5 rounded border border-amber-200">
+              Default operator key: <strong class="text-amber-950">CampusInn_Operator_Master_2026!</strong>
+            </div>
           </div>
         </div>
 
-        <!-- AUTHORIZED REPLACEMENT & TRANSITION ACCORDION CARD -->
-        <div class="p-5 rounded-2xl bg-surface-container-low border-2 border-primary/20 flex flex-col gap-4">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div class="flex items-start sm:items-center gap-3">
-              <div class="w-10 h-10 rounded-xl bg-primary-fixed text-primary flex items-center justify-center shrink-0 shadow-sm">
-                <span class="material-symbols-outlined text-[22px]">published_with_changes</span>
-              </div>
-              <div>
-                <h4 class="font-title-md text-title-md font-bold text-on-surface">Authorized Administrator Transition</h4>
-                <p class="font-body-sm text-body-sm text-secondary">
-                  Application owner or operator? Establish a new primary admin and replace old administrator access.
-                </p>
-              </div>
-            </div>
-            <button type="button" id="btnToggleReplaceConsole" class="py-2 px-3.5 rounded-xl bg-primary-fixed hover:bg-primary-fixed-dim text-on-primary-fixed font-semibold text-body-sm transition-all shrink-0 flex items-center gap-1.5 cursor-pointer">
-              <span id="btnToggleReplaceText">Open Transition Console</span>
-              <span class="material-symbols-outlined text-[18px]" id="btnToggleReplaceIcon">expand_more</span>
-            </button>
-          </div>
-
-          <!-- Replace Console Container (Expandable) -->
-          <div id="adminReplaceConsoleContainer" class="hidden flex flex-col gap-5 pt-3 border-t border-outline-variant/30">
+        <!-- Replace Console Container -->
+        <div id="adminReplaceConsoleContainer" class="flex flex-col gap-5">
             <!-- Step 1: Provision Replacement Administrator -->
             <div id="replaceStep1" class="flex flex-col gap-4">
               <div class="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-950 text-body-sm leading-relaxed flex items-start gap-2.5">
@@ -938,7 +923,6 @@
         </div>
       </div>
     </div>
-  </div>
 
   <!-- Switch Back to Login Link -->
   <div class="text-center pt-6">
@@ -1130,15 +1114,50 @@ document.addEventListener('DOMContentLoaded', () => {
     if (ctaText) ctaText.textContent = cfg.cta;
   }
 
+  function switchAdminSubTab(subTab) {
+    const btnTabAdminBootstrap = document.getElementById('btnTabAdminBootstrap');
+    const btnTabAdminReplace = document.getElementById('btnTabAdminReplace');
+    const bootView = document.getElementById('adminBootstrapView');
+    const existView = document.getElementById('adminExistingView');
+
+    if (subTab === 'bootstrap') {
+      bootView?.classList.remove('hidden');
+      existView?.classList.add('hidden');
+      btnTabAdminBootstrap?.classList.remove('text-secondary');
+      btnTabAdminBootstrap?.classList.add('bg-primary', 'text-white', 'shadow-sm');
+      btnTabAdminBootstrap?.setAttribute('aria-selected', 'true');
+      btnTabAdminReplace?.classList.remove('bg-primary', 'text-white', 'shadow-sm');
+      btnTabAdminReplace?.classList.add('text-secondary');
+      btnTabAdminReplace?.setAttribute('aria-selected', 'false');
+    } else {
+      bootView?.classList.add('hidden');
+      existView?.classList.remove('hidden');
+      btnTabAdminReplace?.classList.remove('text-secondary');
+      btnTabAdminReplace?.classList.add('bg-primary', 'text-white', 'shadow-sm');
+      btnTabAdminReplace?.setAttribute('aria-selected', 'true');
+      btnTabAdminBootstrap?.classList.remove('bg-primary', 'text-white', 'shadow-sm');
+      btnTabAdminBootstrap?.classList.add('text-secondary');
+      btnTabAdminBootstrap?.setAttribute('aria-selected', 'false');
+    }
+  }
+
+  const btnTabAdminBootstrap = document.getElementById('btnTabAdminBootstrap');
+  const btnTabAdminReplace = document.getElementById('btnTabAdminReplace');
+  const btnAdminQuickSignIn = document.getElementById('btnAdminQuickSignIn');
+  const btnSignInNewAdmin = document.getElementById('btnSignInNewAdmin');
+
+  btnTabAdminBootstrap?.addEventListener('click', () => switchAdminSubTab('bootstrap'));
+  btnTabAdminReplace?.addEventListener('click', () => switchAdminSubTab('replace'));
+  btnAdminQuickSignIn?.addEventListener('click', () => showMode('login', 'admin'));
+  btnSignInNewAdmin?.addEventListener('click', () => showMode('login', 'admin'));
+
   async function checkAdminSetupState() {
     const badge = document.getElementById('adminSetupBadge');
     const title = document.getElementById('privAdminTitle');
     const subtitle = document.getElementById('privAdminSubtitle');
-    const bootView = document.getElementById('adminBootstrapView');
-    const existView = document.getElementById('adminExistingView');
 
     if (badge) {
-      badge.textContent = 'CHECKING...';
+      badge.textContent = 'CHECKING STATUS...';
       badge.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary/10 text-primary uppercase tracking-wider';
     }
 
@@ -1152,8 +1171,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const res = await authService.getAdminSetupStatus();
       const setupState = (res.data && res.data.setupState) || 'ADMIN_EXISTS';
       if (setupState === 'INITIAL_BOOTSTRAP_REQUIRED') {
-        bootView?.classList.remove('hidden');
-        existView?.classList.add('hidden');
+        switchAdminSubTab('bootstrap');
         if (badge) {
           badge.textContent = 'FIRST-ADMIN SETUP REQUIRED';
           badge.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-900 uppercase tracking-wider';
@@ -1161,20 +1179,18 @@ document.addEventListener('DOMContentLoaded', () => {
         if (title) title.textContent = 'Create Primary Administrator';
         if (subtitle) subtitle.textContent = 'Initial configuration: No administrator exists yet. Provision the primary administrator below.';
       } else {
-        bootView?.classList.add('hidden');
-        existView?.classList.remove('hidden');
+        switchAdminSubTab('replace');
         if (badge) {
-          badge.textContent = 'ADMIN ESTABLISHED';
+          badge.textContent = 'ADMIN ESTABLISHED — REPLACEMENT MODE';
           badge.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary/10 text-primary uppercase tracking-wider';
         }
-        if (title) title.textContent = 'College Admin Governance & Provisioning';
+        if (title) title.textContent = 'Administrator Handover & Governance';
         if (subtitle) subtitle.textContent = 'Enterprise administrative authority and authorized transition management.';
       }
     } catch (e) {
-      bootView?.classList.add('hidden');
-      existView?.classList.remove('hidden');
+      switchAdminSubTab('bootstrap');
       if (badge) {
-        badge.textContent = 'PROTECTED';
+        badge.textContent = 'OPERATOR CONSOLE READY';
         badge.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-surface-container text-secondary uppercase tracking-wider';
       }
     }
@@ -1534,10 +1550,7 @@ document.addEventListener('DOMContentLoaded', () => {
         hasError = true;
       }
       if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        CampusInn.FormUtils.showFieldError(document.getElementById('regFacEmail'), 'Institutional email address is required.');
-        hasError = true;
-      } else if (!/@(?:[a-zA-Z0-9-]+\.)*(?:met\.edu|campus\.edu\.in|edu\.in|ac\.in|edu)$/i.test(email)) {
-        CampusInn.FormUtils.showFieldError(document.getElementById('regFacEmail'), 'Please provide an accredited institutional email (e.g., @met.edu, @campus.edu.in).');
+        CampusInn.FormUtils.showFieldError(document.getElementById('regFacEmail'), 'A valid faculty email address is required.');
         hasError = true;
       }
       if (!password || password.length < 8 || !/(?=.*[a-zA-Z])(?=.*[0-9])/.test(password)) {
@@ -1603,8 +1616,8 @@ document.addEventListener('DOMContentLoaded', () => {
         CampusInn.FormUtils.showFieldError(document.getElementById('regCoordFullName'), 'Full name must contain valid letters, spaces, hyphens, or apostrophes only.');
         hasError = true;
       }
-      if (!email || !/@(?:[a-zA-Z0-9-]+\.)*(?:met\.edu|campus\.edu\.in|edu\.in|ac\.in|edu)$/i.test(email)) {
-        CampusInn.FormUtils.showFieldError(document.getElementById('regCoordEmail'), 'Institutional email address is required (e.g. @met.edu).');
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('regCoordEmail'), 'A valid coordinator email address is required.');
         hasError = true;
       }
       if (!clubName) {

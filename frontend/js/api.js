@@ -66,7 +66,7 @@ const API = (() => {
 
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 6000);
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
 
       const response = await fetch(url, {
         ...options,
@@ -91,9 +91,15 @@ const API = (() => {
       return { data: json, error: null, isMock: false, endpoint: url };
     } catch (err) {
       missingEndpoints.add(`${options.method || 'GET'} ${url}`);
+      let errorMessage = err.message || 'Network request failed';
+      if (err.name === 'AbortError') {
+        errorMessage = 'Server response timed out. The backend server may be waking up from cold start; please retry in a few seconds.';
+      } else if (errorMessage === 'Failed to fetch') {
+        errorMessage = 'Unable to reach backend server. Please verify your connection or retry in a moment.';
+      }
       return {
         data: null,
-        error: err.message || 'Network request failed',
+        error: errorMessage,
         isMock: false,
         endpoint: url,
         status: err.status || 0
