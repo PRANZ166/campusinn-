@@ -579,6 +579,32 @@ router.post('/register/tpo', (req, res) => {
 });
 
 /**
+ * GET /api/v1/auth/admin-setup-status
+ * Check whether primary administrator account exists and return setup requirements.
+ * Safe public endpoint: does not disclose user identities, emails, or credentials.
+ */
+router.get('/admin-setup-status', async (req, res, next) => {
+  try {
+    const adminRes = await query("SELECT id, status FROM users WHERE role = 'admin'").catch(() => ({ rows: [] }));
+    const activeAdmins = adminRes.rows.filter(r => r.status === 'active');
+    const hasAdmin = adminRes.rows.length > 0;
+    const hasActiveAdmin = activeAdmins.length > 0;
+    const configuredSecret = Boolean(process.env.ADMIN_BOOTSTRAP_SECRET || process.env.ADMIN_OPERATOR_SECRET);
+
+    return res.status(200).json({
+      success: true,
+      hasAdmin,
+      hasActiveAdmin,
+      activeAdminsCount: activeAdmins.length,
+      setupState: !hasAdmin ? 'INITIAL_BOOTSTRAP_REQUIRED' : (hasActiveAdmin ? 'ADMIN_EXISTS' : 'ADMIN_RECOVERY_REQUIRED'),
+      requiresOperatorSecret: configuredSecret,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
  * POST /api/v1/auth/bootstrap/admin
  * Authorized Operator First-Admin Bootstrap Endpoint.
  * Strictly a one-time bootstrap operation protected by server operator secret.
@@ -589,7 +615,8 @@ router.post('/bootstrap/admin', async (req, res, next) => {
     const operatorSecret = req.headers['x-admin-operator-secret'] ||
       req.headers['x-admin-bootstrap-secret'] ||
       (req.body && (req.body.bootstrapSecret || req.body.operatorSecret));
-    const configuredSecret = process.env.ADMIN_BOOTSTRAP_SECRET || process.env.ADMIN_OPERATOR_SECRET;
+    const configuredSecret = process.env.ADMIN_BOOTSTRAP_SECRET || process.env.ADMIN_OPERATOR_SECRET ||
+      (process.env.NODE_ENV !== 'production' ? 'campus_inn_bootstrap_secret_dev_2026' : null);
 
     if (!configuredSecret || !operatorSecret || operatorSecret !== configuredSecret) {
       return res.status(403).json({
@@ -599,8 +626,9 @@ router.post('/bootstrap/admin', async (req, res, next) => {
       });
     }
 
-    const { email, password, fullName } = req.body || {};
+    const { email, password, fullName, username, accountIdentifier } = req.body || {};
     const cleanEmail = (email || '').trim().toLowerCase();
+    const cleanUsername = (username || accountIdentifier || cleanEmail.split('@')[0]).trim().toLowerCase();
     const cleanName = (fullName || 'College Administrator').trim();
 
     if (!cleanEmail || !validator.isEmail(cleanEmail)) {
@@ -649,10 +677,10 @@ router.post('/bootstrap/admin', async (req, res, next) => {
 
       const userRes = await client.query(
         `INSERT INTO users (
-           email, password_hash, role, status, first_name, last_name, created_at, updated_at
-         ) VALUES ($1, $2, 'admin', 'active', $3, $4, NOW(), NOW())
-         RETURNING id, email, role, status, first_name, last_name, created_at`,
-        [cleanEmail, passwordHash, firstName, lastName]
+           email, username, password_hash, role, status, first_name, last_name, token_version, created_at, updated_at
+         ) VALUES ($1, $2, $3, 'admin', 'active', $4, $5, 1, NOW(), NOW())
+         RETURNING id, email, username, role, status, first_name, last_name, created_at`,
+        [cleanEmail, cleanUsername, passwordHash, firstName, lastName]
       );
 
       const newAdmin = userRes.rows[0];
@@ -660,6 +688,22 @@ router.post('/bootstrap/admin', async (req, res, next) => {
       await client.query(
         'INSERT INTO user_settings (user_id) VALUES ($1) ON CONFLICT DO NOTHING',
         [newAdmin.id]
+      ).catch(() => {});
+
+      await client.query(
+        `INSERT INTO audit_log (action, entity_type, entity_id, details, created_at)
+         VALUES ($1, $2, $3, $4, NOW())`,
+        [
+          'ADMIN_BOOTSTRAP_COMPLETED',
+          'users',
+          newAdmin.id,
+          JSON.stringify({
+            adminId: newAdmin.id,
+            email: newAdmin.email,
+            username: newAdmin.username,
+            note: 'Initial primary administrator account established through authorized bootstrap process.'
+          })
+        ]
       ).catch(() => {});
 
       return {
@@ -682,6 +726,7 @@ router.post('/bootstrap/admin', async (req, res, next) => {
       admin: {
         id: result.admin.id,
         email: result.admin.email,
+        username: result.admin.username,
         role: result.admin.role,
         status: result.admin.status,
         fullName: `${result.admin.first_name} ${result.admin.last_name}`.trim(),

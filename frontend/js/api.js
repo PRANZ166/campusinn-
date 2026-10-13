@@ -221,6 +221,44 @@ const API = (() => {
       };
     },
 
+    async getAdminSetupStatus() {
+      const res = await request('/auth/admin-setup-status', { method: 'GET' });
+      if (res.data && res.data.success) {
+        return { data: res.data, error: null, isMock: false };
+      }
+      return {
+        data: null,
+        error: res.error || (res.data && res.data.message) || 'Failed to determine admin setup status.',
+        isMock: false,
+        status: res.status
+      };
+    },
+
+    async bootstrapAdmin(payload) {
+      const clean = { ...(payload || {}) };
+      const headers = {};
+      const secret = clean.operatorSecret || clean.bootstrapSecret;
+      if (secret) {
+        headers['x-admin-operator-secret'] = secret;
+        headers['x-admin-bootstrap-secret'] = secret;
+      }
+      const res = await request('/auth/bootstrap/admin', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(clean)
+      });
+      if (res.data && res.data.success) {
+        return { data: res.data, error: null, isMock: false };
+      }
+      return {
+        data: null,
+        error: res.error || (res.data && res.data.message) || 'Primary administrator bootstrap provisioning failed.',
+        code: (res.data && res.data.code) || null,
+        isMock: false,
+        status: res.status
+      };
+    },
+
     async me() {
       const res = await request('/auth/me', { method: 'GET' });
       if (res.data && res.data.user) {
@@ -896,21 +934,42 @@ const API = (() => {
       return await request('/admin/audit-log' + (queryStr ? '?' + queryStr : ''));
     },
 
-    async getReplaceStatus() {
-      return await request('/admin/replace/status');
+    async getReplaceStatus(operatorSecret = null) {
+      const headers = {};
+      if (operatorSecret) {
+        headers['x-admin-operator-secret'] = operatorSecret;
+        headers['x-admin-bootstrap-secret'] = operatorSecret;
+      }
+      return await request('/admin/replace/status', { headers });
     },
 
     async initiateAdminReplacement(payload) {
+      const clean = { ...(payload || {}) };
+      const headers = {};
+      const secret = clean.operatorSecret || clean.bootstrapSecret;
+      if (secret) {
+        headers['x-admin-operator-secret'] = secret;
+        headers['x-admin-bootstrap-secret'] = secret;
+      }
       return await request('/admin/replace/initiate', {
         method: 'POST',
-        body: JSON.stringify(payload)
+        headers,
+        body: JSON.stringify(clean)
       });
     },
 
     async confirmAdminReplacement(payload) {
+      const clean = { ...(payload || {}) };
+      const headers = {};
+      const secret = clean.operatorSecret || clean.bootstrapSecret;
+      if (secret) {
+        headers['x-admin-operator-secret'] = secret;
+        headers['x-admin-bootstrap-secret'] = secret;
+      }
       return await request('/admin/replace/confirm', {
         method: 'POST',
-        body: JSON.stringify(payload)
+        headers,
+        body: JSON.stringify(clean)
       });
     }
   };

@@ -108,6 +108,39 @@ describe('Part 11: Administrator Replacement & Multi-Role Authorization Suite', 
       }
     });
 
+    it('0a. Public inspection of administrator setup status when no admin exists (INITIAL_BOOTSTRAP_REQUIRED)', async () => {
+      mockPoolQuery = jest.spyOn(require('../src/db/pool').pool, 'query').mockImplementation((sql) => {
+        const sqlStr = typeof sql === 'string' ? sql : (sql && sql.text ? sql.text : '');
+        if (sqlStr.includes("WHERE role = 'admin'")) {
+          return Promise.resolve({ rows: [] }); // No admin in database
+        }
+        return Promise.resolve({ rows: [] });
+      });
+
+      const res = await request(app).get('/api/v1/auth/admin-setup-status');
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.hasAdmin).toBe(false);
+      expect(res.body.setupState).toEqual('INITIAL_BOOTSTRAP_REQUIRED');
+    });
+
+    it('0b. Public inspection of administrator setup status when active admin exists (ADMIN_EXISTS)', async () => {
+      mockPoolQuery = jest.spyOn(require('../src/db/pool').pool, 'query').mockImplementation((sql) => {
+        const sqlStr = typeof sql === 'string' ? sql : (sql && sql.text ? sql.text : '');
+        if (sqlStr.includes("WHERE role = 'admin'")) {
+          return Promise.resolve({ rows: [{ id: 'admin-01', status: 'active' }] });
+        }
+        return Promise.resolve({ rows: [] });
+      });
+
+      const res = await request(app).get('/api/v1/auth/admin-setup-status');
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.hasAdmin).toBe(true);
+      expect(res.body.setupState).toEqual('ADMIN_EXISTS');
+      expect(res.body.activeAdminsCount).toBe(1);
+    });
+
     it('1. Authorized creation of a new administrator through controlled server-side provisioning', async () => {
       mockPoolQuery = jest.spyOn(require('../src/db/pool').pool, 'query').mockImplementation((sql, params) => {
         const sqlStr = typeof sql === 'string' ? sql : (sql && sql.text ? sql.text : '');

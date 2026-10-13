@@ -83,16 +83,18 @@ async function bootstrapAdmin() {
       const firstName = parts[0] || 'College';
       const lastName = parts.slice(1).join(' ') || 'Administrator';
 
+      const username = (args.username || process.env.ADMIN_BOOTSTRAP_USERNAME || email.split('@')[0]).trim().toLowerCase();
+
       // 3. Hash password securely
       const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
 
       // 4. Insert College Admin account
       const userRes = await client.query(
         `INSERT INTO users (
-           email, password_hash, role, status, first_name, last_name, created_at, updated_at
-         ) VALUES ($1, $2, 'admin', 'active', $3, $4, NOW(), NOW())
-         RETURNING id, email, role, status, first_name, last_name, created_at`,
-        [email, passwordHash, firstName, lastName]
+           email, username, password_hash, role, status, first_name, last_name, token_version, created_at, updated_at
+         ) VALUES ($1, $2, $3, 'admin', 'active', $4, $5, 1, NOW(), NOW())
+         RETURNING id, email, username, role, status, first_name, last_name, created_at`,
+        [email, username, passwordHash, firstName, lastName]
       );
 
       const newAdmin = userRes.rows[0];
@@ -101,6 +103,23 @@ async function bootstrapAdmin() {
       await client.query(
         'INSERT INTO user_settings (user_id) VALUES ($1) ON CONFLICT DO NOTHING',
         [newAdmin.id]
+      ).catch(() => {});
+
+      // 6. Record audit log
+      await client.query(
+        `INSERT INTO audit_log (action, entity_type, entity_id, details, created_at)
+         VALUES ($1, $2, $3, $4, NOW())`,
+        [
+          'ADMIN_BOOTSTRAP_COMPLETED',
+          'users',
+          newAdmin.id,
+          JSON.stringify({
+            adminId: newAdmin.id,
+            email: newAdmin.email,
+            username: newAdmin.username,
+            note: 'Initial primary administrator established via bootstrap CLI.'
+          })
+        ]
       ).catch(() => {});
 
       return {

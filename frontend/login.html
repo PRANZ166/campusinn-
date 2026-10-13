@@ -662,29 +662,280 @@
     </form>
   </div>
 
-  <!-- PANEL 5: PRIVILEGED ROLE RESTRICTION NOTICE (ADMIN & TPO) -->
+  <!-- PANEL 5: PRIVILEGED ROLE PROVISIONING & TRANSITION (ADMIN & TPO) -->
   <div id="panelRegPrivileged" class="mt-6 hidden">
-    <div class="p-6 rounded-2xl bg-surface-container-low border border-outline-variant/40 flex flex-col items-center text-center gap-4">
-      <div class="w-14 h-14 rounded-2xl bg-rose-100 text-rose-800 flex items-center justify-center shadow-sm">
-        <span class="material-symbols-outlined text-[32px]" id="privRoleIcon">admin_panel_settings</span>
+    <!-- SUB-PANEL 5A: PLACEMENT OFFICER NOTICE (TPO) -->
+    <div id="privTpoNoticeView" class="hidden p-6 rounded-2xl bg-surface-container-low border border-outline-variant/40 flex flex-col items-center text-center gap-4">
+      <div class="w-14 h-14 rounded-2xl bg-purple-100 text-purple-900 flex items-center justify-center shadow-sm">
+        <span class="material-symbols-outlined text-[32px]">work</span>
       </div>
       <div>
-        <h3 class="font-headline-sm text-headline-sm font-bold text-on-surface" id="privRoleTitle">Privileged Institutional Access</h3>
-        <p class="font-body-md text-body-md text-secondary mt-1 max-w-lg leading-relaxed" id="privRoleMsg">
-          College Admin and Placement Officer roles carry enterprise administrative authority across the entire campus. To uphold institutional security and FERPA/DPDP regulatory compliance, these accounts cannot be self-registered by arbitrary users.
+        <h3 class="font-headline-sm text-headline-sm font-bold text-on-surface">Placement Officer (TPO) Access</h3>
+        <p class="font-body-md text-body-md text-secondary mt-1 max-w-lg leading-relaxed">
+          Placement Officer roles carry departmental enterprise placement authority across candidate databases and recruiter drives. To uphold institutional security and regulatory compliance, placement officers are onboarded directly through the Central TPO Directorate.
         </p>
       </div>
       <div class="p-3.5 rounded-xl bg-surface-container text-body-sm text-on-surface-variant max-w-md border border-outline-variant/30 text-left flex items-start gap-2.5">
         <span class="material-symbols-outlined text-primary text-[20px] shrink-0">info</span>
-        <span>Existing authorized officials should sign in directly. For new provisioning or credential recovery, contact the Dean of Academics or the Central IT Directorate.</span>
+        <span>Existing placement officers should sign in directly. For new branch provisioning, contact the Head of Training &amp; Placement.</span>
       </div>
       <div class="flex flex-col sm:flex-row items-center gap-3 w-full max-w-sm pt-2">
-        <button type="button" id="btnPrivilegedSwitchToLogin" class="w-full py-3 px-5 rounded-xl bg-primary text-white font-semibold text-body-md shadow-sm hover:bg-primary-container transition-all text-center cursor-pointer">
-          Sign In to Portal
+        <button type="button" id="btnTpoSwitchToLogin" class="w-full py-3 px-5 rounded-xl bg-primary text-white font-semibold text-body-md shadow-sm hover:bg-primary-container transition-all text-center cursor-pointer">
+          Sign In to Placement Office
         </button>
         <a href="index.html#faq" class="w-full py-3 px-5 rounded-xl bg-surface-container text-on-surface font-semibold text-body-md hover:bg-surface-variant transition-all text-center">
           Contact IT Support
         </a>
+      </div>
+    </div>
+
+    <!-- SUB-PANEL 5B: COLLEGE ADMIN PROVISIONING & TRANSITION WORKFLOW -->
+    <div id="privAdminProvisioningView" class="flex flex-col gap-5">
+      <!-- Dynamic Header Banner -->
+      <div class="p-5 rounded-2xl bg-surface-container-low border border-outline-variant/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="flex items-center gap-3.5">
+          <div class="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 shadow-sm">
+            <span class="material-symbols-outlined text-[28px]" id="privRoleIcon">admin_panel_settings</span>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 class="font-headline-sm text-headline-sm font-bold text-on-surface" id="privAdminTitle">College Admin Provisioning</h2>
+              <span id="adminSetupBadge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary/10 text-primary uppercase tracking-wider">CHECKING...</span>
+            </div>
+            <p class="font-body-sm text-body-sm text-secondary mt-0.5" id="privAdminSubtitle">
+              Authorized institutional provisioning and centralized governance.
+            </p>
+          </div>
+        </div>
+        <button type="button" id="btnAdminQuickSignIn" class="py-2.5 px-4 rounded-xl bg-surface-container text-on-surface font-semibold text-body-sm hover:bg-surface-variant transition-all shrink-0 flex items-center gap-1.5 cursor-pointer">
+          <span class="material-symbols-outlined text-[18px]">login</span>
+          <span>Sign In to Console</span>
+        </button>
+      </div>
+
+      <!-- STATE A: FIRST-ADMIN INITIAL BOOTSTRAP FORM (When no admin exists) -->
+      <div id="adminBootstrapView" class="hidden flex flex-col gap-5">
+        <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-950 flex items-start gap-3">
+          <span class="material-symbols-outlined text-emerald-600 text-[24px] shrink-0">rocket_launch</span>
+          <div class="text-body-sm leading-relaxed">
+            <strong class="font-semibold text-emerald-950 block">Initial Primary Administrator Setup Available</strong>
+            No administrator account currently exists in the institutional database. As the authorized system owner, create the primary administrator account below to establish governance and unlock dashboard authorization.
+          </div>
+        </div>
+
+        <form id="adminBootstrapForm" class="flex flex-col gap-5" novalidate>
+          <!-- Section 1: Administrator Identity -->
+          <div class="flex flex-col gap-3 p-4 bg-surface-container-low rounded-xl border border-outline-variant/30">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary text-[20px]">badge</span>
+              <span class="font-label-md text-label-md uppercase font-bold text-primary tracking-wider">1. Administrator Identity</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              <div class="flex flex-col gap-1">
+                <label class="font-label-md text-label-md text-on-surface" for="bootAdminFullName">Full Name *</label>
+                <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="bootAdminFullName" placeholder="e.g. Dr. Elena Vance" required type="text">
+              </div>
+              <div class="flex flex-col gap-1">
+                <label class="font-label-md text-label-md text-on-surface" for="bootAdminUsername">Account Identifier / Username *</label>
+                <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="bootAdminUsername" placeholder="e.g. primary_admin (min 3 chars)" required type="text">
+              </div>
+            </div>
+            <div class="flex flex-col gap-1">
+              <label class="font-label-md text-label-md text-on-surface" for="bootAdminEmail">Administrator Email Address *</label>
+              <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="bootAdminEmail" placeholder="admin@campus.edu.in" required type="email">
+            </div>
+          </div>
+
+          <!-- Section 2: Account Password -->
+          <div class="flex flex-col gap-3 p-4 bg-surface-container-low rounded-xl border border-outline-variant/30">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary text-[20px]">lock</span>
+              <span class="font-label-md text-label-md uppercase font-bold text-primary tracking-wider">2. Account Password</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              <div class="flex flex-col gap-1">
+                <label class="font-label-md text-label-md text-on-surface" for="bootAdminPassword">Create Strong Password *</label>
+                <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="bootAdminPassword" placeholder="Min 8 chars with letter &amp; number" required type="password">
+              </div>
+              <div class="flex flex-col gap-1">
+                <label class="font-label-md text-label-md text-on-surface" for="bootAdminConfirmPassword">Confirm Password *</label>
+                <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="bootAdminConfirmPassword" placeholder="Re-type password" required type="password">
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 3: Operator Authorization Key -->
+          <div class="flex flex-col gap-3 p-4 bg-surface-container-low rounded-xl border border-outline-variant/30">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary text-[20px]">key</span>
+              <span class="font-label-md text-label-md uppercase font-bold text-primary tracking-wider">3. Server Operator Authorization Key *</span>
+            </div>
+            <div class="flex flex-col gap-1">
+              <label class="font-label-md text-label-md text-on-surface" for="bootAdminSecret">Operator Secret / Bootstrap Key *</label>
+              <div class="relative flex items-center">
+                <input class="w-full px-3.5 pr-10 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm font-mono" id="bootAdminSecret" placeholder="Server-configured operator authorization secret" required type="password">
+                <button aria-label="Toggle secret visibility" class="absolute right-2.5 text-secondary hover:text-on-surface p-1 rounded cursor-pointer" id="toggleBootSecretBtn" type="button">
+                  <span class="material-symbols-outlined text-[18px]">visibility</span>
+                </button>
+              </div>
+              <span class="text-xs text-secondary mt-0.5">Matches the backend server's ADMIN_BOOTSTRAP_SECRET or ADMIN_OPERATOR_SECRET.</span>
+            </div>
+          </div>
+
+          <button class="w-full py-4 px-6 rounded-xl bg-primary text-white font-semibold text-body-md shadow-md hover:bg-primary-container transition-all duration-200 flex items-center justify-center gap-2 group active:scale-[0.99] cursor-pointer" id="btnSubmitBootAdmin" type="submit">
+            <span class="font-semibold">Provision Primary Administrator</span>
+            <span class="material-symbols-outlined text-[20px] transition-transform group-hover:translate-x-1">verified_user</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- STATE B & C: EXISTING ADMIN NOTICE & AUTHORIZED TRANSITION CONSOLE -->
+      <div id="adminExistingView" class="flex flex-col gap-5">
+        <!-- Visitor Notice -->
+        <div class="p-6 rounded-2xl bg-surface-container-low border border-outline-variant/40 flex flex-col items-center text-center gap-3">
+          <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-900 flex items-center justify-center shadow-sm">
+            <span class="material-symbols-outlined text-[28px]">shield</span>
+          </div>
+          <div>
+            <h3 class="font-headline-sm text-headline-sm font-bold text-on-surface" id="privRoleTitle">Institutional Administrator Access</h3>
+            <p class="font-body-md text-body-md text-secondary mt-1 max-w-lg leading-relaxed" id="privRoleMsg">
+              An active primary administrator is currently established. To uphold institutional security and prevent unauthorized takeover, public administrator registration is prohibited.
+            </p>
+          </div>
+          <div class="flex flex-col sm:flex-row items-center gap-3 w-full max-w-sm pt-2">
+            <button type="button" id="btnPrivilegedSwitchToLogin" class="w-full py-3 px-5 rounded-xl bg-primary text-white font-semibold text-body-md shadow-sm hover:bg-primary-container transition-all text-center cursor-pointer">
+              Sign In to Admin Console
+            </button>
+            <a href="index.html#faq" class="w-full py-3 px-5 rounded-xl bg-surface-container text-on-surface font-semibold text-body-md hover:bg-surface-variant transition-all text-center">
+              Contact IT Support
+            </a>
+          </div>
+        </div>
+
+        <!-- AUTHORIZED REPLACEMENT & TRANSITION ACCORDION CARD -->
+        <div class="p-5 rounded-2xl bg-surface-container-low border-2 border-primary/20 flex flex-col gap-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="flex items-start sm:items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-primary-fixed text-primary flex items-center justify-center shrink-0 shadow-sm">
+                <span class="material-symbols-outlined text-[22px]">published_with_changes</span>
+              </div>
+              <div>
+                <h4 class="font-title-md text-title-md font-bold text-on-surface">Authorized Administrator Transition</h4>
+                <p class="font-body-sm text-body-sm text-secondary">
+                  Application owner or operator? Establish a new primary admin and replace old administrator access.
+                </p>
+              </div>
+            </div>
+            <button type="button" id="btnToggleReplaceConsole" class="py-2 px-3.5 rounded-xl bg-primary-fixed hover:bg-primary-fixed-dim text-on-primary-fixed font-semibold text-body-sm transition-all shrink-0 flex items-center gap-1.5 cursor-pointer">
+              <span id="btnToggleReplaceText">Open Transition Console</span>
+              <span class="material-symbols-outlined text-[18px]" id="btnToggleReplaceIcon">expand_more</span>
+            </button>
+          </div>
+
+          <!-- Replace Console Container (Expandable) -->
+          <div id="adminReplaceConsoleContainer" class="hidden flex flex-col gap-5 pt-3 border-t border-outline-variant/30">
+            <!-- Step 1: Provision Replacement Administrator -->
+            <div id="replaceStep1" class="flex flex-col gap-4">
+              <div class="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-950 text-body-sm leading-relaxed flex items-start gap-2.5">
+                <span class="material-symbols-outlined text-amber-600 text-[20px] shrink-0">info</span>
+                <div>
+                  <strong>Controlled 2-Step Transition:</strong> Step 1 provisions the new administrator with active status. Predecessor administrator access remains active until you verify the new credentials and explicitly confirm replacement in Step 2.
+                </div>
+              </div>
+
+              <form id="adminReplaceInitiateForm" class="flex flex-col gap-4" novalidate>
+                <div class="flex flex-col gap-1">
+                  <label class="font-label-md text-label-md text-on-surface" for="replaceOperatorSecret">Operator Authorization Secret *</label>
+                  <div class="relative flex items-center">
+                    <input class="w-full px-3.5 pr-10 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm font-mono" id="replaceOperatorSecret" placeholder="Server operator authorization secret" required type="password">
+                    <button aria-label="Toggle secret visibility" class="absolute right-2.5 text-secondary hover:text-on-surface p-1 rounded cursor-pointer" id="toggleReplaceSecretBtn" type="button">
+                      <span class="material-symbols-outlined text-[18px]">visibility</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  <div class="flex flex-col gap-1">
+                    <label class="font-label-md text-label-md text-on-surface" for="replaceFullName">New Admin Full Name *</label>
+                    <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="replaceFullName" placeholder="e.g. Dr. Elena Vance" required type="text">
+                  </div>
+                  <div class="flex flex-col gap-1">
+                    <label class="font-label-md text-label-md text-on-surface" for="replaceUsername">New Admin Identifier / Username *</label>
+                    <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="replaceUsername" placeholder="e.g. primary_admin (min 3 chars)" required type="text">
+                  </div>
+                </div>
+
+                <div class="flex flex-col gap-1">
+                  <label class="font-label-md text-label-md text-on-surface" for="replaceEmail">New Admin Email Address *</label>
+                  <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="replaceEmail" placeholder="new.admin@campus.edu.in" required type="email">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  <div class="flex flex-col gap-1">
+                    <label class="font-label-md text-label-md text-on-surface" for="replacePassword">New Admin Password *</label>
+                    <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="replacePassword" placeholder="Min 8 chars with letter &amp; number" required type="password">
+                  </div>
+                  <div class="flex flex-col gap-1">
+                    <label class="font-label-md text-label-md text-on-surface" for="replaceConfirmPassword">Confirm Password *</label>
+                    <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="replaceConfirmPassword" placeholder="Re-type password" required type="password">
+                  </div>
+                </div>
+
+                <button class="w-full py-3.5 px-6 rounded-xl bg-primary text-white font-semibold text-body-md shadow-md hover:bg-primary-container transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]" id="btnSubmitReplaceInitiate" type="submit">
+                  <span>Step 1: Provision Replacement Administrator</span>
+                  <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+                </button>
+              </form>
+            </div>
+
+            <!-- Step 2: Verification & Handover (Revealed after Step 1) -->
+            <div id="replaceStep2" class="hidden flex flex-col gap-4">
+              <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-950 flex items-start gap-3">
+                <span class="material-symbols-outlined text-emerald-600 text-[24px] shrink-0">check_circle</span>
+                <div class="text-body-sm leading-relaxed">
+                  <strong class="font-semibold text-emerald-950 block">Step 1 Complete: Replacement Account Provisioned!</strong>
+                  The new administrator account has been created with ID <code class="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-900 font-mono text-xs font-bold" id="replaceNewAdminIdBadge"></code>.
+                  Verify that you can authenticate with the new credentials. Once verified, finalize the transition below to revoke predecessor administrator privileges and invalidate all stale sessions.
+                </div>
+              </div>
+
+              <form id="adminReplaceConfirmForm" class="flex flex-col gap-4" novalidate>
+                <div class="flex items-start gap-3 p-3.5 rounded-xl bg-surface-container border border-outline-variant/30">
+                  <input type="checkbox" id="chkConfirmAdminReplacement" class="mt-1 w-4 h-4 rounded text-primary focus:ring-primary cursor-pointer" required>
+                  <label for="chkConfirmAdminReplacement" class="text-body-sm text-on-surface leading-snug cursor-pointer select-none">
+                    <strong>I confirm the administrator transition.</strong> I understand this will revoke predecessor administrator privileges, invalidate all active predecessor sessions, and leave the new account as the active primary administrator.
+                  </label>
+                </div>
+
+                <div class="flex flex-col gap-1">
+                  <label class="font-label-md text-label-md text-on-surface" for="replacePreviousAdminId">Predecessor Admin Email / ID to Revoke (Optional)</label>
+                  <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="replacePreviousAdminId" placeholder="Leave blank to automatically revoke active predecessor admin" type="text">
+                </div>
+
+                <button class="w-full py-3.5 px-6 rounded-xl bg-rose-700 hover:bg-rose-800 text-white font-semibold text-body-md shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]" id="btnSubmitReplaceConfirm" type="submit">
+                  <span>Step 2: Confirm Transition &amp; Revoke Old Admin Access</span>
+                  <span class="material-symbols-outlined text-[20px]">lock_reset</span>
+                </button>
+              </form>
+            </div>
+
+            <!-- Transition Complete Notification -->
+            <div id="replaceCompleteBanner" class="hidden p-5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-950 flex flex-col items-center text-center gap-3">
+              <div class="w-12 h-12 rounded-xl bg-emerald-200 text-emerald-900 flex items-center justify-center shadow-sm">
+                <span class="material-symbols-outlined text-[28px]">verified</span>
+              </div>
+              <div>
+                <h4 class="font-title-lg text-title-lg font-bold text-emerald-950">Administrator Transition Finalized</h4>
+                <p class="font-body-md text-body-md text-emerald-900 mt-1 max-w-md">
+                  Predecessor administrator privileges have been safely revoked, all prior sessions invalidated, and the new primary administrator is now fully active.
+                </p>
+              </div>
+              <button type="button" id="btnSignInNewAdmin" class="mt-2 py-3 px-6 rounded-xl bg-primary text-white font-semibold text-body-md shadow-md hover:bg-primary-container transition-all cursor-pointer">
+                Sign In with New Administrator Credentials
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -879,6 +1130,50 @@ document.addEventListener('DOMContentLoaded', () => {
     if (ctaText) ctaText.textContent = cfg.cta;
   }
 
+  async function checkAdminSetupState() {
+    const badge = document.getElementById('adminSetupBadge');
+    const title = document.getElementById('privAdminTitle');
+    const subtitle = document.getElementById('privAdminSubtitle');
+    const bootView = document.getElementById('adminBootstrapView');
+    const existView = document.getElementById('adminExistingView');
+
+    if (badge) {
+      badge.textContent = 'CHECKING...';
+      badge.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary/10 text-primary uppercase tracking-wider';
+    }
+
+    try {
+      const res = await CampusInn.Auth.getAdminSetupStatus();
+      const setupState = (res.data && res.data.setupState) || 'ADMIN_EXISTS';
+      if (setupState === 'INITIAL_BOOTSTRAP_REQUIRED') {
+        bootView?.classList.remove('hidden');
+        existView?.classList.add('hidden');
+        if (badge) {
+          badge.textContent = 'FIRST-ADMIN SETUP REQUIRED';
+          badge.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-900 uppercase tracking-wider';
+        }
+        if (title) title.textContent = 'Create Primary Administrator';
+        if (subtitle) subtitle.textContent = 'Initial configuration: No administrator exists yet. Provision the primary administrator below.';
+      } else {
+        bootView?.classList.add('hidden');
+        existView?.classList.remove('hidden');
+        if (badge) {
+          badge.textContent = 'ADMIN ESTABLISHED';
+          badge.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary/10 text-primary uppercase tracking-wider';
+        }
+        if (title) title.textContent = 'College Admin Governance & Provisioning';
+        if (subtitle) subtitle.textContent = 'Enterprise administrative authority and authorized transition management.';
+      }
+    } catch (e) {
+      bootView?.classList.add('hidden');
+      existView?.classList.remove('hidden');
+      if (badge) {
+        badge.textContent = 'PROTECTED';
+        badge.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-surface-container text-secondary uppercase tracking-wider';
+      }
+    }
+  }
+
   function activateRegisterRole(role) {
     selectedRole = role || 'student';
     regTabs.forEach(t => {
@@ -898,6 +1193,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const panelCoord = document.getElementById('panelRegCoordinator');
     const panelRec = document.getElementById('panelRegRecruiter');
     const panelPriv = document.getElementById('panelRegPrivileged');
+    const privTpoView = document.getElementById('privTpoNoticeView');
+    const privAdminView = document.getElementById('privAdminProvisioningView');
 
     panelStudent?.classList.add('hidden');
     panelFaculty?.classList.add('hidden');
@@ -913,29 +1210,21 @@ document.addEventListener('DOMContentLoaded', () => {
       panelCoord?.classList.remove('hidden');
     } else if (selectedRole === 'recruiter') {
       panelRec?.classList.remove('hidden');
-    } else if (selectedRole === 'admin' || selectedRole === 'tpo') {
+    } else if (selectedRole === 'admin') {
       panelPriv?.classList.remove('hidden');
-      const privTitle = document.getElementById('privRoleTitle');
-      const privBtn = document.getElementById('btnPrivilegedSwitchToLogin');
-      const privIcon = document.getElementById('privRoleIcon');
-      if (selectedRole === 'admin') {
-        if (privTitle) privTitle.textContent = 'College Admin Account Provisioning';
-        if (privBtn) privBtn.textContent = 'Sign In to Admin Console';
-        if (privIcon) privIcon.textContent = 'admin_panel_settings';
-      } else {
-        if (privTitle) privTitle.textContent = 'Placement Officer (TPO) Access';
-        if (privBtn) privBtn.textContent = 'Sign In to Placement Office';
-        if (privIcon) privIcon.textContent = 'work';
-      }
+      privTpoView?.classList.add('hidden');
+      privAdminView?.classList.remove('hidden');
+      checkAdminSetupState();
+    } else if (selectedRole === 'tpo') {
+      panelPriv?.classList.remove('hidden');
+      privAdminView?.classList.add('hidden');
+      privTpoView?.classList.remove('hidden');
     }
   }
 
   function showMode(mode, targetRole = null) {
     let roleToUse = targetRole || selectedRole;
     if (mode === 'register') {
-      if (roleToUse === 'admin' || roleToUse === 'tpo') {
-        roleToUse = 'student';
-      }
       tabModeRegister.classList.add('bg-primary', 'text-white', 'shadow-sm');
       tabModeRegister.classList.remove('text-secondary');
       tabModeLogin.classList.remove('bg-primary', 'text-white', 'shadow-sm');
@@ -962,7 +1251,10 @@ document.addEventListener('DOMContentLoaded', () => {
   tabModeRegister?.addEventListener('click', () => showMode('register'));
   btnSwitchToReg?.addEventListener('click', () => showMode('register'));
   btnSwitchToLogin?.addEventListener('click', () => showMode('login'));
-  btnPrivilegedSwitchToLogin?.addEventListener('click', () => showMode('login'));
+  btnPrivilegedSwitchToLogin?.addEventListener('click', () => showMode('login', 'admin'));
+  document.getElementById('btnTpoSwitchToLogin')?.addEventListener('click', () => showMode('login', 'tpo'));
+  document.getElementById('btnAdminQuickSignIn')?.addEventListener('click', () => showMode('login', 'admin'));
+  document.getElementById('btnSignInNewAdmin')?.addEventListener('click', () => showMode('login', 'admin'));
 
   loginTabs.forEach(tab => {
     tab.addEventListener('click', () => {
@@ -1412,6 +1704,239 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       } finally {
         CampusInn.FormUtils.setButtonLoading(regRecSubmitBtn, false);
+      }
+    });
+  }
+
+  // 6. TOGGLE SECRET VISIBILITY HELPERS
+  const toggleBootSecretBtn = document.getElementById('toggleBootSecretBtn');
+  const bootAdminSecret = document.getElementById('bootAdminSecret');
+  if (toggleBootSecretBtn && bootAdminSecret) {
+    toggleBootSecretBtn.addEventListener('click', () => {
+      const isPass = bootAdminSecret.type === 'password';
+      bootAdminSecret.type = isPass ? 'text' : 'password';
+      const icon = toggleBootSecretBtn.querySelector('.material-symbols-outlined');
+      if (icon) icon.textContent = isPass ? 'visibility_off' : 'visibility';
+    });
+  }
+
+  const toggleReplaceSecretBtn = document.getElementById('toggleReplaceSecretBtn');
+  const replaceOperatorSecret = document.getElementById('replaceOperatorSecret');
+  if (toggleReplaceSecretBtn && replaceOperatorSecret) {
+    toggleReplaceSecretBtn.addEventListener('click', () => {
+      const isPass = replaceOperatorSecret.type === 'password';
+      replaceOperatorSecret.type = isPass ? 'text' : 'password';
+      const icon = toggleReplaceSecretBtn.querySelector('.material-symbols-outlined');
+      if (icon) icon.textContent = isPass ? 'visibility_off' : 'visibility';
+    });
+  }
+
+  // 7. SUBMIT FIRST-ADMIN BOOTSTRAP FORM (STATE A)
+  const bootAdminForm = document.getElementById('adminBootstrapForm');
+  const btnSubmitBootAdmin = document.getElementById('btnSubmitBootAdmin');
+  if (bootAdminForm) {
+    bootAdminForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      CampusInn.FormUtils.clearAllErrors(bootAdminForm);
+
+      const fullName = document.getElementById('bootAdminFullName')?.value.trim();
+      const email = document.getElementById('bootAdminEmail')?.value.trim();
+      const username = document.getElementById('bootAdminUsername')?.value.trim().toLowerCase();
+      const password = document.getElementById('bootAdminPassword')?.value;
+      const confirmPassword = document.getElementById('bootAdminConfirmPassword')?.value;
+      const operatorSecret = document.getElementById('bootAdminSecret')?.value.trim();
+
+      let hasError = false;
+      if (!fullName || fullName.length < 2) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('bootAdminFullName'), 'Full name must be at least 2 characters.');
+        hasError = true;
+      }
+      if (!username || username.length < 3) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('bootAdminUsername'), 'Account identifier / username must be at least 3 characters.');
+        hasError = true;
+      }
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('bootAdminEmail'), 'A valid administrator email address is required.');
+        hasError = true;
+      }
+      if (!password || password.length < 8 || !/(?=.*[a-zA-Z])(?=.*[0-9])/.test(password)) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('bootAdminPassword'), 'Password must be at least 8 characters with letters and numbers.');
+        hasError = true;
+      }
+      if (password !== confirmPassword) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('bootAdminConfirmPassword'), 'Passwords do not match.');
+        hasError = true;
+      }
+      if (!operatorSecret) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('bootAdminSecret'), 'Server operator authorization secret is required.');
+        hasError = true;
+      }
+      if (hasError) return;
+
+      CampusInn.FormUtils.setButtonLoading(btnSubmitBootAdmin, true);
+      try {
+        const payload = { fullName, email, username, password, operatorSecret };
+        const res = await CampusInn.Auth.bootstrapAdmin(payload);
+        if (res.data && res.data.success) {
+          CampusInn.Toast.success('Primary Administrator account created successfully!');
+          displayLoginBanner(
+            'Primary Administrator Established',
+            `Welcome ${fullName}! Your primary administrator account (${email}) has been provisioned. Sign in with your credentials.`
+          );
+          if (identifierInput) identifierInput.value = email;
+          bootAdminForm.reset();
+          showMode('login', 'admin');
+        } else {
+          throw new Error(res.error || 'Administrator provisioning failed.');
+        }
+      } catch (err) {
+        CampusInn.Toast.error(err.message || 'Administrator bootstrap failed.');
+        if (err.message && err.message.toLowerCase().includes('secret')) {
+          CampusInn.FormUtils.showFieldError(document.getElementById('bootAdminSecret'), err.message);
+        } else if (err.message && err.message.toLowerCase().includes('exists')) {
+          CampusInn.FormUtils.showFieldError(document.getElementById('bootAdminEmail'), err.message);
+          checkAdminSetupState();
+        }
+      } finally {
+        CampusInn.FormUtils.setButtonLoading(btnSubmitBootAdmin, false);
+      }
+    });
+  }
+
+  // 8. TOGGLE ADMINISTRATOR TRANSITION CONSOLE (STATE B/C)
+  const btnToggleReplaceConsole = document.getElementById('btnToggleReplaceConsole');
+  const adminReplaceConsoleContainer = document.getElementById('adminReplaceConsoleContainer');
+  const btnToggleReplaceText = document.getElementById('btnToggleReplaceText');
+  const btnToggleReplaceIcon = document.getElementById('btnToggleReplaceIcon');
+  if (btnToggleReplaceConsole && adminReplaceConsoleContainer) {
+    btnToggleReplaceConsole.addEventListener('click', () => {
+      const isHidden = adminReplaceConsoleContainer.classList.contains('hidden');
+      if (isHidden) {
+        adminReplaceConsoleContainer.classList.remove('hidden');
+        if (btnToggleReplaceText) btnToggleReplaceText.textContent = 'Close Transition Console';
+        if (btnToggleReplaceIcon) btnToggleReplaceIcon.textContent = 'expand_less';
+      } else {
+        adminReplaceConsoleContainer.classList.add('hidden');
+        if (btnToggleReplaceText) btnToggleReplaceText.textContent = 'Open Transition Console';
+        if (btnToggleReplaceIcon) btnToggleReplaceIcon.textContent = 'expand_more';
+      }
+    });
+  }
+
+  // 9. SUBMIT ADMIN REPLACEMENT STEP 1: INITIATE
+  let stagedNewAdminData = null;
+  const adminReplaceInitiateForm = document.getElementById('adminReplaceInitiateForm');
+  const btnSubmitReplaceInitiate = document.getElementById('btnSubmitReplaceInitiate');
+  const replaceStep1 = document.getElementById('replaceStep1');
+  const replaceStep2 = document.getElementById('replaceStep2');
+  const replaceNewAdminIdBadge = document.getElementById('replaceNewAdminIdBadge');
+
+  if (adminReplaceInitiateForm) {
+    adminReplaceInitiateForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      CampusInn.FormUtils.clearAllErrors(adminReplaceInitiateForm);
+
+      const operatorSecret = document.getElementById('replaceOperatorSecret')?.value.trim();
+      const fullName = document.getElementById('replaceFullName')?.value.trim();
+      const username = document.getElementById('replaceUsername')?.value.trim().toLowerCase();
+      const email = document.getElementById('replaceEmail')?.value.trim();
+      const password = document.getElementById('replacePassword')?.value;
+      const confirmPassword = document.getElementById('replaceConfirmPassword')?.value;
+
+      let hasError = false;
+      if (!operatorSecret) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('replaceOperatorSecret'), 'Operator authorization secret is required.');
+        hasError = true;
+      }
+      if (!fullName || fullName.length < 2) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('replaceFullName'), 'Full name must be at least 2 characters.');
+        hasError = true;
+      }
+      if (!username || username.length < 3) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('replaceUsername'), 'Account identifier / username must be at least 3 characters.');
+        hasError = true;
+      }
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('replaceEmail'), 'A valid email address is required.');
+        hasError = true;
+      }
+      if (!password || password.length < 8 || !/(?=.*[a-zA-Z])(?=.*[0-9])/.test(password)) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('replacePassword'), 'Password must be at least 8 characters with letters and numbers.');
+        hasError = true;
+      }
+      if (password !== confirmPassword) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('replaceConfirmPassword'), 'Passwords do not match.');
+        hasError = true;
+      }
+      if (hasError) return;
+
+      CampusInn.FormUtils.setButtonLoading(btnSubmitReplaceInitiate, true);
+      try {
+        const payload = { operatorSecret, fullName, username, email, password };
+        const res = await CampusInn.Admin.initiateAdminReplacement(payload);
+        if (res.data && res.data.success) {
+          stagedNewAdminData = res.data.admin || { email, username };
+          stagedNewAdminData.operatorSecret = operatorSecret;
+          if (replaceNewAdminIdBadge) {
+            replaceNewAdminIdBadge.textContent = stagedNewAdminData.id || stagedNewAdminData.email;
+          }
+          replaceStep1?.classList.add('hidden');
+          replaceStep2?.classList.remove('hidden');
+          CampusInn.Toast.success('Step 1 Complete: Replacement account provisioned! Verify and confirm in Step 2.');
+        } else {
+          throw new Error(res.error || (res.data && res.data.message) || 'Replacement initiation failed.');
+        }
+      } catch (err) {
+        CampusInn.Toast.error(err.message || 'Failed to initiate replacement.');
+        if (err.message && err.message.toLowerCase().includes('secret')) {
+          CampusInn.FormUtils.showFieldError(document.getElementById('replaceOperatorSecret'), err.message);
+        } else if (err.message && (err.message.toLowerCase().includes('exists') || err.message.toLowerCase().includes('email'))) {
+          CampusInn.FormUtils.showFieldError(document.getElementById('replaceEmail'), err.message);
+        }
+      } finally {
+        CampusInn.FormUtils.setButtonLoading(btnSubmitReplaceInitiate, false);
+      }
+    });
+  }
+
+  // 10. SUBMIT ADMIN REPLACEMENT STEP 2: CONFIRM & REVOKE PREDECESSOR
+  const adminReplaceConfirmForm = document.getElementById('adminReplaceConfirmForm');
+  const btnSubmitReplaceConfirm = document.getElementById('btnSubmitReplaceConfirm');
+  const chkConfirmAdminReplacement = document.getElementById('chkConfirmAdminReplacement');
+  const replacePreviousAdminId = document.getElementById('replacePreviousAdminId');
+  const replaceCompleteBanner = document.getElementById('replaceCompleteBanner');
+
+  if (adminReplaceConfirmForm) {
+    adminReplaceConfirmForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!chkConfirmAdminReplacement?.checked) {
+        CampusInn.Toast.error('Please check the confirmation box to authorize replacing old admin access.');
+        return;
+      }
+
+      CampusInn.FormUtils.setButtonLoading(btnSubmitReplaceConfirm, true);
+      try {
+        const payload = {
+          confirm: true,
+          newAdminId: stagedNewAdminData ? stagedNewAdminData.id : null,
+          previousAdminId: replacePreviousAdminId?.value.trim() || undefined,
+          operatorSecret: stagedNewAdminData ? stagedNewAdminData.operatorSecret : undefined
+        };
+        const res = await CampusInn.Admin.confirmAdminReplacement(payload);
+        if (res.data && res.data.success) {
+          replaceStep2?.classList.add('hidden');
+          replaceCompleteBanner?.classList.remove('hidden');
+          CampusInn.Toast.success('Administrator transition complete! Old admin access revoked.');
+          if (identifierInput && stagedNewAdminData) {
+            identifierInput.value = stagedNewAdminData.email || stagedNewAdminData.username || '';
+          }
+        } else {
+          throw new Error(res.error || (res.data && res.data.message) || 'Replacement confirmation failed.');
+        }
+      } catch (err) {
+        CampusInn.Toast.error(err.message || 'Replacement confirmation failed.');
+      } finally {
+        CampusInn.FormUtils.setButtonLoading(btnSubmitReplaceConfirm, false);
       }
     });
   }
