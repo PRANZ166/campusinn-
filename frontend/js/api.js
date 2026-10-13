@@ -1020,4 +1020,8 @@ const API = (() => {
 
 if (typeof window !== 'undefined') {
   window.CampusInnAPI = API;
+  window.CampusInn = window.CampusInn || {};
+  window.CampusInn.API = API;
+  window.CampusInn.admin = API.admin;
+  window.CampusInn.Admin = API.admin;
 }

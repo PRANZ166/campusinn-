@@ -181,6 +181,20 @@ const Auth = (() => {
     throw new Error('Registration service unavailable.');
   }
 
+  async function getAdminSetupStatus() {
+    if (typeof window.CampusInnAPI !== 'undefined' && window.CampusInnAPI.auth) {
+      return await window.CampusInnAPI.auth.getAdminSetupStatus();
+    }
+    throw new Error('Administrative status service unavailable.');
+  }
+
+  async function bootstrapAdmin(payload) {
+    if (typeof window.CampusInnAPI !== 'undefined' && window.CampusInnAPI.auth) {
+      return await window.CampusInnAPI.auth.bootstrapAdmin(payload);
+    }
+    throw new Error('Administrator bootstrap service unavailable.');
+  }
+
   async function logout() {
     try {
       if (typeof window.CampusInnAPI !== 'undefined' && window.CampusInnAPI.auth) {
@@ -262,7 +276,8 @@ const Auth = (() => {
   }
 
   return { getSession, isAuthenticated, getRole, getUser, getRoleConfig,
-           getDashboardUrl, login, registerStudent, registerFaculty, registerCoordinator, registerRecruiter, logout, requireAuth, sanitizeRedirect, ROLES };
+           getDashboardUrl, login, registerStudent, registerFaculty, registerCoordinator, registerRecruiter,
+           getAdminSetupStatus, bootstrapAdmin, logout, requireAuth, sanitizeRedirect, ROLES };
 })();
 
 /* ═══════════════════════════════════════════
@@ -1835,7 +1850,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-window.CampusInn = {
+window.CampusInn = window.CampusInn || {};
+Object.assign(window.CampusInn, {
   Auth,
   Theme,
   Nav,
@@ -1846,8 +1862,53 @@ window.CampusInn = {
   Toast,
   MobileMenu,
   SidebarManager,
-  FormUtils,
-  get API() { return window.CampusInnAPI; },
-  get DevMock() { return window.CampusInnDevMock; }
-};
+  FormUtils
+});
+
+if (!Object.getOwnPropertyDescriptor(window.CampusInn, 'Admin')) {
+  Object.defineProperty(window.CampusInn, 'Admin', {
+    get() {
+      return (typeof window.CampusInnAPI !== 'undefined' && window.CampusInnAPI.admin)
+        ? window.CampusInnAPI.admin
+        : (this._admin || null);
+    },
+    set(v) { this._admin = v; },
+    configurable: true,
+    enumerable: true
+  });
+}
+
+if (!Object.getOwnPropertyDescriptor(window.CampusInn, 'admin')) {
+  Object.defineProperty(window.CampusInn, 'admin', {
+    get() {
+      return (typeof window.CampusInnAPI !== 'undefined' && window.CampusInnAPI.admin)
+        ? window.CampusInnAPI.admin
+        : (this._admin || null);
+    },
+    set(v) { this._admin = v; },
+    configurable: true,
+    enumerable: true
+  });
+}
+
+if (!Object.getOwnPropertyDescriptor(window.CampusInn, 'API')) {
+  Object.defineProperty(window.CampusInn, 'API', {
+    get() {
+      return (typeof window.CampusInnAPI !== 'undefined') ? window.CampusInnAPI : null;
+    },
+    configurable: true,
+    enumerable: true
+  });
+}
+
+if (!Object.getOwnPropertyDescriptor(window.CampusInn, 'DevMock')) {
+  Object.defineProperty(window.CampusInn, 'DevMock', {
+    get() {
+      return (typeof window.CampusInnDevMock !== 'undefined') ? window.CampusInnDevMock : null;
+    },
+    configurable: true,
+    enumerable: true
+  });
+}
+
 

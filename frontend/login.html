@@ -1143,7 +1143,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     try {
-      const res = await CampusInn.Auth.getAdminSetupStatus();
+      const authService = (typeof window.CampusInnAPI !== 'undefined' && window.CampusInnAPI.auth)
+        ? window.CampusInnAPI.auth
+        : (typeof CampusInn !== 'undefined' && CampusInn.Auth ? CampusInn.Auth : null);
+      if (!authService || typeof authService.getAdminSetupStatus !== 'function') {
+        throw new Error('Administrative status service is unavailable.');
+      }
+      const res = await authService.getAdminSetupStatus();
       const setupState = (res.data && res.data.setupState) || 'ADMIN_EXISTS';
       if (setupState === 'INITIAL_BOOTSTRAP_REQUIRED') {
         bootView?.classList.remove('hidden');
@@ -1776,7 +1782,13 @@ document.addEventListener('DOMContentLoaded', () => {
       CampusInn.FormUtils.setButtonLoading(btnSubmitBootAdmin, true);
       try {
         const payload = { fullName, email, username, password, operatorSecret };
-        const res = await CampusInn.Auth.bootstrapAdmin(payload);
+        const authService = (typeof window.CampusInnAPI !== 'undefined' && window.CampusInnAPI.auth)
+          ? window.CampusInnAPI.auth
+          : (typeof CampusInn !== 'undefined' && CampusInn.Auth ? CampusInn.Auth : null);
+        if (!authService || typeof authService.bootstrapAdmin !== 'function') {
+          throw new Error('Administrator bootstrap service is unavailable. Please verify your connection and refresh.');
+        }
+        const res = await authService.bootstrapAdmin(payload);
         if (res.data && res.data.success) {
           CampusInn.Toast.success('Primary Administrator account created successfully!');
           displayLoginBanner(
@@ -1873,7 +1885,13 @@ document.addEventListener('DOMContentLoaded', () => {
       CampusInn.FormUtils.setButtonLoading(btnSubmitReplaceInitiate, true);
       try {
         const payload = { operatorSecret, fullName, username, email, password };
-        const res = await CampusInn.Admin.initiateAdminReplacement(payload);
+        const adminService = (typeof window.CampusInnAPI !== 'undefined' && window.CampusInnAPI.admin)
+          ? window.CampusInnAPI.admin
+          : (typeof CampusInn !== 'undefined' && (CampusInn.Admin || CampusInn.admin) ? (CampusInn.Admin || CampusInn.admin) : null);
+        if (!adminService || typeof adminService.initiateAdminReplacement !== 'function') {
+          throw new Error('Administrator replacement service is unavailable. Please refresh the page and verify your connection.');
+        }
+        const res = await adminService.initiateAdminReplacement(payload);
         if (res.data && res.data.success) {
           stagedNewAdminData = res.data.admin || { email, username };
           stagedNewAdminData.operatorSecret = operatorSecret;
@@ -1922,7 +1940,13 @@ document.addEventListener('DOMContentLoaded', () => {
           previousAdminId: replacePreviousAdminId?.value.trim() || undefined,
           operatorSecret: stagedNewAdminData ? stagedNewAdminData.operatorSecret : undefined
         };
-        const res = await CampusInn.Admin.confirmAdminReplacement(payload);
+        const adminService = (typeof window.CampusInnAPI !== 'undefined' && window.CampusInnAPI.admin)
+          ? window.CampusInnAPI.admin
+          : (typeof CampusInn !== 'undefined' && (CampusInn.Admin || CampusInn.admin) ? (CampusInn.Admin || CampusInn.admin) : null);
+        if (!adminService || typeof adminService.confirmAdminReplacement !== 'function') {
+          throw new Error('Administrator replacement confirmation service is unavailable. Please refresh the page and verify your connection.');
+        }
+        const res = await adminService.confirmAdminReplacement(payload);
         if (res.data && res.data.success) {
           replaceStep2?.classList.add('hidden');
           replaceCompleteBanner?.classList.remove('hidden');
