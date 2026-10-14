@@ -13,6 +13,24 @@ function sanitizeString(str) {
 }
 
 /**
+ * Strict Indian mobile phone validation (accepts exactly 10 digits).
+ * Rejects fewer than 10 digits, more than 10 digits, letters, special characters, and non-numeric inputs.
+ */
+function validatePhone(phone, required = false) {
+  if (phone === undefined || phone === null || String(phone).trim() === '') {
+    if (required) {
+      return { valid: false, error: 'Phone number is required.' };
+    }
+    return { valid: true, value: null };
+  }
+  const clean = String(phone).trim();
+  if (!/^[0-9]{10}$/.test(clean)) {
+    return { valid: false, error: 'Phone number must be exactly 10 digits.' };
+  }
+  return { valid: true, value: clean };
+}
+
+/**
  * Unify, trim and validate full name according to universal contract.
  * Accepts legitimate names containing spaces, hyphens, apostrophes, dots, and unicode/international letters.
  * Rejects empty names and names shorter than 2 characters after trimming.
@@ -81,6 +99,15 @@ function validateStudentRegister(req, res, next) {
 
   if (!password || typeof password !== 'string' || password.length < 6) {
     errors.push('Password must be at least 6 characters.');
+  }
+
+  if (phone !== undefined && phone !== null && String(phone).trim() !== '') {
+    const phoneCheck = validatePhone(phone, false);
+    if (!phoneCheck.valid) {
+      errors.push(phoneCheck.error);
+    } else {
+      req.body.phone = phoneCheck.value;
+    }
   }
 
   if (errors.length > 0) {
@@ -232,6 +259,16 @@ function validateFacultyRegister(req, res, next) {
     errors.push('Academic Department is required.');
   }
 
+  const { phone: facPhone } = req.body || {};
+  if (facPhone !== undefined && facPhone !== null && String(facPhone).trim() !== '') {
+    const phoneCheck = validatePhone(facPhone, false);
+    if (!phoneCheck.valid) {
+      errors.push(phoneCheck.error);
+    } else {
+      req.body.phone = phoneCheck.value;
+    }
+  }
+
   if (errors.length > 0) {
     return res.status(400).json({
       success: false,
@@ -248,7 +285,7 @@ function validateFacultyRegister(req, res, next) {
  * Validate Admin Provisioning of Faculty Payload
  */
 function validateAdminFacultyRegister(req, res, next) {
-  const { email, password, firstName, fullName } = req.body || {};
+  const { email, password, firstName, fullName, phone } = req.body || {};
   const errors = [];
 
   if (!email || !validateEmail(email)) {
@@ -262,6 +299,15 @@ function validateAdminFacultyRegister(req, res, next) {
   const hasName = (firstName && firstName.trim()) || (fullName && fullName.trim());
   if (!hasName) {
     errors.push('Faculty name is required.');
+  }
+
+  if (phone !== undefined && phone !== null && String(phone).trim() !== '') {
+    const phoneCheck = validatePhone(phone, false);
+    if (!phoneCheck.valid) {
+      errors.push(phoneCheck.error);
+    } else {
+      req.body.phone = phoneCheck.value;
+    }
   }
 
   if (errors.length > 0) {
@@ -286,6 +332,7 @@ function validateCoordinatorRegister(req, res, next) {
     password,
     department,
     clubName,
+    phone,
   } = req.body || {};
 
   const errors = [];
@@ -317,6 +364,15 @@ function validateCoordinatorRegister(req, res, next) {
     errors.push('Academic Department is required.');
   }
 
+  if (phone !== undefined && phone !== null && String(phone).trim() !== '') {
+    const phoneCheck = validatePhone(phone, false);
+    if (!phoneCheck.valid) {
+      errors.push(phoneCheck.error);
+    } else {
+      req.body.phone = phoneCheck.value;
+    }
+  }
+
   if (errors.length > 0) {
     return res.status(400).json({
       success: false,
@@ -340,6 +396,7 @@ function validateRecruiterRegister(req, res, next) {
     password,
     companyName,
     designation,
+    phone,
   } = req.body || {};
 
   const errors = [];
@@ -374,6 +431,15 @@ function validateRecruiterRegister(req, res, next) {
     errors.push('Designation / Job title is required.');
   }
 
+  if (phone !== undefined && phone !== null && String(phone).trim() !== '') {
+    const phoneCheck = validatePhone(phone, false);
+    if (!phoneCheck.valid) {
+      errors.push(phoneCheck.error);
+    } else {
+      req.body.phone = phoneCheck.value;
+    }
+  }
+
   if (errors.length > 0) {
     return res.status(400).json({
       success: false,
@@ -389,6 +455,7 @@ function validateRecruiterRegister(req, res, next) {
 module.exports = {
   validateEmail,
   sanitizeString,
+  validatePhone,
   validateStudentRegister,
   validateFacultyRegister,
   validateAdminFacultyRegister,

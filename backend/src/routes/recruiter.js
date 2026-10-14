@@ -4,6 +4,7 @@
 const express = require('express');
 const { query } = require('../db/pool');
 const { authenticate, authorize } = require('../middleware/auth');
+const { validatePhone } = require('../middleware/validate');
 
 const router = express.Router();
 
@@ -13,7 +14,19 @@ const router = express.Router();
  */
 router.post('/register', async (req, res, next) => {
   try {
-    const { companyName, industry, website, hqLocation, contactPerson, contactEmail, contactPhone, tier } = req.body;
+    const { companyName, industry, website, hqLocation, contactPerson, contactEmail, contactPhone, phone, tier } = req.body;
+
+    const phoneToValidate = contactPhone || phone;
+    if (phoneToValidate !== undefined && phoneToValidate !== null && String(phoneToValidate).trim() !== '') {
+      const phoneCheck = validatePhone(phoneToValidate, false);
+      if (!phoneCheck.valid) {
+        return res.status(400).json({
+          success: false,
+          message: phoneCheck.error,
+          code: 'INVALID_PHONE',
+        });
+      }
+    }
 
     const companyRes = await query(
       `INSERT INTO companies (name, website, tier, verification_status, status)

@@ -1021,19 +1021,22 @@ document.addEventListener('DOMContentLoaded', async () => {
                 </div>
               `;
             } else {
-              photoGrid.innerHTML = photos.map(ph => `
+              photoGrid.innerHTML = photos.map(ph => {
+                const downloadUrl = ph.download_url || ph.file_url;
+                const displayUrl = ph.file_url || downloadUrl;
+                return `
                 <div class="rounded-lg overflow-hidden bg-surface-container-lowest border border-outline-variant/30 flex flex-col justify-between">
                   <div class="h-28 overflow-hidden bg-surface-container">
-                    <img src="${ph.file_url}" alt="${ph.caption || 'Event Media'}" class="w-full h-full object-cover">
+                    <img src="${displayUrl}" alt="${ph.caption || 'Event Media'}" class="w-full h-full object-cover">
                   </div>
                   <div class="p-2 flex items-center justify-between gap-1 border-t border-surface-container/60">
                     <p class="text-[11px] text-on-surface truncate flex-1">${ph.caption || 'Event Capture'}</p>
-                    <a href="${ph.file_url}" download="campus_event_photo.jpg" class="p-1 rounded bg-surface-container text-primary hover:bg-surface-variant transition-colors" title="Download">
+                    <a href="${downloadUrl}" download="campus_event_photo.jpg" class="p-1 rounded bg-surface-container text-primary hover:bg-surface-variant transition-colors" title="Download">
                       <span class="material-symbols-outlined text-[14px]">download</span>
                     </a>
                   </div>
                 </div>
-              `).join('');
+              `}).join('');
             }
           }
         }

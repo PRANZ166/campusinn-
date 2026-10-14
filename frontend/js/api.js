@@ -424,6 +424,13 @@ const API = (() => {
     async getEvents() {
       const res = await request('/students/events');
       return res;
+    },
+
+    async updateProfile(payload) {
+      return await request('/students/profile', {
+        method: 'PUT',
+        body: JSON.stringify(payload)
+      });
     }
   };
 
@@ -600,6 +607,10 @@ const API = (() => {
         body: JSON.stringify(payload)
       });
       return res;
+    },
+
+    getPhotoDownloadUrl(photoId) {
+      return `${BASE_URL}/events/photos/${encodeURIComponent(photoId)}/download`;
     }
   };
 
@@ -647,6 +658,17 @@ const API = (() => {
       return await request('/faculty/profile', {
         method: 'PUT',
         body: JSON.stringify(payload)
+      });
+    },
+
+    async getDashboard() {
+      return await request('/faculty/dashboard');
+    },
+
+    async submitMenteeFeedback(studentId, feedback) {
+      return await request(`/faculty/mentees/${encodeURIComponent(studentId)}/feedback`, {
+        method: 'POST',
+        body: JSON.stringify({ feedback })
       });
     }
   };
@@ -831,6 +853,13 @@ const API = (() => {
 
     async launchEvent(payload) {
       return this.createEvent(payload);
+    },
+
+    async updateEventStatus(eventId, status) {
+      return await request(`/coordinator/events/${encodeURIComponent(eventId)}/status`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status })
+      });
     }
   };
 

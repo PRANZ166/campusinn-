@@ -312,7 +312,7 @@
           </div>
           <div class="flex flex-col gap-1">
             <label class="font-label-md text-label-md text-on-surface" for="regPhone">Phone Number *</label>
-            <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regPhone" placeholder="10-digit mobile (e.g. 9820123456)" required type="tel">
+            <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regPhone" placeholder="10-digit mobile (e.g. 9820123456)" required type="tel" inputmode="numeric" maxlength="10" pattern="[0-9]{10}" autocomplete="tel">
           </div>
         </div>
       </div>
@@ -466,7 +466,7 @@
           </div>
           <div class="flex flex-col gap-1">
             <label class="font-label-md text-label-md text-on-surface" for="regFacPhone">Mobile / Contact Phone</label>
-            <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regFacPhone" placeholder="10-digit mobile number" type="tel">
+            <input class="w-full px-3.5 py-2.5 bg-surface-container-lowest rounded-lg border border-outline-variant text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="regFacPhone" placeholder="10-digit mobile number" type="tel" inputmode="numeric" maxlength="10" pattern="[0-9]{10}" autocomplete="tel">
           </div>
         </div>
 
@@ -1054,6 +1054,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnSwitchToLogin = document.getElementById('btnSwitchToLogin');
   const btnPrivilegedSwitchToLogin = document.getElementById('btnPrivilegedSwitchToLogin');
 
+  // Bind Phone Number Inputs strictly with PhoneUtils
+  if (typeof CampusInn !== 'undefined' && CampusInn.PhoneUtils) {
+    const regPhoneEl = document.getElementById('regPhone');
+    if (regPhoneEl) CampusInn.PhoneUtils.bindInput(regPhoneEl, { required: true });
+    const regFacPhoneEl = document.getElementById('regFacPhone');
+    if (regFacPhoneEl) CampusInn.PhoneUtils.bindInput(regFacPhoneEl, { required: false });
+  }
+
   // Role Tab Switching (Login)
   const loginTabs = document.querySelectorAll('.role-tab');
   const regTabs = document.querySelectorAll('.reg-role-tab');
@@ -1443,8 +1451,11 @@ document.addEventListener('DOMContentLoaded', () => {
         CampusInn.FormUtils.showFieldError(document.getElementById('regEmail'), 'Please provide a valid email address.');
         hasError = true;
       }
-      if (!phone || phone.replace(/[\s-]/g, '').length < 10) {
-        CampusInn.FormUtils.showFieldError(document.getElementById('regPhone'), 'Please provide a valid 10-digit phone number.');
+      const phoneRes = (typeof CampusInn !== 'undefined' && CampusInn.PhoneUtils)
+        ? CampusInn.PhoneUtils.validate(phone, true)
+        : (/^[0-9]{10}$/.test(phone || '') ? { valid: true } : { valid: false, error: 'Please provide a valid 10-digit phone number.' });
+      if (!phoneRes.valid) {
+        CampusInn.FormUtils.showFieldError(document.getElementById('regPhone'), phoneRes.error);
         hasError = true;
       }
       if (!rollNumber) {
@@ -1552,6 +1563,15 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         CampusInn.FormUtils.showFieldError(document.getElementById('regFacEmail'), 'A valid faculty email address is required.');
         hasError = true;
+      }
+      if (phone) {
+        const facPhoneRes = (typeof CampusInn !== 'undefined' && CampusInn.PhoneUtils)
+          ? CampusInn.PhoneUtils.validate(phone, false)
+          : (/^[0-9]{10}$/.test(phone) ? { valid: true } : { valid: false, error: 'Phone number must be exactly 10 digits.' });
+        if (!facPhoneRes.valid) {
+          CampusInn.FormUtils.showFieldError(document.getElementById('regFacPhone'), facPhoneRes.error);
+          hasError = true;
+        }
       }
       if (!password || password.length < 8 || !/(?=.*[a-zA-Z])(?=.*[0-9])/.test(password)) {
         CampusInn.FormUtils.showFieldError(document.getElementById('regFacPassword'), 'Password must be at least 8 characters with letters and numbers.');

@@ -5,6 +5,7 @@ const multer = require('multer');
 const config = require('../config');
 const { query } = require('../db/pool');
 const { authenticate, authorize } = require('../middleware/auth');
+const { validatePhone } = require('../middleware/validate');
 
 const router = express.Router();
 
@@ -666,6 +667,17 @@ router.get('/events', authenticate, authorize('student'), async (req, res, next)
       }
     }
 
+    // 5. Fetch published gallery photos for students
+    const photosRes = await query(
+      `SELECT ep.id, ep.file_url AS "fileUrl", ep.caption, ep.created_at AS "createdAt",
+              ep.file_size AS "fileSize", ep.mime_type AS "mimeType", ep.original_filename AS "originalFilename",
+              ep.download_count AS "downloadCount", ep.event_id AS "eventId", e.title AS "eventTitle"
+       FROM event_photos ep
+       LEFT JOIN events e ON e.id = ep.event_id
+       WHERE ep.is_published = true
+       ORDER BY ep.created_at DESC LIMIT 30`
+    ).catch(() => ({ rows: [] }));
+
     return res.status(200).json({
       success: true,
       studentDepartment: studentDept,
@@ -675,6 +687,42 @@ router.get('/events', authenticate, authorize('student'), async (req, res, next)
       attendance: attRes.rows,
       recordedAttendance: attRes.rows,
       departmentFreshers: freshersEvent,
+      photos: photosRes.rows.map(p => ({
+        ...p,
+        fileUrl: p.fileUrl || `/api/v1/events/photos/${p.id}/file`,
+        downloadUrl: `/api/v1/events/photos/${p.id}/download`,
+      })),
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
+ * PUT /api/v1/students/profile
+ * Update student profile (phone, skills) with strict 10-digit phone validation
+ */
+router.put('/profile', authenticate, authorize('student'), async (req, res, next) => {
+  try {
+    const { phone } = req.body || {};
+
+    if (phone !== undefined && phone !== null && String(phone).trim() !== '') {
+      const phoneCheck = validatePhone(phone, false);
+      if (!phoneCheck.valid) {
+        return res.status(400).json({
+          success: false,
+          message: phoneCheck.error,
+          code: 'INVALID_PHONE',
+        });
+      }
+      await query('UPDATE users SET phone = $1, updated_at = NOW() WHERE id = $2', [phoneCheck.value, req.user.id]);
+    } else if (phone === null || phone === '') {
+      await query('UPDATE users SET phone = NULL, updated_at = NOW() WHERE id = $1', [req.user.id]);
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Student profile updated successfully.',
     });
   } catch (err) {
     next(err);

@@ -58,6 +58,30 @@ const uploadPhoto = multer({
 });
 
 /**
+ * Validates actual binary signature (magic bytes) of uploaded images.
+ * Rejects disguised or malicious file extensions.
+ */
+function validateImageMagicBytes(buffer) {
+  if (!buffer || buffer.length < 12) return false;
+  // JPEG / JPG: 0xFF 0xD8 0xFF
+  if (buffer[0] === 0xFF && buffer[1] === 0xD8 && buffer[2] === 0xFF) {
+    return 'image/jpeg';
+  }
+  // PNG: 0x89 0x50 0x4E 0x47
+  if (buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4E && buffer[3] === 0x47) {
+    return 'image/png';
+  }
+  // WebP: RIFF (bytes 0-3) and WEBP (bytes 8-11)
+  if (
+    buffer[0] === 0x52 && buffer[1] === 0x49 && buffer[2] === 0x46 && buffer[3] === 0x46 &&
+    buffer[8] === 0x57 && buffer[9] === 0x45 && buffer[10] === 0x42 && buffer[11] === 0x50
+  ) {
+    return 'image/webp';
+  }
+  return false;
+}
+
+/**
  * Helper: Normalize department comparison
  */
 function normalizeDept(dept) {
@@ -890,19 +914,44 @@ router.get('/:id/attendance', authenticate, authorize('coordinator', 'admin', 'f
 router.get('/:id/photos', optionalAuth, async (req, res, next) => {
   try {
     const eventId = req.params.id;
-    const photosRes = await query(
-      `SELECT ep.id, ep.file_url AS "fileUrl", ep.caption, ep.created_at AS "createdAt",
-              ep.file_size AS "fileSize", ep.mime_type AS "mimeType"
-       FROM event_photos ep
-       WHERE ep.event_id = $1 AND ep.is_published = true
-       ORDER BY ep.created_at DESC`,
-      [eventId]
-    ).catch(() => ({ rows: [] }));
+    let queryText = '';
+    let params = [];
+
+    if (eventId === 'all') {
+      queryText = `
+        SELECT ep.id, ep.file_url AS "fileUrl", ep.caption, ep.created_at AS "createdAt",
+               ep.file_size AS "fileSize", ep.mime_type AS "mimeType",
+               ep.original_filename AS "originalFilename", ep.download_count AS "downloadCount",
+               ep.event_id AS "eventId", e.title AS "eventTitle"
+        FROM event_photos ep
+        LEFT JOIN events e ON e.id = ep.event_id
+        WHERE ep.is_published = true
+        ORDER BY ep.created_at DESC
+      `;
+    } else {
+      queryText = `
+        SELECT ep.id, ep.file_url AS "fileUrl", ep.caption, ep.created_at AS "createdAt",
+               ep.file_size AS "fileSize", ep.mime_type AS "mimeType",
+               ep.original_filename AS "originalFilename", ep.download_count AS "downloadCount",
+               ep.event_id AS "eventId", e.title AS "eventTitle"
+        FROM event_photos ep
+        LEFT JOIN events e ON e.id = ep.event_id
+        WHERE ep.event_id::text = $1 AND ep.is_published = true
+        ORDER BY ep.created_at DESC
+      `;
+      params = [eventId];
+    }
+
+    const photosRes = await query(queryText, params).catch(() => ({ rows: [] }));
 
     return res.status(200).json({
       success: true,
       eventId,
-      photos: photosRes.rows,
+      photos: photosRes.rows.map(p => ({
+        ...p,
+        fileUrl: p.fileUrl || `/api/v1/events/photos/${p.id}/file`,
+        downloadUrl: `/api/v1/events/photos/${p.id}/download`,
+      })),
     });
   } catch (err) {
     next(err);
@@ -910,21 +959,128 @@ router.get('/:id/photos', optionalAuth, async (req, res, next) => {
 });
 
 /**
+ * GET /api/v1/events/photos/:photoId/download
+ * Real binary image file download with attachment headers and tracking
+ */
+router.get('/photos/:photoId/download', optionalAuth, async (req, res, next) => {
+  try {
+    const photoId = req.params.photoId;
+    const photoRes = await query(
+      `SELECT ep.id, ep.event_id, ep.original_filename, ep.file_size, ep.mime_type, ep.image_data, ep.storage_key, ep.is_published,
+              e.title AS "eventTitle"
+       FROM event_photos ep
+       LEFT JOIN events e ON e.id = ep.event_id
+       WHERE ep.id::text = $1`,
+      [photoId]
+    );
+
+    if (photoRes.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Photo not found.' });
+    }
+
+    const photo = photoRes.rows[0];
+    if (!photo.is_published && (!req.user || (req.user.role !== 'admin' && req.user.role !== 'coordinator'))) {
+      return res.status(403).json({ success: false, message: 'This photo has not been published.' });
+    }
+
+    // Increment download count
+    await query('UPDATE event_photos SET download_count = COALESCE(download_count, 0) + 1 WHERE id = $1', [photo.id]).catch(() => {});
+
+    const mime = photo.mime_type || 'image/jpeg';
+    const filename = photo.original_filename || `campus_inn_event_photo_${photo.id}.jpg`;
+
+    res.setHeader('Content-Type', mime);
+    res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(filename)}"`);
+
+    if (photo.image_data) {
+      return res.send(photo.image_data);
+    }
+
+    if (photo.storage_key && fs.existsSync(photo.storage_key)) {
+      return res.sendFile(path.resolve(photo.storage_key));
+    }
+
+    return res.status(404).json({ success: false, message: 'Image data unavailable.' });
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
+ * GET /api/v1/events/photos/:photoId/file
+ * Serve image file directly for browser previews
+ */
+router.get('/photos/:photoId/file', optionalAuth, async (req, res, next) => {
+  try {
+    const photoId = req.params.photoId;
+    const photoRes = await query(
+      `SELECT ep.id, ep.image_data, ep.mime_type, ep.storage_key, ep.is_published
+       FROM event_photos ep
+       WHERE ep.id::text = $1 OR ep.file_url LIKE $2`,
+      [photoId, `%${photoId}%`]
+    );
+
+    if (photoRes.rows.length === 0) {
+      const diskPath = path.join(PHOTOS_DIR, photoId);
+      if (fs.existsSync(diskPath)) {
+        return res.sendFile(diskPath);
+      }
+      return res.status(404).json({ success: false, message: 'Photo not found.' });
+    }
+
+    const photo = photoRes.rows[0];
+    res.setHeader('Content-Type', photo.mime_type || 'image/jpeg');
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+
+    if (photo.image_data) {
+      return res.send(photo.image_data);
+    }
+    if (photo.storage_key && fs.existsSync(photo.storage_key)) {
+      return res.sendFile(path.resolve(photo.storage_key));
+    }
+
+    return res.status(404).send('Image file unavailable.');
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
  * POST /api/v1/events/:id/photos
- * Upload event photo (Authorized Event Coordinator or Admin only)
+ * Upload event photo(s) with magic signature check and PostgreSQL binary persistence
  */
 router.post(
   '/:id/photos',
   authenticate,
   authorize('coordinator', 'admin'),
-  uploadPhoto.single('photo'),
+  (req, res, next) => {
+    const multi = uploadPhoto.fields([
+      { name: 'photo', maxCount: 1 },
+      { name: 'photos', maxCount: 10 }
+    ]);
+    multi(req, res, (err) => {
+      if (err) {
+        return res.status(400).json({
+          success: false,
+          message: err.message || 'Photo upload error.',
+          code: err.code || 'UPLOAD_ERROR'
+        });
+      }
+      next();
+    });
+  },
   async (req, res, next) => {
     try {
       const eventId = req.params.id;
-      const file = req.file;
-      const caption = req.body.caption || null;
+      const uploadedFiles = [];
+      if (req.files) {
+        if (req.files.photo) uploadedFiles.push(...req.files.photo);
+        if (req.files.photos) uploadedFiles.push(...req.files.photos);
+      } else if (req.file) {
+        uploadedFiles.push(req.file);
+      }
 
-      if (!file) {
+      if (uploadedFiles.length === 0) {
         return res.status(400).json({
           success: false,
           message: 'No image file provided. Please upload a valid JPG, PNG, or WebP image.',
@@ -935,8 +1091,7 @@ router.post(
       // Check event exists
       const evCheck = await query('SELECT * FROM events WHERE id::text = $1', [eventId]);
       if (evCheck.rows.length === 0) {
-        // Remove uploaded file to avoid dangling storage
-        try { fs.unlinkSync(file.path); } catch (e) {}
+        uploadedFiles.forEach(f => { try { fs.unlinkSync(f.path); } catch (e) {} });
         return res.status(404).json({
           success: false,
           message: 'Event not found.',
@@ -948,7 +1103,7 @@ router.post(
       if (req.user.role === 'coordinator') {
         const accessCheck = await canCoordinatorManageEvent(req.user, evCheck.rows[0]);
         if (!accessCheck.allowed) {
-          try { fs.unlinkSync(file.path); } catch (e) {}
+          uploadedFiles.forEach(f => { try { fs.unlinkSync(f.path); } catch (e) {} });
           return res.status(403).json({
             success: false,
             message: 'Coordinators can only upload photos for events within their assigned department or created events.',
@@ -957,29 +1112,52 @@ router.post(
         }
       }
 
-      // File URL relative path
-      const fileUrl = `/uploads/event_photos/${path.basename(file.path)}`;
+      const caption = req.body.caption || null;
+      const insertedPhotos = [];
 
-      const photoRes = await query(
-        `INSERT INTO event_photos (
-           event_id, uploaded_by, file_url, storage_key, caption, is_published, file_size, mime_type
-         ) VALUES ($1, $2, $3, $4, $5, true, $6, $7)
-         RETURNING id, event_id, file_url, caption, created_at`,
-        [
-          evCheck.rows[0].id,
-          req.user.id,
-          fileUrl,
-          file.path,
-          caption ? caption.trim() : null,
-          file.size,
-          file.mimetype,
-        ]
-      );
+      for (const file of uploadedFiles) {
+        // Read buffer to validate magic signature
+        const buffer = fs.readFileSync(file.path);
+        const detectedMime = validateImageMagicBytes(buffer);
+        if (!detectedMime) {
+          try { fs.unlinkSync(file.path); } catch (e) {}
+          return res.status(400).json({
+            success: false,
+            message: `File "${file.originalname}" is not a valid image format. Only authentic JPG, PNG, and WebP files are accepted.`,
+            code: 'INVALID_IMAGE_SIGNATURE'
+          });
+        }
+
+        const fileUrl = `/api/v1/events/photos/${path.basename(file.path)}/file`;
+
+        const photoRes = await query(
+          `INSERT INTO event_photos (
+             event_id, uploaded_by, file_url, storage_key, caption, is_published, file_size, mime_type, image_data, original_filename
+           ) VALUES ($1, $2, $3, $4, $5, true, $6, $7, $8, $9)
+           RETURNING id, event_id, file_url, caption, created_at, original_filename AS "originalFilename"`,
+          [
+            evCheck.rows[0].id,
+            req.user.id,
+            fileUrl,
+            file.path,
+            caption ? caption.trim() : null,
+            file.size,
+            detectedMime,
+            buffer,
+            file.originalname
+          ]
+        );
+        insertedPhotos.push({
+          ...photoRes.rows[0],
+          downloadUrl: `/api/v1/events/photos/${photoRes.rows[0].id}/download`
+        });
+      }
 
       return res.status(201).json({
         success: true,
-        message: 'Event photo published to gallery successfully!',
-        photo: photoRes.rows[0],
+        message: `${insertedPhotos.length} photo${insertedPhotos.length > 1 ? 's' : ''} published to gallery successfully!`,
+        photo: insertedPhotos[0],
+        photos: insertedPhotos,
       });
     } catch (err) {
       next(err);

@@ -111,6 +111,7 @@ router.get('/events', authenticate, authorize('coordinator', 'admin'), async (re
               e.venue, COALESCE(e.capacity, e.max_participants, 500) AS "capacity",
               e.department_id AS "departmentId", e.department_name AS "departmentName",
               e.is_published AS "isPublished", e.is_freshers AS "isFreshers",
+              COALESCE(e.status, CASE WHEN e.is_published = true THEN 'published' ELSE 'draft' END) AS "status",
               e.registration_open AS "registrationOpen", e.registration_close AS "registrationClose",
               e.created_by AS "createdBy", e.created_at AS "createdAt",
               COUNT(DISTINCT er.id) AS "registrationCount",
@@ -195,14 +196,18 @@ router.post('/events', authenticate, authorize('coordinator', 'admin'), async (r
       }
     }
 
+    const isPub = req.body.isPublished !== undefined ? Boolean(req.body.isPublished) : true;
+    const eventStatus = isPub ? 'published' : 'draft';
+
     const eventRes = await query(
       `INSERT INTO events (
          title, description, category, venue, date_start, date_end, capacity,
-         max_participants, is_freshers, department_name, is_published,
+         max_participants, is_freshers, department_name, is_published, status,
          registration_open, registration_close, questions, created_by, created_at, updated_at
-       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $7, $8, $9, true, $10, $11, $12, $13, NOW(), NOW())
+       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $7, $8, $9, $10, $11, $12, $13, $14, $15, NOW(), NOW())
        RETURNING id, title, category, venue, date_start AS "dateStart", date_end AS "dateEnd",
-                 capacity, is_freshers AS "isFreshers", department_name AS "departmentName", is_published AS "isPublished"`,
+                 capacity, is_freshers AS "isFreshers", department_name AS "departmentName",
+                 is_published AS "isPublished", status`,
       [
         title.trim(),
         description ? description.trim() : null,
@@ -213,6 +218,8 @@ router.post('/events', authenticate, authorize('coordinator', 'admin'), async (r
         parseInt(capacity, 10) || 500,
         Boolean(isFreshers),
         departmentName ? departmentName.trim() : null,
+        isPub,
+        eventStatus,
         registrationOpen ? new Date(registrationOpen) : new Date(),
         registrationClose ? new Date(registrationClose) : new Date(Date.now() + 86400000 * 30),
         JSON.stringify(questions || []),
@@ -222,7 +229,7 @@ router.post('/events', authenticate, authorize('coordinator', 'admin'), async (r
 
     return res.status(201).json({
       success: true,
-      message: `Event "${title.trim()}" published successfully!`,
+      message: isPub ? `Event "${title.trim()}" published successfully!` : `Event "${title.trim()}" saved as draft!`,
       event: eventRes.rows[0],
     });
   } catch (err) {
@@ -249,6 +256,7 @@ router.put('/events/:id', authenticate, authorize('coordinator', 'admin'), async
       departmentName,
       isPublished,
       registrationClose,
+      status,
     } = req.body;
 
     // Check authorization: must be creator, match coordinator's department, or admin
@@ -266,6 +274,11 @@ router.put('/events/:id', authenticate, authorize('coordinator', 'admin'), async
       });
     }
 
+    let targetStatus = status;
+    if (!targetStatus && isPublished !== undefined) {
+      targetStatus = isPublished ? 'published' : 'draft';
+    }
+
     const updateRes = await query(
       `UPDATE events
        SET title = COALESCE($1, title),
@@ -280,9 +293,11 @@ router.put('/events/:id', authenticate, authorize('coordinator', 'admin'), async
            department_name = COALESCE($9, department_name),
            is_published = COALESCE($10, is_published),
            registration_close = COALESCE($11, registration_close),
+           status = COALESCE($12, status),
            updated_at = NOW()
-       WHERE id = $12
-       RETURNING id, title, category, venue, capacity, is_published AS "isPublished", department_name AS "departmentName"`,
+       WHERE id = $13
+       RETURNING id, title, category, venue, capacity, is_published AS "isPublished",
+                 department_name AS "departmentName", status`,
       [
         title ? title.trim() : null,
         description !== undefined ? description : null,
@@ -295,6 +310,7 @@ router.put('/events/:id', authenticate, authorize('coordinator', 'admin'), async
         departmentName ? departmentName.trim() : null,
         isPublished !== undefined ? Boolean(isPublished) : null,
         registrationClose ? new Date(registrationClose) : null,
+        targetStatus || null,
         evCheck.rows[0].id,
       ]
     );
@@ -302,6 +318,56 @@ router.put('/events/:id', authenticate, authorize('coordinator', 'admin'), async
     return res.status(200).json({
       success: true,
       message: `Event "${updateRes.rows[0].title}" updated successfully!`,
+      event: updateRes.rows[0],
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
+ * PATCH /api/v1/coordinator/events/:id/status
+ * Toggle draft / published / cancelled status
+ */
+router.patch('/events/:id/status', authenticate, authorize('coordinator', 'admin'), async (req, res, next) => {
+  try {
+    const eventId = req.params.id;
+    const { status, isPublished } = req.body || {};
+
+    const evCheck = await query('SELECT id, created_by, title, department_name, is_published, status FROM events WHERE id::text = $1', [eventId]);
+    if (evCheck.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Event not found.' });
+    }
+
+    const accessCheck = await canCoordinatorManageEvent(req.user, evCheck.rows[0]);
+    if (!accessCheck.allowed) {
+      return res.status(403).json({
+        success: false,
+        message: 'You are not authorized to update status for this event.',
+        code: 'FORBIDDEN_COORDINATOR_SCOPE',
+      });
+    }
+
+    let targetStatus = status || (isPublished === false ? 'draft' : 'published');
+    let targetPub = isPublished !== undefined ? Boolean(isPublished) : (targetStatus === 'published');
+    let regOpen = true;
+
+    if (targetStatus === 'cancelled') {
+      targetPub = false;
+      regOpen = false;
+    }
+
+    const updateRes = await query(
+      `UPDATE events
+       SET status = $1, is_published = $2, registration_open = $3, updated_at = NOW()
+       WHERE id = $4
+       RETURNING id, title, status, is_published AS "isPublished", registration_open AS "registration_open"`,
+      [targetStatus, targetPub, regOpen, evCheck.rows[0].id]
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: `Event "${evCheck.rows[0].title}" status updated to ${targetStatus}.`,
       event: updateRes.rows[0],
     });
   } catch (err) {

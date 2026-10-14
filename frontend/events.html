@@ -927,7 +927,7 @@
         </div>
         <div>
           <label class="block text-xs font-semibold text-on-surface mb-1">Phone Number *</label>
-          <input type="tel" id="htContactPhone" placeholder="+91 98000 12345" class="w-full px-3.5 py-2 bg-surface-container-low rounded-lg text-xs" required>
+          <input type="tel" id="htContactPhone" placeholder="10-digit mobile (e.g. 9800012345)" class="w-full px-3.5 py-2 bg-surface-container-low rounded-lg text-xs" required inputmode="numeric" maxlength="10" pattern="[0-9]{10}" autocomplete="tel">
         </div>
       </div>
 
@@ -2003,26 +2003,30 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
       }
 
-      grid.innerHTML = photos.map(photo => `
+      grid.innerHTML = photos.map(photo => {
+        const downloadUrl = photo.download_url || photo.file_url;
+        const displayUrl = photo.file_url || downloadUrl;
+        return `
         <div class="group relative rounded-xl overflow-hidden bg-surface-container-low border border-outline-variant/30 flex flex-col justify-between shadow-xs hover:shadow-md transition-all">
-          <div class="relative w-full h-44 overflow-hidden bg-surface-container cursor-pointer btn-open-photo" data-url="${photo.file_url}" data-caption="${photo.caption || 'MET BKC Campus Moment'}">
-            <img src="${photo.file_url}" alt="${photo.caption || 'Event Media'}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+          <div class="relative w-full h-44 overflow-hidden bg-surface-container cursor-pointer btn-open-photo" data-url="${displayUrl}" data-download="${downloadUrl}" data-caption="${photo.caption || 'MET BKC Campus Moment'}">
+            <img src="${displayUrl}" alt="${photo.caption || 'Event Media'}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
             <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2.5">
               <span class="text-[11px] text-white font-medium truncate">${photo.caption || 'View Full Photo'}</span>
             </div>
           </div>
           <div class="p-3 flex items-center justify-between gap-2 border-t border-surface-container/60">
             <p class="text-xs font-medium text-on-surface truncate flex-1">${photo.caption || 'Campus Capture'}</p>
-            <a href="${photo.file_url}" download="campus_event_photo.jpg" class="p-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-primary flex items-center justify-center transition-colors" title="Download High-Res">
+            <a href="${downloadUrl}" download="campus_event_photo.jpg" class="p-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-primary flex items-center justify-center transition-colors" title="Download High-Res">
               <span class="material-symbols-outlined text-[16px]">download</span>
             </a>
           </div>
         </div>
-      `).join('');
+      `}).join('');
 
       grid.querySelectorAll('.btn-open-photo').forEach(el => {
         el.addEventListener('click', () => {
           const url = el.getAttribute('data-url');
+          const downloadUrl = el.getAttribute('data-download') || url;
           const cap = el.getAttribute('data-caption');
           const pImg = document.getElementById('photoViewerImg');
           const pCap = document.getElementById('photoViewerCaption');
@@ -2031,7 +2035,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           if (pImg) pImg.src = url;
           if (pCap) pCap.textContent = cap;
           if (pDown) {
-            pDown.href = url;
+            pDown.href = downloadUrl;
             pDown.setAttribute('download', `campus_photo_${Date.now()}.jpg`);
           }
 
@@ -2087,6 +2091,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
     });
   });
+
+  // Strict phone number binding
+  const htPhoneEl = document.getElementById('htContactPhone');
+  if (htPhoneEl && typeof CampusInn !== 'undefined' && CampusInn.PhoneUtils) {
+    CampusInn.PhoneUtils.bindInput(htPhoneEl, { required: true });
+  }
 
   // Initial load
   await loadData();

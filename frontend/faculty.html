@@ -73,6 +73,9 @@
       </div>
     </div>
     <div class="flex items-center gap-space-sm">
+      <button id="btnOpenFacultyProfileModal" type="button" class="px-3 py-1.5 rounded-lg bg-surface-container font-label-md font-semibold text-primary hover:bg-surface-variant transition-colors flex items-center gap-1 cursor-pointer">
+        <span class="material-symbols-outlined text-[16px]">account_box</span> My Profile
+      </button>
       <button aria-label="Toggle Theme" class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors" type="button">
         <span class="material-symbols-outlined text-[20px]">light_mode</span>
       </button>
@@ -84,23 +87,23 @@
   <main class="w-full pt-16 bg-surface px-space-lg">
     <div class="flex flex-col w-full pb-space-xl mt-space-md">
       <div class="relative bg-surface-container-lowest rounded-xl p-space-lg mb-space-lg shadow-sm">
-        <h1 class="font-headline-lg font-extrabold text-on-surface">Faculty Academic & Mentorship Dashboard</h1>
-        <p class="font-body-md text-on-surface-variant mt-1 font-medium">Course: Advanced Data Structures & Cloud Computing (BE CSE Semester 7 & MCA Semester 3)</p>
+        <h1 class="font-headline-lg font-extrabold text-on-surface">Faculty Academic &amp; Mentorship Dashboard</h1>
+        <p class="font-body-md text-on-surface-variant mt-1 font-medium">Course: Advanced Data Structures &amp; Cloud Computing (BE CSE Semester 7 &amp; MCA Semester 3)</p>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-space-md mb-space-lg">
         <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm border-l-4 border-l-primary">
           <span class="font-label-caps text-secondary uppercase font-bold">Assigned Mentees</span>
-          <div class="font-headline-xl text-headline-xl font-bold text-on-surface my-1">64</div>
-          <span class="font-body-sm text-tertiary font-semibold">All eligible for Phase 1 drives</span>
+          <div class="font-headline-xl text-headline-xl font-bold text-on-surface my-1" id="statFacultyMentees">—</div>
+          <span class="font-body-sm text-tertiary font-semibold" id="statFacultyMenteesSub">Active department cohort</span>
         </div>
         <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm border-l-4 border-l-tertiary">
           <span class="font-label-caps text-secondary uppercase font-bold">NOC Approval Requests</span>
-          <div class="font-headline-xl text-headline-xl font-bold text-tertiary my-1">3</div>
-          <span class="font-body-sm text-primary font-semibold">Google & PhonePe Drive Attendance</span>
+          <div class="font-headline-xl text-headline-xl font-bold text-tertiary my-1" id="statFacultyNocs">—</div>
+          <span class="font-body-sm text-primary font-semibold" id="statFacultyNocsSub">Drive Attendance Clearances</span>
         </div>
         <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm border-l-4 border-l-secondary">
           <span class="font-label-caps text-secondary uppercase font-bold">Class Attendance Avg</span>
-          <div class="font-headline-xl text-headline-xl font-bold text-on-surface my-1">88.5%</div>
+          <div class="font-headline-xl text-headline-xl font-bold text-on-surface my-1" id="statFacultyAttendance">—</div>
           <span class="font-body-sm text-secondary font-semibold">Exceeds 75% SPPU Mandatory Quota</span>
         </div>
       </div>
@@ -305,8 +308,85 @@
   </main>
 </div>
 
+<!-- MODAL: Sign Mentee Feedback -->
+<div id="modalMenteeFeedback" class="fixed inset-0 bg-inverse-surface/60 backdrop-blur-sm z-[9999] hidden flex items-center justify-center p-4">
+  <div class="bg-surface-container-lowest rounded-2xl max-w-md w-full p-6 shadow-2xl border border-outline-variant/30">
+    <div class="flex items-center justify-between pb-3 border-b border-surface-container">
+      <div class="flex items-center gap-2">
+        <span class="w-8 h-8 rounded-lg bg-primary-fixed text-primary flex items-center justify-center font-bold">
+          <span class="material-symbols-outlined text-lg">draw</span>
+        </span>
+        <div>
+          <h3 class="font-headline-sm text-sm font-bold text-on-surface">Sign Mentorship Review</h3>
+          <p class="text-[11px] text-secondary" id="feedbackStudentSubtitle">Student Academic Assessment</p>
+        </div>
+      </div>
+      <button type="button" class="close-fac-modal w-7 h-7 rounded-full bg-surface-container flex items-center justify-center text-secondary hover:text-on-surface cursor-pointer" data-target="modalMenteeFeedback">
+        <span class="material-symbols-outlined text-xs">close</span>
+      </button>
+    </div>
+
+    <form id="formMenteeFeedback" class="space-y-3 my-3">
+      <input type="hidden" id="feedbackStudentId">
+      <input type="hidden" id="feedbackStudentName">
+      <div>
+        <label class="block text-xs font-semibold text-on-surface mb-1">Academic &amp; Technical Progress Feedback *</label>
+        <textarea id="feedbackText" rows="4" placeholder="Enter progress assessment, project milestone review, and drive recommendations..." class="w-full px-3 py-2 bg-surface-container-low rounded-lg text-xs text-on-surface border border-outline-variant/30 focus:outline-none focus:ring-2 focus:ring-primary/20" required></textarea>
+      </div>
+      <div class="pt-2 border-t border-surface-container flex items-center justify-end gap-2">
+        <button type="button" class="close-fac-modal px-3 py-1.5 rounded-lg bg-surface-container text-xs font-semibold cursor-pointer" data-target="modalMenteeFeedback">Cancel</button>
+        <button type="submit" id="btnSubmitFeedback" class="px-4 py-1.5 rounded-lg bg-primary text-on-primary text-xs font-bold hover:bg-primary-container shadow-sm flex items-center gap-1 cursor-pointer">
+          <span class="material-symbols-outlined text-sm">signature</span> Sign &amp; Record
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL: Faculty Profile & Cabin Settings -->
+<div id="modalFacultyProfile" class="fixed inset-0 bg-inverse-surface/60 backdrop-blur-sm z-[9999] hidden flex items-center justify-center p-4">
+  <div class="bg-surface-container-lowest rounded-2xl max-w-md w-full p-6 shadow-2xl border border-outline-variant/30">
+    <div class="flex items-center justify-between pb-3 border-b border-surface-container">
+      <div class="flex items-center gap-2">
+        <span class="w-8 h-8 rounded-lg bg-primary-fixed text-primary flex items-center justify-center font-bold">
+          <span class="material-symbols-outlined text-lg">badge</span>
+        </span>
+        <div>
+          <h3 class="font-headline-sm text-sm font-bold text-on-surface">Faculty Official Profile</h3>
+          <p class="text-[11px] text-secondary">Department Office &amp; Contact Information</p>
+        </div>
+      </div>
+      <button type="button" class="close-fac-modal w-7 h-7 rounded-full bg-surface-container flex items-center justify-center text-secondary hover:text-on-surface cursor-pointer" data-target="modalFacultyProfile">
+        <span class="material-symbols-outlined text-xs">close</span>
+      </button>
+    </div>
+
+    <form id="formFacultyProfile" class="space-y-3 my-3">
+      <div>
+        <label class="block text-xs font-semibold text-on-surface mb-1">Cabin Number / Office Location</label>
+        <input type="text" id="facCabinInput" placeholder="e.g. C-304, Third Floor, IOE Main Building" class="w-full px-3 py-2 bg-surface-container-low rounded-lg text-xs text-on-surface border border-outline-variant/30 focus:outline-none focus:ring-2 focus:ring-primary/20">
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-on-surface mb-1">Office Hours / Consulting Slot</label>
+        <input type="text" id="facOfficeHoursInput" placeholder="e.g. Mon-Thu 2:00 PM - 4:00 PM" class="w-full px-3 py-2 bg-surface-container-low rounded-lg text-xs text-on-surface border border-outline-variant/30 focus:outline-none focus:ring-2 focus:ring-primary/20">
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-on-surface mb-1">Official Mobile Number (10 Digits)</label>
+        <input type="tel" id="facPhoneInput" inputmode="numeric" maxlength="10" pattern="[0-9]{10}" placeholder="e.g. 9876543210" class="w-full px-3 py-2 bg-surface-container-low rounded-lg text-xs text-on-surface border border-outline-variant/30 focus:outline-none focus:ring-2 focus:ring-primary/20">
+        <span id="facPhoneFeedback" class="text-[11px] text-error mt-0.5 hidden">Please enter exactly 10 digits.</span>
+      </div>
+      <div class="pt-2 border-t border-surface-container flex items-center justify-end gap-2">
+        <button type="button" class="close-fac-modal px-3 py-1.5 rounded-lg bg-surface-container text-xs font-semibold cursor-pointer" data-target="modalFacultyProfile">Cancel</button>
+        <button type="submit" id="btnSubmitFacProfile" class="px-4 py-1.5 rounded-lg bg-primary text-on-primary text-xs font-bold hover:bg-primary-container shadow-sm flex items-center gap-1 cursor-pointer">
+          <span class="material-symbols-outlined text-sm">save</span> Save Profile
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <script>
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   // 1. Role Guard (Only Faculty or Admin)
   if (!CampusInn.Auth.requireAuth(['faculty', 'admin'])) {
     return;
@@ -325,20 +405,204 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Modal helpers
+  function openModal(id) {
+    const m = document.getElementById(id);
+    if (m) { m.classList.remove('hidden'); m.classList.add('flex'); document.body.style.overflow = 'hidden'; }
+  }
+  function closeModal(id) {
+    const m = document.getElementById(id);
+    if (m) { m.classList.add('hidden'); m.classList.remove('flex'); document.body.style.overflow = ''; }
+  }
+  document.querySelectorAll('.close-fac-modal').forEach(b => {
+    b.addEventListener('click', () => {
+      const t = b.getAttribute('data-target');
+      if (t) closeModal(t);
+    });
+  });
+
   // 3. Mentee Search Filter
   const searchInput = document.getElementById('menteeSearchInput');
-  const rows = document.querySelectorAll('#menteeTableBody tr');
-  if (searchInput) {
-    searchInput.addEventListener('input', (e) => {
-      const q = e.target.value.toLowerCase().trim();
-      rows.forEach(row => {
-        const text = row.textContent.toLowerCase();
-        row.style.display = (!q || text.includes(q)) ? '' : 'none';
-      });
+  function setupSearchFilter() {
+    const rows = document.querySelectorAll('#menteeTableBody tr');
+    if (searchInput) {
+      searchInput.oninput = (e) => {
+        const q = e.target.value.toLowerCase().trim();
+        rows.forEach(row => {
+          const text = row.textContent.toLowerCase();
+          row.style.display = (!q || text.includes(q)) ? '' : 'none';
+        });
+      };
+    }
+  }
+
+  // 4. Live Faculty Dashboard Stats
+  async function loadFacultyDashboard() {
+    try {
+      if (window.CampusInn.API && window.CampusInn.API.faculty) {
+        const res = await window.CampusInn.API.faculty.getDashboard();
+        if (res.data && res.data.stats) {
+          const s = res.data.stats;
+          const menteesEl = document.getElementById('statFacultyMentees');
+          const nocsEl = document.getElementById('statFacultyNocs');
+          const attEl = document.getElementById('statFacultyAttendance');
+          if (menteesEl) menteesEl.textContent = s.totalMentees ?? '64';
+          if (nocsEl) nocsEl.textContent = s.pendingNocs ?? '3';
+          if (attEl) attEl.textContent = `${s.attendanceRate ?? 88.5}%`;
+        }
+      }
+    } catch (err) {
+      console.warn('Could not load faculty stats:', err);
+    }
+  }
+
+  // 5. Dynamic Mentees Directory
+  function wireFeedbackButtons() {
+    document.querySelectorAll('.btn-sign-feedback').forEach(btn => {
+      btn.onclick = () => {
+        const id = btn.getAttribute('data-id');
+        const name = btn.getAttribute('data-name');
+        document.getElementById('feedbackStudentId').value = id;
+        document.getElementById('feedbackStudentName').value = name;
+        document.getElementById('feedbackStudentSubtitle').textContent = `Reviewing mentee: ${name} (${id})`;
+        document.getElementById('feedbackText').value = '';
+        openModal('modalMenteeFeedback');
+      };
     });
   }
 
-  // 4. Wire NOC Grant Actions
+  async function loadMentees() {
+    try {
+      if (window.CampusInn.API && window.CampusInn.API.faculty) {
+        const res = await window.CampusInn.API.faculty.getMentees();
+        let list = null;
+        if (res.data && Array.isArray(res.data)) list = res.data;
+        else if (res.data && Array.isArray(res.data.mentees)) list = res.data.mentees;
+
+        if (list && list.length > 0) {
+          const tbody = document.getElementById('menteeTableBody');
+          tbody.innerHTML = list.map(m => {
+            const initials = (m.name || 'ST').split(' ').map(p => p[0]).join('').substring(0, 2).toUpperCase();
+            return `
+              <tr class="hover:bg-surface-container-low/50 transition-colors">
+                <td class="py-space-md px-space-md font-bold text-on-surface">
+                  <div class="flex items-center gap-space-sm">
+                    <div class="w-9 h-9 rounded-full bg-primary-fixed text-primary font-bold flex items-center justify-center shrink-0">${initials}</div>
+                    <div>
+                      <span class="block font-bold text-on-surface">${m.name}</span>
+                      <span class="font-body-sm text-secondary font-medium text-[12px]">${m.rollNumber || m.roll || '2021CS'} • ${m.department || 'BE Computer'}</span>
+                    </div>
+                  </div>
+                </td>
+                <td class="py-space-md px-space-md">
+                  <span class="font-bold text-on-surface">${m.cgpa || '8.80'} CGPA</span>
+                  <span class="block text-[11px] text-tertiary font-bold">${m.backlogs === 0 ? 'Zero Backlogs' : (m.backlogs ? m.backlogs + ' Backlogs' : 'Eligible')}</span>
+                </td>
+                <td class="py-space-md px-space-md">
+                  <span class="font-bold text-tertiary">${m.attendance || '90%'}</span>
+                  <span class="block text-[11px] text-on-surface-variant font-medium">SPPU Verified</span>
+                </td>
+                <td class="py-space-md px-space-md">
+                  <span class="px-2 py-0.5 rounded-full bg-primary-fixed text-primary font-label-caps text-xs font-bold">${m.driveStatus || m.status || 'Active Candidate'}</span>
+                </td>
+                <td class="py-space-md px-space-md text-right">
+                  <button class="btn-sign-feedback px-2.5 py-1 rounded bg-surface-container-high text-on-surface font-label-md text-xs font-semibold hover:bg-surface-container cursor-pointer" data-id="${m.id || m.rollNumber || m.roll || m.name}" data-name="${m.name}">Sign Feedback</button>
+                </td>
+              </tr>
+            `;
+          }).join('');
+        }
+      }
+    } catch (err) {
+      console.warn('Could not load mentees from backend:', err);
+    }
+    wireFeedbackButtons();
+    setupSearchFilter();
+  }
+
+  // 6. Mentee Feedback Form Submission
+  const formFeedback = document.getElementById('formMenteeFeedback');
+  if (formFeedback) {
+    formFeedback.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const studentId = document.getElementById('feedbackStudentId').value;
+      const studentName = document.getElementById('feedbackStudentName').value;
+      const feedback = document.getElementById('feedbackText').value.trim();
+
+      if (!feedback) {
+        CampusInn.Toast.error('Please enter feedback comments before signing.');
+        return;
+      }
+
+      const btn = document.getElementById('btnSubmitFeedback');
+      btn.disabled = true;
+      try {
+        await window.CampusInn.API.faculty.submitMenteeFeedback(studentId, feedback);
+        CampusInn.Toast.success(`Mentorship progress feedback signed and recorded for ${studentName}!`);
+        closeModal('modalMenteeFeedback');
+      } catch (err) {
+        CampusInn.Toast.error(err.message || 'Failed to submit feedback.');
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  }
+
+  // 7. Faculty Profile Modal & 10-Digit Phone Handling
+  const btnOpenProfile = document.getElementById('btnOpenFacultyProfileModal');
+  if (btnOpenProfile) {
+    btnOpenProfile.addEventListener('click', async () => {
+      try {
+        const res = await window.CampusInn.API.faculty.getProfile();
+        if (res.data && res.data.faculty) {
+          const f = res.data.faculty;
+          if (f.cabin) document.getElementById('facCabinInput').value = f.cabin;
+          if (f.officeHours) document.getElementById('facOfficeHoursInput').value = f.officeHours;
+          if (f.phone) document.getElementById('facPhoneInput').value = f.phone;
+        }
+      } catch (err) {
+        console.warn('Could not fetch faculty profile:', err);
+      }
+      openModal('modalFacultyProfile');
+    });
+  }
+
+  const phoneInput = document.getElementById('facPhoneInput');
+  const phoneFeedback = document.getElementById('facPhoneFeedback');
+  if (phoneInput && CampusInn.PhoneUtils) {
+    CampusInn.PhoneUtils.bindInput(phoneInput, phoneFeedback);
+  }
+
+  const formProfile = document.getElementById('formFacultyProfile');
+  if (formProfile) {
+    formProfile.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const cabin = document.getElementById('facCabinInput').value.trim();
+      const officeHours = document.getElementById('facOfficeHoursInput').value.trim();
+      const phone = phoneInput ? phoneInput.value.trim() : '';
+
+      if (phone && CampusInn.PhoneUtils && !CampusInn.PhoneUtils.validate(phone)) {
+        CampusInn.Toast.error('Mobile number must be exactly 10 digits.');
+        if (phoneFeedback) phoneFeedback.classList.remove('hidden');
+        return;
+      }
+
+      const btn = document.getElementById('btnSubmitFacProfile');
+      btn.disabled = true;
+      try {
+        const res = await window.CampusInn.API.faculty.updateProfile({ cabin, officeHours, phone });
+        if (res.error) throw new Error(res.error);
+        CampusInn.Toast.success('Faculty profile updated and saved to university database!');
+        closeModal('modalFacultyProfile');
+      } catch (err) {
+        CampusInn.Toast.error(err.message || 'Failed to update profile.');
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  }
+
+  // 8. Wire NOC Grant Actions
   document.querySelectorAll('button[data-action="grant-noc"]').forEach(btn => {
     btn.addEventListener('click', async () => {
       const student = btn.getAttribute('data-student');
@@ -359,6 +623,10 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
+
+  // Initial loads
+  await loadFacultyDashboard();
+  await loadMentees();
 });
 </script>
 </body></html>

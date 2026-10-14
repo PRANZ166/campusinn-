@@ -1179,6 +1179,74 @@ const FormUtils = (() => {
 })();
 
 /* ═══════════════════════════════════════════
+   6B. STRICT PHONE NUMBER UTILITIES
+   ═══════════════════════════════════════════ */
+const PhoneUtils = (() => {
+  const PHONE_REGEX = /^[0-9]{10}$/;
+
+  function sanitize(value) {
+    if (!value) return '';
+    return String(value).replace(/[^0-9]/g, '').slice(0, 10);
+  }
+
+  function validate(value, required = true) {
+    if (!value || String(value).trim() === '') {
+      if (!required) return { valid: true, value: '' };
+      return { valid: false, error: 'Phone number is required.' };
+    }
+    const clean = String(value).trim();
+    if (/[^0-9]/.test(clean)) {
+      return { valid: false, error: 'Phone number must contain digits only.' };
+    }
+    if (clean.length < 10) {
+      return { valid: false, error: 'Phone number must be exactly 10 digits (entered ' + clean.length + ').' };
+    }
+    if (clean.length > 10) {
+      return { valid: false, error: 'Phone number cannot exceed 10 digits.' };
+    }
+    return { valid: true, value: clean };
+  }
+
+  function bindInput(input, options = {}) {
+    if (!input) return;
+    const { required = true, getErrorTarget = null } = options;
+
+    input.setAttribute('type', 'tel');
+    input.setAttribute('inputmode', 'numeric');
+    input.setAttribute('maxlength', '10');
+    input.setAttribute('pattern', '[0-9]{10}');
+
+    input.addEventListener('input', () => {
+      const sanitized = sanitize(input.value);
+      if (input.value !== sanitized) {
+        input.value = sanitized;
+      }
+      if (input.value.length === 10) {
+        FormUtils.clearFieldError(getErrorTarget ? getErrorTarget() : input);
+      }
+    });
+
+    input.addEventListener('paste', (e) => {
+      e.preventDefault();
+      const pasteText = (e.clipboardData || window.clipboardData)?.getData('text') || '';
+      input.value = sanitize(pasteText);
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+
+    input.addEventListener('blur', () => {
+      const res = validate(input.value, required);
+      if (!res.valid) {
+        FormUtils.showFieldError(getErrorTarget ? getErrorTarget() : input, res.error);
+      } else {
+        FormUtils.clearFieldError(getErrorTarget ? getErrorTarget() : input);
+      }
+    });
+  }
+
+  return { sanitize, validate, bindInput, PHONE_REGEX };
+})();
+
+/* ═══════════════════════════════════════════
    7. SPINNER ANIMATION CSS (injected once)
    ═══════════════════════════════════════════ */
 (function injectGlobalCSS() {
@@ -1862,7 +1930,8 @@ Object.assign(window.CampusInn, {
   Toast,
   MobileMenu,
   SidebarManager,
-  FormUtils
+  FormUtils,
+  PhoneUtils
 });
 
 if (!Object.getOwnPropertyDescriptor(window.CampusInn, 'Admin')) {

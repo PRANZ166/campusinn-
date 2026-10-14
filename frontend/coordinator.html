@@ -208,18 +208,25 @@
         </div>
 
         <!-- Upload Form -->
-        <form id="formUploadPhoto" class="p-4 rounded-xl bg-surface-container-low border border-outline-variant/30 flex flex-col md:flex-row md:items-center gap-3">
-          <div class="flex-1 space-y-1">
-            <label class="block text-xs font-bold text-on-surface">Select High-Resolution Image (JPEG, PNG, WebP &le; 5MB)</label>
-            <input type="file" id="inputPhotoFile" accept="image/jpeg,image/png,image/webp" class="block w-full text-xs text-secondary file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-surface-container file:text-on-surface hover:file:bg-surface-container-high cursor-pointer" required>
+        <form id="formUploadPhoto" class="p-4 rounded-xl bg-surface-container-low border border-outline-variant/30 space-y-3">
+          <div class="flex flex-col md:flex-row md:items-center gap-3">
+            <div class="flex-1 space-y-1">
+              <label class="block text-xs font-bold text-on-surface">Select High-Resolution Images (JPEG, PNG, WebP &le; 5MB per photo, multi-select supported)</label>
+              <input type="file" id="inputPhotoFile" accept="image/jpeg,image/png,image/webp" multiple class="block w-full text-xs text-secondary file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-surface-container file:text-on-surface hover:file:bg-surface-container-high cursor-pointer">
+            </div>
+            <div class="w-full md:w-64 space-y-1">
+              <label class="block text-xs font-bold text-on-surface">Caption / Description (Optional)</label>
+              <input type="text" id="inputPhotoCaption" placeholder="e.g. Inaugural Keynote & Project Showcase" class="w-full px-3 py-1.5 bg-surface-container-lowest rounded-lg text-xs border border-outline-variant/30 focus:outline-none focus:ring-2 focus:ring-primary/20">
+            </div>
+            <button type="submit" id="btnSubmitPhotoUpload" class="px-5 py-2 rounded-lg bg-primary text-on-primary text-xs font-bold hover:bg-primary-container shadow-sm flex items-center justify-center gap-1.5 self-end md:self-auto cursor-pointer shrink-0">
+              <span class="material-symbols-outlined text-sm">cloud_upload</span> Publish to Gallery
+            </button>
           </div>
-          <div class="w-full md:w-64 space-y-1">
-            <label class="block text-xs font-bold text-on-surface">Caption / Description (Optional)</label>
-            <input type="text" id="inputPhotoCaption" placeholder="e.g. Inaugural Keynote & Project Showcase" class="w-full px-3 py-1.5 bg-surface-container-lowest rounded-lg text-xs border border-outline-variant/30 focus:outline-none focus:ring-2 focus:ring-primary/20">
+          <div id="photoPreviewContainer" class="hidden flex flex-wrap gap-2 pt-2 border-t border-surface-container/60"></div>
+          <div id="photoUploadProgress" class="hidden text-xs text-primary font-semibold flex items-center gap-2">
+            <div class="animate-spin w-3.5 h-3.5 border-2 border-primary border-t-transparent rounded-full"></div>
+            <span>Uploading images to persistent storage...</span>
           </div>
-          <button type="submit" id="btnSubmitPhotoUpload" class="px-5 py-2 rounded-lg bg-primary text-on-primary text-xs font-bold hover:bg-primary-container shadow-sm flex items-center justify-center gap-1.5 self-end md:self-auto cursor-pointer shrink-0">
-            <span class="material-symbols-outlined text-sm">cloud_upload</span> Publish to Gallery
-          </button>
         </form>
 
         <!-- Uploaded Photos Grid -->
@@ -322,6 +329,9 @@
 
       <div class="pt-3 border-t border-surface-container flex items-center justify-end gap-2">
         <button type="button" class="close-modal-btn px-4 py-2 rounded-lg bg-surface-container text-xs font-semibold cursor-pointer" data-target="modalCreateEvent">Cancel</button>
+        <button type="button" id="btnSaveDraftEvent" class="px-4 py-2.5 rounded-lg bg-surface-container-high text-on-surface text-xs font-bold hover:bg-surface-variant shadow-sm flex items-center gap-1.5 cursor-pointer">
+          <span class="material-symbols-outlined text-sm">draft</span> Save Draft
+        </button>
         <button type="submit" id="btnSubmitCreateEvent" class="px-5 py-2.5 rounded-lg bg-primary text-on-primary text-xs font-bold hover:bg-primary-container shadow-sm flex items-center gap-1.5 cursor-pointer">
           <span class="material-symbols-outlined text-sm">publish</span> Publish Event
         </button>
@@ -414,7 +424,17 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
-    tbody.innerHTML = managedEvents.map(e => `
+    tbody.innerHTML = managedEvents.map(e => {
+      const isDraft = e.status === 'draft' || e.is_published === false;
+      const isCancelled = e.status === 'cancelled';
+      let statusBadge = '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-tertiary-fixed text-tertiary">Published</span>';
+      if (isDraft) {
+        statusBadge = '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-secondary-container text-on-secondary-container">Draft</span>';
+      } else if (isCancelled) {
+        statusBadge = '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-error-container text-on-error-container">Cancelled</span>';
+      }
+
+      return `
       <tr class="hover:bg-surface-container-low transition-colors">
         <td class="py-3 px-2">
           <p class="font-bold text-on-surface truncate">${e.title}</p>
@@ -434,16 +454,52 @@ document.addEventListener('DOMContentLoaded', async () => {
           ${e.attendance_count || 0}
         </td>
         <td class="py-3 px-2">
-          ${e.registration_open ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-tertiary-fixed text-tertiary">Open</span>' : '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-error-container text-on-error-container">Closed</span>'}
+          ${statusBadge}
         </td>
         <td class="py-3 px-2 text-right space-x-1">
-          <button class="btn-select-att px-2 py-1 rounded bg-surface-container hover:bg-surface-container-high text-primary font-bold text-[11px]" data-id="${e.id}">Attendance</button>
-          <button class="btn-toggle-reg px-2 py-1 rounded bg-surface-container hover:bg-surface-container-high text-secondary font-bold text-[11px]" data-id="${e.id}" data-open="${e.registration_open}">
-            ${e.registration_open ? 'Close' : 'Open'}
+          ${isDraft ? `<button class="btn-pub-status px-2 py-1 rounded bg-tertiary-fixed hover:bg-tertiary hover:text-on-tertiary text-tertiary font-bold text-[11px] cursor-pointer" data-id="${e.id}" data-action="publish" title="Publish to Student Portal">Publish</button>` : (!isCancelled ? `<button class="btn-pub-status px-2 py-1 rounded bg-surface-container hover:bg-surface-container-high text-secondary font-bold text-[11px] cursor-pointer" data-id="${e.id}" data-action="draft" title="Move back to draft">Unpublish</button>` : '')}
+          ${!isCancelled ? `<button class="btn-cancel-event px-2 py-1 rounded bg-error-container/30 hover:bg-error-container text-error font-bold text-[11px] cursor-pointer" data-id="${e.id}" title="Cancel event">Cancel</button>` : ''}
+          <button class="btn-select-att px-2 py-1 rounded bg-surface-container hover:bg-surface-container-high text-primary font-bold text-[11px] cursor-pointer" data-id="${e.id}">Attendance</button>
+          <button class="btn-toggle-reg px-2 py-1 rounded bg-surface-container hover:bg-surface-container-high text-secondary font-bold text-[11px] cursor-pointer" data-id="${e.id}" data-open="${e.registration_open}">
+            ${e.registration_open ? 'Close Reg' : 'Open Reg'}
           </button>
         </td>
       </tr>
-    `).join('');
+    `}).join('');
+
+    tbody.querySelectorAll('.btn-pub-status').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.getAttribute('data-id');
+        const action = btn.getAttribute('data-action');
+        btn.disabled = true;
+        try {
+          const newStatus = action === 'publish' ? 'published' : 'draft';
+          await window.CampusInnAPI.coordinator.updateEventStatus(id, newStatus);
+          CampusInn.Toast.success(action === 'publish' ? 'Event published to student calendar!' : 'Event reverted to draft.');
+          await loadCoordinatorEvents();
+        } catch (err) {
+          CampusInn.Toast.error(err.message || 'Failed to update status.');
+          btn.disabled = false;
+        }
+      });
+    });
+
+    tbody.querySelectorAll('.btn-cancel-event').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.getAttribute('data-id');
+        if (confirm('Are you sure you want to cancel this event? Registrations will be closed.')) {
+          btn.disabled = true;
+          try {
+            await window.CampusInnAPI.coordinator.updateEventStatus(id, 'cancelled');
+            CampusInn.Toast.success('Event cancelled.');
+            await loadCoordinatorEvents();
+          } catch (err) {
+            CampusInn.Toast.error(err.message || 'Failed to cancel event.');
+            btn.disabled = false;
+          }
+        }
+      });
+    });
 
     tbody.querySelectorAll('.btn-select-att').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -666,7 +722,68 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  // 6. Photo Upload Form Handler (Part 8)
+  // 6. Photo Upload & Multi-Image Gallery Management
+  let pendingPhotos = [];
+  const inputPhotoFile = document.getElementById('inputPhotoFile');
+  const previewContainer = document.getElementById('photoPreviewContainer');
+  const progressIndicator = document.getElementById('photoUploadProgress');
+
+  function renderPhotoPreviews() {
+    if (!previewContainer) return;
+    if (pendingPhotos.length === 0) {
+      previewContainer.innerHTML = '';
+      previewContainer.classList.add('hidden');
+      return;
+    }
+    previewContainer.classList.remove('hidden');
+    previewContainer.innerHTML = pendingPhotos.map((file, idx) => {
+      const url = URL.createObjectURL(file);
+      const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
+      return `
+        <div class="relative group w-20 h-20 rounded-lg overflow-hidden border border-outline-variant/40 bg-surface-container shrink-0">
+          <img src="${url}" alt="${file.name}" class="w-full h-full object-cover">
+          <div class="absolute inset-0 bg-inverse-surface/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-1">
+            <span class="text-[9px] text-white truncate max-w-full">${sizeMb}MB</span>
+            <button type="button" class="btn-remove-preview text-error p-0.5 rounded hover:bg-error-container/40 cursor-pointer" data-index="${idx}" title="Remove photo">
+              <span class="material-symbols-outlined text-[16px]">close</span>
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    previewContainer.querySelectorAll('.btn-remove-preview').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const idx = parseInt(btn.getAttribute('data-index'), 10);
+        pendingPhotos.splice(idx, 1);
+        renderPhotoPreviews();
+      });
+    });
+  }
+
+  if (inputPhotoFile) {
+    inputPhotoFile.addEventListener('change', () => {
+      const files = Array.from(inputPhotoFile.files || []);
+      const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
+
+      files.forEach(file => {
+        if (!validTypes.includes(file.type)) {
+          CampusInn.Toast.error(`Skipped "${file.name}": Allowed formats are JPEG, PNG, WebP.`);
+          return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+          CampusInn.Toast.error(`Skipped "${file.name}": Exceeds 5MB limit.`);
+          return;
+        }
+        pendingPhotos.push(file);
+      });
+
+      inputPhotoFile.value = '';
+      renderPhotoPreviews();
+    });
+  }
+
   const formPhoto = document.getElementById('formUploadPhoto');
   if (formPhoto) {
     formPhoto.addEventListener('submit', async (e) => {
@@ -675,103 +792,120 @@ document.addEventListener('DOMContentLoaded', async () => {
         CampusInn.Toast.error('Please select a target event first.');
         return;
       }
-      const fileInput = document.getElementById('inputPhotoFile');
-      const file = fileInput?.files?.[0];
-      if (!file) {
-        CampusInn.Toast.error('Please select an image file to upload.');
-        return;
-      }
-
-      // Client-side file type & size check
-      const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
-      if (!validTypes.includes(file.type)) {
-        CampusInn.Toast.error('Invalid image format. Allowed: JPEG, PNG, WebP.');
-        return;
-      }
-      if (file.size > 5 * 1024 * 1024) {
-        CampusInn.Toast.error('Image exceeds 5MB limit.');
+      if (pendingPhotos.length === 0) {
+        CampusInn.Toast.error('Please select at least one image to upload.');
         return;
       }
 
       const caption = document.getElementById('inputPhotoCaption')?.value.trim() || '';
       const formData = new FormData();
-      formData.append('photo', file);
+      if (pendingPhotos.length === 1) {
+        formData.append('photo', pendingPhotos[0]);
+      } else {
+        pendingPhotos.forEach(file => formData.append('photos', file));
+      }
       if (caption) formData.append('caption', caption);
 
       const submitBtn = document.getElementById('btnSubmitPhotoUpload');
       submitBtn.disabled = true;
-      submitBtn.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">refresh</span> Uploading...';
+      if (progressIndicator) progressIndicator.classList.remove('hidden');
 
       try {
         const res = await window.CampusInnAPI.events.uploadPhoto(selectedEventId, formData);
         if (res.error) throw new Error(res.error);
 
-        CampusInn.Toast.success('Photo successfully uploaded and published to Student Gallery!');
+        CampusInn.Toast.success(`${pendingPhotos.length} photo(s) successfully uploaded and published to Student Gallery!`);
+        pendingPhotos = [];
+        renderPhotoPreviews();
         formPhoto.reset();
         await loadEventPhotos(selectedEventId);
       } catch (err) {
         CampusInn.Toast.error(err.message || 'Failed to upload photo.');
       } finally {
         submitBtn.disabled = false;
-        submitBtn.innerHTML = '<span class="material-symbols-outlined text-sm">cloud_upload</span> Publish to Gallery';
+        if (progressIndicator) progressIndicator.classList.add('hidden');
       }
     });
   }
 
-  // 7. Event Creation Form (Part 7)
+  // 7. Event Creation (Draft vs Publish)
+  async function submitEventForm(isPublished) {
+    const title = document.getElementById('evTitle').value.trim();
+    const category = document.getElementById('evCategory').value;
+    const department = document.getElementById('evDepartment').value || null;
+    const isFreshers = document.getElementById('evIsFreshers').checked;
+    const date = document.getElementById('evDate').value;
+    const startTime = document.getElementById('evStartTime').value;
+    const endTime = document.getElementById('evEndTime').value;
+    const venue = document.getElementById('evVenue').value.trim();
+    const capacity = parseInt(document.getElementById('evCapacity').value, 10) || 200;
+    const description = document.getElementById('evDescription').value.trim();
+
+    if (!title || !date || !venue) {
+      CampusInn.Toast.error('Please fill in required fields: Title, Date, and Venue.');
+      return;
+    }
+
+    if (isFreshers && !department) {
+      CampusInn.Toast.error('Department Freshers events must be assigned to exactly one department.');
+      return;
+    }
+
+    const submitBtn = document.getElementById('btnSubmitCreateEvent');
+    const draftBtn = document.getElementById('btnSaveDraftEvent');
+    if (submitBtn) submitBtn.disabled = true;
+    if (draftBtn) draftBtn.disabled = true;
+
+    try {
+      const payload = {
+        title,
+        category,
+        departmentName: department,
+        isFreshers,
+        date,
+        startTime,
+        endTime,
+        venue,
+        capacity,
+        description,
+        registrationOpen: isPublished,
+        isPublished: isPublished,
+        status: isPublished ? 'published' : 'draft'
+      };
+
+      const res = await window.CampusInnAPI.coordinator.createEvent(payload);
+      if (res.error) throw new Error(res.error);
+
+      if (isPublished) {
+        CampusInn.Toast.success(`Event "${title}" published successfully to campus calendar!`);
+      } else {
+        CampusInn.Toast.success(`Event "${title}" saved as draft. Visible only in coordinator hub until published.`);
+      }
+
+      formCreate.reset();
+      closeModal('modalCreateEvent');
+      await loadCoordinatorEvents();
+    } catch (err) {
+      CampusInn.Toast.error(err.message || 'Failed to create event.');
+    } finally {
+      if (submitBtn) submitBtn.disabled = false;
+      if (draftBtn) draftBtn.disabled = false;
+    }
+  }
+
   const formCreate = document.getElementById('formCreateNewEvent');
   if (formCreate) {
-    formCreate.addEventListener('submit', async (e) => {
+    formCreate.addEventListener('submit', (e) => {
       e.preventDefault();
+      submitEventForm(true);
+    });
+  }
 
-      const title = document.getElementById('evTitle').value.trim();
-      const category = document.getElementById('evCategory').value;
-      const department = document.getElementById('evDepartment').value || null;
-      const isFreshers = document.getElementById('evIsFreshers').checked;
-      const date = document.getElementById('evDate').value;
-      const startTime = document.getElementById('evStartTime').value;
-      const endTime = document.getElementById('evEndTime').value;
-      const venue = document.getElementById('evVenue').value.trim();
-      const capacity = parseInt(document.getElementById('evCapacity').value, 10) || 200;
-      const description = document.getElementById('evDescription').value.trim();
-
-      if (isFreshers && !department) {
-        CampusInn.Toast.error('Department Freshers events must be assigned to exactly one department.');
-        return;
-      }
-
-      const submitBtn = document.getElementById('btnSubmitCreateEvent');
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">refresh</span> Publishing...';
-
-      try {
-        const payload = {
-          title,
-          category,
-          departmentName: department,
-          isFreshers,
-          date,
-          startTime,
-          endTime,
-          venue,
-          capacity,
-          description,
-          registrationOpen: true
-        };
-
-        const res = await window.CampusInnAPI.coordinator.createEvent(payload);
-        if (res.error) throw new Error(res.error);
-
-        CampusInn.Toast.success(`Event "${title}" published successfully to campus calendar!`);
-        formCreate.reset();
-        closeModal('modalCreateEvent');
-        await loadCoordinatorEvents();
-      } catch (err) {
-        CampusInn.Toast.error(err.message || 'Failed to create event.');
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = '<span class="material-symbols-outlined text-sm">publish</span> Publish Event';
-      }
+  const btnDraft = document.getElementById('btnSaveDraftEvent');
+  if (btnDraft) {
+    btnDraft.addEventListener('click', (e) => {
+      e.preventDefault();
+      submitEventForm(false);
     });
   }
 
