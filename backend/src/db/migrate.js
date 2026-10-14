@@ -772,6 +772,8 @@ CREATE TABLE IF NOT EXISTS mentorship_feedback (
 
 CREATE INDEX IF NOT EXISTS idx_mentorship_feedback_fac ON mentorship_feedback (faculty_id);
 CREATE INDEX IF NOT EXISTS idx_mentorship_feedback_stu ON mentorship_feedback (student_id);
+`;
+
 const MIGRATION_010_SQL = `
   ALTER TABLE events ADD COLUMN IF NOT EXISTS tag VARCHAR(100);
   DO $$
@@ -791,6 +793,17 @@ const MIGRATION_010_SQL = `
   ALTER TABLE events ADD COLUMN IF NOT EXISTS event_type VARCHAR(50) DEFAULT 'other';
   CREATE INDEX IF NOT EXISTS idx_events_tag ON events(tag);
   CREATE INDEX IF NOT EXISTS idx_events_date_start ON events(date_start DESC);
+`;
+
+const MIGRATION_011_SQL = `
+  ALTER TABLE events ADD COLUMN IF NOT EXISTS banner_url TEXT;
+  ALTER TABLE events ADD COLUMN IF NOT EXISTS banner_data BYTEA;
+  ALTER TABLE events ADD COLUMN IF NOT EXISTS banner_mime_type VARCHAR(100);
+  ALTER TABLE events ADD COLUMN IF NOT EXISTS banner_filename VARCHAR(255);
+  ALTER TABLE events ADD COLUMN IF NOT EXISTS banner_size INTEGER;
+  ALTER TABLE events ADD COLUMN IF NOT EXISTS published_at TIMESTAMPTZ;
+  UPDATE events SET published_at = COALESCE(created_at, NOW()) WHERE is_published = true AND published_at IS NULL;
+  CREATE INDEX IF NOT EXISTS idx_events_published_at ON events (published_at DESC NULLS LAST, created_at DESC);
 `;
 
 const MIGRATIONS = [
@@ -843,6 +856,11 @@ const MIGRATIONS = [
     name: '010_event_type_enum_and_dates',
     sqlFile: '010_event_type_enum_and_dates.sql',
     fallbackSql: MIGRATION_010_SQL,
+  },
+  {
+    name: '011_event_banner_and_published_at',
+    sqlFile: '011_event_banner_and_published_at.sql',
+    fallbackSql: MIGRATION_011_SQL,
   },
 ];
 

@@ -412,7 +412,27 @@
     </a>
   </div>
 
-  <!-- 1. My Department's Freshers Event Card -->
+  <!-- 1. All Published Campus Events Feed (Newest Published First) -->
+  <div class="p-space-md rounded-xl bg-surface-container-low border border-outline-variant/30 space-y-space-sm">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="w-8 h-8 rounded-lg bg-primary-fixed text-primary flex items-center justify-center font-bold">
+          <span class="material-symbols-outlined text-[18px]">event</span>
+        </span>
+        <div>
+          <h4 class="font-headline-sm text-base font-bold text-on-surface">Published Campus Events</h4>
+          <p class="text-xs text-secondary">Authorized events open to students (Newest published first)</p>
+        </div>
+      </div>
+      <span id="stdEventsFeedCountBadge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary-fixed text-primary">0 Events</span>
+    </div>
+
+    <div id="stdPublishedEventsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-space-md">
+      <div class="col-span-full py-8 text-center text-xs text-secondary">Loading published campus events...</div>
+    </div>
+  </div>
+
+  <!-- 2. My Department's Freshers Event Card -->
   <div id="studentFreshersSection" class="p-space-md rounded-xl bg-surface-container-low border border-outline-variant/30 space-y-space-sm">
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-2">
@@ -920,7 +940,103 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (window.CampusInnAPI && window.CampusInnAPI.student) {
         const res = await window.CampusInnAPI.student.getEvents();
         if (res.data) {
-          const { studentDepartment, freshersEvent, registrations, attendance, photos } = res.data;
+          const { studentDepartment, freshersEvent, registrations, attendance, photos, events } = res.data;
+
+          // 0. Published Campus Events Feed (Newest Published First)
+          const eventsFeedBadge = document.getElementById('stdEventsFeedCountBadge');
+          const eventsFeedGrid = document.getElementById('stdPublishedEventsGrid');
+          const publishedEvents = events || [];
+
+          if (eventsFeedBadge) eventsFeedBadge.textContent = `${publishedEvents.length} Events`;
+          if (eventsFeedGrid) {
+            if (publishedEvents.length === 0) {
+              eventsFeedGrid.innerHTML = `
+                <div class="col-span-full py-8 text-center bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-6 text-xs text-secondary">
+                  <span class="material-symbols-outlined text-3xl text-outline mb-1 select-none">event_available</span>
+                  <p class="font-bold text-on-surface">No published events available right now</p>
+                  <p class="text-[11px] mt-0.5">Newly published coordinator events will appear here in real time.</p>
+                </div>
+              `;
+            } else {
+              eventsFeedGrid.innerHTML = publishedEvents.map(ev => {
+                const bannerSrc = ev.bannerUrl || ev.banner_url || 'assets/campus_inn_logo.svg';
+                const isPlaceholder = !ev.bannerUrl && !ev.banner_url;
+                const formattedDate = ev.date || (ev.dateStart ? new Date(ev.dateStart).toLocaleDateString() : 'Upcoming');
+                return `
+                  <div class="bg-surface-container-lowest rounded-xl overflow-hidden border border-outline-variant/30 flex flex-col justify-between shadow-xs hover:shadow-md transition-all">
+                    <div>
+                      <div class="h-36 w-full overflow-hidden bg-surface-container relative flex items-center justify-center">
+                        <img src="${bannerSrc}" alt="${ev.title}" class="${isPlaceholder ? 'h-16 w-auto object-contain opacity-60' : 'w-full h-full object-cover'}">
+                        <div class="absolute top-2 left-2">
+                          <span class="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-surface-container-lowest/90 backdrop-blur-md text-primary shadow-xs">
+                            ${ev.category || 'Event'}
+                          </span>
+                        </div>
+                        ${ev.isFreshers ? `
+                          <div class="absolute top-2 right-2">
+                            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-secondary-container text-on-secondary-fixed shadow-xs">Freshers</span>
+                          </div>
+                        ` : ''}
+                      </div>
+                      <div class="p-4 space-y-2">
+                        <h5 class="font-headline-sm text-sm font-bold text-on-surface line-clamp-2 leading-snug">${ev.title}</h5>
+                        <div class="space-y-1 text-xs text-secondary">
+                          <p class="flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-xs text-primary">calendar_month</span>
+                            <span>${formattedDate}${ev.startTime ? ` • ${ev.startTime}` : ''}</span>
+                          </p>
+                          <p class="flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-xs text-tertiary">location_on</span>
+                            <span class="truncate">${ev.venue || 'Campus Auditorium'}</span>
+                          </p>
+                          ${ev.departmentName ? `
+                            <p class="flex items-center gap-1.5 text-[11px] text-outline font-semibold">
+                              <span class="material-symbols-outlined text-xs">apartment</span>
+                              <span>${ev.departmentName}</span>
+                            </p>
+                          ` : ''}
+                        </div>
+                        ${ev.description ? `<p class="text-[11px] text-on-surface-variant line-clamp-2 mt-1 leading-normal">${ev.description}</p>` : ''}
+                      </div>
+                    </div>
+                    <div class="p-4 pt-0">
+                      ${ev.isRegistered ? `
+                        <div class="w-full py-2 rounded-lg bg-tertiary-fixed/30 text-tertiary text-xs font-bold flex items-center justify-center gap-1.5 select-none">
+                          <span class="material-symbols-outlined text-sm">verified</span> Registered ✓
+                        </div>
+                      ` : `
+                        <button type="button" class="btn-std-quick-reg w-full py-2 rounded-lg bg-primary text-on-primary text-xs font-bold hover:bg-primary-container transition-colors shadow-sm flex items-center justify-center gap-1.5 cursor-pointer" data-id="${ev.id}" data-title="${encodeURIComponent(ev.title)}">
+                          <span class="material-symbols-outlined text-sm">how_to_reg</span> Register for Event
+                        </button>
+                      `}
+                    </div>
+                  </div>
+                `;
+              }).join('');
+
+              eventsFeedGrid.querySelectorAll('.btn-std-quick-reg').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                  const id = btn.getAttribute('data-id');
+                  const title = decodeURIComponent(btn.getAttribute('data-title') || 'Event');
+                  btn.disabled = true;
+                  btn.innerHTML = '<span class="material-symbols-outlined text-xs animate-spin">refresh</span> Registering...';
+                  try {
+                    const regRes = await window.CampusInnAPI.events.register(id, {
+                      rollNumber: u.rollNo || u.rollNumber || '',
+                      department: u.department || ''
+                    });
+                    if (regRes.error) throw new Error(regRes.error);
+                    CampusInn.Toast.success(`Successfully registered for "${title}"!`);
+                    await loadStudentEventsData();
+                  } catch (err) {
+                    CampusInn.Toast.error(err.message || 'Registration failed.');
+                    btn.disabled = false;
+                    btn.innerHTML = '<span class="material-symbols-outlined text-sm">how_to_reg</span> Register for Event';
+                  }
+                });
+              });
+            }
+          }
 
           // Department Freshers Event Info
           if (freshersEvent) {

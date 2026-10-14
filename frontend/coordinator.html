@@ -219,7 +219,7 @@
               <input type="text" id="inputPhotoCaption" placeholder="e.g. Inaugural Keynote & Project Showcase" class="w-full px-3 py-1.5 bg-surface-container-lowest rounded-lg text-xs border border-outline-variant/30 focus:outline-none focus:ring-2 focus:ring-primary/20">
             </div>
             <button type="submit" id="btnSubmitPhotoUpload" class="px-5 py-2 rounded-lg bg-primary text-on-primary text-xs font-bold hover:bg-primary-container shadow-sm flex items-center justify-center gap-1.5 self-end md:self-auto cursor-pointer shrink-0">
-              <span class="material-symbols-outlined text-sm">cloud_upload</span> Publish to Gallery
+              <span class="material-symbols-outlined text-sm">photo_library</span> Upload to Gallery
             </button>
           </div>
           <div id="photoPreviewContainer" class="hidden flex flex-wrap gap-2 pt-2 border-t border-surface-container/60"></div>
@@ -329,6 +329,44 @@
         <textarea id="evDescription" rows="3" placeholder="Provide event schedule, rules, guidelines, and dress codes..." class="w-full px-3 py-2 bg-surface-container-low rounded-lg text-xs text-on-surface"></textarea>
       </div>
 
+      <!-- SECTION 5: Upload Event Banner -->
+      <div class="space-y-2">
+        <label class="block text-xs font-semibold text-on-surface">Upload Event Banner (Promotional Graphic)</label>
+        <div id="evBannerDropZone" class="border-2 border-dashed border-outline-variant/60 rounded-xl p-4 bg-surface-container-low/50 hover:bg-surface-container-low transition-colors text-center relative cursor-pointer">
+          <input type="file" id="evBannerInput" accept="image/jpeg,image/png,image/webp" class="hidden">
+          
+          <!-- Empty State (No banner chosen) -->
+          <div id="evBannerEmptyState" class="py-2 flex flex-col items-center justify-center">
+            <span class="material-symbols-outlined text-3xl text-primary mb-1 select-none">add_photo_alternate</span>
+            <p class="text-xs font-bold text-on-surface">Choose or Drop Event Banner Image</p>
+            <p class="text-[11px] text-secondary mt-0.5">JPEG, PNG, or WebP • Max 5MB • Displayed prominently in Student Events Feed</p>
+            <button type="button" id="btnSelectEvBanner" class="mt-2.5 px-3.5 py-1.5 rounded-lg bg-surface-container-high hover:bg-primary-fixed text-primary text-xs font-bold transition-colors inline-flex items-center gap-1 cursor-pointer">
+              <span class="material-symbols-outlined text-sm">upload_file</span> Browse Image
+            </button>
+          </div>
+
+          <!-- Preview State (Banner chosen) -->
+          <div id="evBannerPreviewState" class="hidden flex flex-col sm:flex-row items-center gap-3 text-left">
+            <div class="relative w-32 h-20 rounded-lg overflow-hidden border border-outline-variant/40 bg-surface-container shrink-0">
+              <img id="evBannerPreviewImg" src="" alt="Banner Preview" class="w-full h-full object-cover">
+            </div>
+            <div class="flex-1 min-w-0">
+              <p id="evBannerFileName" class="text-xs font-bold text-on-surface truncate">event_banner.jpg</p>
+              <p id="evBannerFileSize" class="text-[11px] text-secondary">0.0 MB</p>
+              <div class="flex items-center gap-2 mt-2">
+                <button type="button" id="btnReplaceEvBanner" class="px-2.5 py-1 rounded bg-surface-container-high hover:bg-surface-container-highest text-primary text-[11px] font-bold transition-colors inline-flex items-center gap-1 cursor-pointer">
+                  <span class="material-symbols-outlined text-xs">sync</span> Replace
+                </button>
+                <button type="button" id="btnRemoveEvBanner" class="px-2.5 py-1 rounded bg-error-container/30 hover:bg-error-container text-error text-[11px] font-bold transition-colors inline-flex items-center gap-1 cursor-pointer">
+                  <span class="material-symbols-outlined text-xs">delete</span> Remove
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="evBannerValidationAlert" class="hidden p-2 rounded-lg text-xs leading-normal bg-error-container text-on-error-container"></div>
+      </div>
+
       <div class="pt-3 border-t border-surface-container flex items-center justify-end gap-2">
         <button type="button" class="close-modal-btn px-4 py-2 rounded-lg bg-surface-container text-xs font-semibold cursor-pointer" data-target="modalCreateEvent">Cancel</button>
         <button type="button" id="btnSaveDraftEvent" class="px-4 py-2.5 rounded-lg bg-surface-container-high text-on-surface text-xs font-bold hover:bg-surface-variant shadow-sm flex items-center gap-1.5 cursor-pointer">
@@ -369,6 +407,132 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   let editingEventId = null;
+  let pendingBannerFile = null;
+
+  function getCampusTodayInKolkata() {
+    const fmt = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Asia/Kolkata',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    });
+    return fmt.format(new Date()); // 'YYYY-MM-DD'
+  }
+
+  function resetBannerUploadUI() {
+    pendingBannerFile = null;
+    const input = document.getElementById('evBannerInput');
+    if (input) input.value = '';
+    const emptyState = document.getElementById('evBannerEmptyState');
+    const previewState = document.getElementById('evBannerPreviewState');
+    const alertBox = document.getElementById('evBannerValidationAlert');
+    if (emptyState) emptyState.classList.remove('hidden');
+    if (previewState) previewState.classList.add('hidden');
+    if (alertBox) {
+      alertBox.textContent = '';
+      alertBox.classList.add('hidden');
+    }
+  }
+
+  function setBannerPreview(file) {
+    pendingBannerFile = file;
+    const emptyState = document.getElementById('evBannerEmptyState');
+    const previewState = document.getElementById('evBannerPreviewState');
+    const previewImg = document.getElementById('evBannerPreviewImg');
+    const nameEl = document.getElementById('evBannerFileName');
+    const sizeEl = document.getElementById('evBannerFileSize');
+    const alertBox = document.getElementById('evBannerValidationAlert');
+
+    if (alertBox) {
+      alertBox.textContent = '';
+      alertBox.classList.add('hidden');
+    }
+
+    if (previewImg) previewImg.src = URL.createObjectURL(file);
+    if (nameEl) nameEl.textContent = file.name;
+    if (sizeEl) sizeEl.textContent = `${(file.size / (1024 * 1024)).toFixed(2)} MB`;
+    if (emptyState) emptyState.classList.add('hidden');
+    if (previewState) previewState.classList.remove('hidden');
+  }
+
+  function handleSelectedBanner(file) {
+    const alertBox = document.getElementById('evBannerValidationAlert');
+    const allowed = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!allowed.includes(file.type)) {
+      if (alertBox) {
+        alertBox.textContent = 'Invalid file type. Only JPEG, PNG, and WebP images are supported.';
+        alertBox.classList.remove('hidden');
+      }
+      CampusInn.Toast.error('Invalid image type. Allowed: JPEG, PNG, WebP.');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      if (alertBox) {
+        alertBox.textContent = 'Selected banner image exceeds 5MB size limit.';
+        alertBox.classList.remove('hidden');
+      }
+      CampusInn.Toast.error('Banner exceeds 5MB size limit.');
+      return;
+    }
+    setBannerPreview(file);
+  }
+
+  const evBannerInput = document.getElementById('evBannerInput');
+  const evBannerDropZone = document.getElementById('evBannerDropZone');
+  const btnSelectEvBanner = document.getElementById('btnSelectEvBanner');
+  const btnReplaceEvBanner = document.getElementById('btnReplaceEvBanner');
+  const btnRemoveEvBanner = document.getElementById('btnRemoveEvBanner');
+
+  if (btnSelectEvBanner && evBannerInput) {
+    btnSelectEvBanner.addEventListener('click', (e) => {
+      e.stopPropagation();
+      evBannerInput.click();
+    });
+  }
+
+  if (evBannerDropZone && evBannerInput) {
+    evBannerDropZone.addEventListener('click', (e) => {
+      if (e.target.closest('#btnRemoveEvBanner') || e.target.closest('#btnReplaceEvBanner')) return;
+      if (!pendingBannerFile) evBannerInput.click();
+    });
+
+    evBannerDropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      evBannerDropZone.classList.add('border-primary', 'bg-primary-fixed/20');
+    });
+
+    evBannerDropZone.addEventListener('dragleave', () => {
+      evBannerDropZone.classList.remove('border-primary', 'bg-primary-fixed/20');
+    });
+
+    evBannerDropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      evBannerDropZone.classList.remove('border-primary', 'bg-primary-fixed/20');
+      const files = Array.from(e.dataTransfer.files || []);
+      if (files.length > 0) handleSelectedBanner(files[0]);
+    });
+  }
+
+  if (btnReplaceEvBanner && evBannerInput) {
+    btnReplaceEvBanner.addEventListener('click', (e) => {
+      e.stopPropagation();
+      evBannerInput.click();
+    });
+  }
+
+  if (btnRemoveEvBanner) {
+    btnRemoveEvBanner.addEventListener('click', (e) => {
+      e.stopPropagation();
+      resetBannerUploadUI();
+    });
+  }
+
+  if (evBannerInput) {
+    evBannerInput.addEventListener('change', () => {
+      const files = Array.from(evBannerInput.files || []);
+      if (files.length > 0) handleSelectedBanner(files[0]);
+    });
+  }
 
   const btnOpenCreate = document.getElementById('btnOpenCreateEventModal');
   if (btnOpenCreate) {
@@ -376,6 +540,16 @@ document.addEventListener('DOMContentLoaded', async () => {
       editingEventId = null;
       const form = document.getElementById('formCreateNewEvent');
       if (form) form.reset();
+      resetBannerUploadUI();
+
+      // Recalculate minimum selectable date dynamically in Asia/Kolkata (Section 4)
+      const evDateEl = document.getElementById('evDate');
+      if (evDateEl) {
+        const todayStr = getCampusTodayInKolkata();
+        evDateEl.min = todayStr;
+        evDateEl.value = todayStr;
+      }
+
       const heading = document.getElementById('modalEventHeading');
       if (heading) heading.textContent = 'Create New Campus Event';
       const subBtn = document.getElementById('btnSubmitCreateEvent');
@@ -491,6 +665,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         const ev = managedEvents.find(x => String(x.id) === String(id));
         if (!ev) return;
         editingEventId = id;
+        resetBannerUploadUI();
+
         document.getElementById('evTitle').value = ev.title || '';
         const catSelect = document.getElementById('evCategory');
         if (catSelect) {
@@ -515,10 +691,32 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!evDateVal && ev.date && /^\d{4}-\d{2}-\d{2}/.test(ev.date)) {
           evDateVal = ev.date.substring(0, 10);
         }
-        document.getElementById('evDate').value = evDateVal;
+        const evDateEl = document.getElementById('evDate');
+        if (evDateEl) {
+          const todayKolkata = getCampusTodayInKolkata();
+          // Allow existing historical date if unchanged, but restrict new changes to today or future
+          evDateEl.min = (evDateVal && evDateVal < todayKolkata) ? evDateVal : todayKolkata;
+          evDateEl.value = evDateVal;
+        }
+
         document.getElementById('evVenue').value = ev.venue || '';
         document.getElementById('evCapacity').value = ev.capacity || ev.max_participants || 200;
         document.getElementById('evDescription').value = ev.description || '';
+
+        // Populate existing banner preview if event has banner
+        const bannerUrl = ev.banner_url || ev.bannerUrl;
+        if (bannerUrl) {
+          const previewImg = document.getElementById('evBannerPreviewImg');
+          const nameEl = document.getElementById('evBannerFileName');
+          const sizeEl = document.getElementById('evBannerFileSize');
+          const emptyState = document.getElementById('evBannerEmptyState');
+          const previewState = document.getElementById('evBannerPreviewState');
+          if (previewImg) previewImg.src = bannerUrl;
+          if (nameEl) nameEl.textContent = ev.banner_filename || 'Current Event Banner';
+          if (sizeEl) sizeEl.textContent = 'Stored on server';
+          if (emptyState) emptyState.classList.add('hidden');
+          if (previewState) previewState.classList.remove('hidden');
+        }
 
         const heading = document.getElementById('modalEventHeading');
         if (heading) heading.textContent = 'Edit Campus Event';
@@ -927,6 +1125,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
+    const todayCampus = getCampusTodayInKolkata();
+    if (!editingEventId && date < todayCampus) {
+      CampusInn.Toast.error('Event date cannot be in the past. Please select today or a future date.');
+      return;
+    }
+
     if (isFreshers && !department) {
       CampusInn.Toast.error('Department Freshers events must be assigned to exactly one department.');
       return;
@@ -934,38 +1138,45 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const submitBtn = document.getElementById('btnSubmitCreateEvent');
     const draftBtn = document.getElementById('btnSaveDraftEvent');
-    if (submitBtn) submitBtn.disabled = true;
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.dataset.originalHtml = submitBtn.innerHTML;
+      submitBtn.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">refresh</span> Processing...';
+    }
     if (draftBtn) draftBtn.disabled = true;
 
     try {
       const dateStart = `${date}T${startTime}:00+05:30`;
       const dateEnd = `${date}T${endTime}:00+05:30`;
 
-      const payload = {
-        title,
-        category,
-        departmentName: department,
-        isFreshers,
-        date,
-        startTime,
-        endTime,
-        dateStart,
-        dateEnd,
-        venue,
-        capacity,
-        description,
-        registrationOpen: isPublished,
-        isPublished: isPublished,
-        status: isPublished ? 'published' : 'draft'
-      };
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('category', category);
+      if (department) formData.append('departmentName', department);
+      formData.append('isFreshers', isFreshers);
+      formData.append('date', date);
+      formData.append('startTime', startTime);
+      formData.append('endTime', endTime);
+      formData.append('dateStart', dateStart);
+      formData.append('dateEnd', dateEnd);
+      formData.append('venue', venue);
+      formData.append('capacity', capacity);
+      formData.append('description', description);
+      formData.append('registrationOpen', isPublished);
+      formData.append('isPublished', isPublished);
+      formData.append('status', isPublished ? 'published' : 'draft');
+
+      if (pendingBannerFile) {
+        formData.append('banner', pendingBannerFile);
+      }
 
       if (editingEventId) {
-        const res = await window.CampusInnAPI.coordinator.updateEvent(editingEventId, payload);
+        const res = await window.CampusInnAPI.coordinator.updateEvent(editingEventId, formData);
         if (res.error) throw new Error(res.error);
         CampusInn.Toast.success(`Event "${title}" updated successfully!`);
         editingEventId = null;
       } else {
-        const res = await window.CampusInnAPI.coordinator.createEvent(payload);
+        const res = await window.CampusInnAPI.coordinator.createEvent(formData);
         if (res.error) throw new Error(res.error);
 
         if (isPublished) {
@@ -975,13 +1186,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
       }
 
+      resetBannerUploadUI();
       formCreate.reset();
       closeModal('modalCreateEvent');
       await loadCoordinatorEvents();
     } catch (err) {
       CampusInn.Toast.error(err.message || 'Failed to save event.');
     } finally {
-      if (submitBtn) submitBtn.disabled = false;
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        if (submitBtn.dataset.originalHtml) submitBtn.innerHTML = submitBtn.dataset.originalHtml;
+      }
       if (draftBtn) draftBtn.disabled = false;
     }
   }

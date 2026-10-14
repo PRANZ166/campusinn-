@@ -141,7 +141,7 @@ describe('Campus Inn+ Comprehensive Repair Test Suite', () => {
       }
 
       // Event coordinator: GET /coordinator/events
-      if (sqlStr.includes('FROM events e') && sqlStr.includes('ORDER BY e.date_start DESC')) {
+      if (sqlStr.includes('FROM events e') && (sqlStr.includes('attendanceCount') || sqlStr.includes('e.date_start DESC'))) {
         return Promise.resolve({ rows: mockEvents });
       }
 

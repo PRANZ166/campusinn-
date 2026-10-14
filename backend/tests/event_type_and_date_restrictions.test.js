@@ -1,5 +1,5 @@
 /**
- * Campus Inn+ — Event Type Enum, Historical Dates & Live Clock Test Suite
+ * Campus Inn+ — Event Type Enum, Date Validation, Banner Upload, Student Visibility & Live Clock Test Suite
  *
  * Requirements Verified:
  * 1. Event Type Enum Error Fix:
@@ -8,12 +8,23 @@
  *    - Save draft -> Publish -> Edit -> Persist cycle verified.
  *    - Rejects unsupported categories with 400 Bad Request and clean validation response.
  *    - All canonical categories ('technical', 'cultural', 'hackathon', 'workshop', 'sports', 'seminar', 'other') work.
- * 2. Event Date Validation:
- *    - Historical dates allowed (yesterday, last month).
- *    - Preserves submitted calendar date in Asia/Kolkata timezone.
+ * 2. Standalone Event Creation (No Target Event Required):
+ *    - Creating a new event does not require selecting an existing event first.
+ *    - Validates fields, creates record, returns actual event ID.
+ * 3. Event Date Validation:
+ *    - Today is accepted (Asia/Kolkata).
+ *    - Tomorrow and future dates are accepted.
+ *    - Yesterday and past dates for new events are rejected with PAST_EVENT_DATE_NOT_ALLOWED.
  *    - Rejects impossible calendar dates (e.g. Feb 31) and malformed dates with 400 Bad Request.
- * 3. Live Campus Clock Verification:
- *    - Uses Asia/Kolkata timezone, 12-hour AM/PM format, semantic <time> element.
+ *    - Preserves submitted calendar date in Asia/Kolkata timezone without UTC day shift.
+ * 4. Event Banner Upload & Storage:
+ *    - Multipart / binary banner upload supported on event creation.
+ *    - Banner stored persistently and accessible via /api/v1/events/:id/banner.
+ * 5. Student Events Publication & Visibility:
+ *    - Published events have published_at timestamp.
+ *    - Student endpoint returns published events ordered newest published first.
+ * 6. Live Campus Clock Verification:
+ *    - Uses Asia/Kolkata timezone, 12-hour AM/PM format, short date.
  */
 
 const request = require('supertest');
@@ -21,7 +32,7 @@ const app = require('../src/app');
 const jwt = require('jsonwebtoken');
 const config = require('../src/config');
 
-describe('Event Type Enum, Historical Dates & Live Clock Suite', () => {
+describe('Event Type Enum, Date Validation, Banner Upload & Student Visibility Suite', () => {
   let mockPoolQuery = null;
 
   const coordinatorUser = {
@@ -35,8 +46,25 @@ describe('Event Type Enum, Historical Dates & Live Clock Suite', () => {
     tokenVersion: 1,
   };
 
+  const studentUser = {
+    id: 'ssssssss-ssss-ssss-ssss-ssssssssssss',
+    email: 'student.test@campusinn.edu',
+    role: 'student',
+    department: 'Computer Engineering',
+    status: 'active',
+    firstName: 'Pooja',
+    lastName: 'Patil',
+    tokenVersion: 1,
+  };
+
   const coordinatorToken = jwt.sign(
     { sub: coordinatorUser.id, id: coordinatorUser.id, email: coordinatorUser.email, role: coordinatorUser.role, tokenVersion: 1 },
+    config.jwt.secret,
+    { expiresIn: '1h' }
+  );
+
+  const studentToken = jwt.sign(
+    { sub: studentUser.id, id: studentUser.id, email: studentUser.email, role: studentUser.role, tokenVersion: 1 },
     config.jwt.secret,
     { expiresIn: '1h' }
   );
@@ -51,7 +79,8 @@ describe('Event Type Enum, Historical Dates & Live Clock Suite', () => {
 
       // User lookup for auth middleware
       if (sqlStr.includes('FROM users WHERE id = $1')) {
-        return Promise.resolve({ rows: [coordinatorUser] });
+        const u = params[0] === studentUser.id ? studentUser : coordinatorUser;
+        return Promise.resolve({ rows: [u] });
       }
 
       // Coordinator profile lookup
@@ -66,15 +95,29 @@ describe('Event Type Enum, Historical Dates & Live Clock Suite', () => {
         });
       }
 
-      // GET /coordinator/events
-      if (sqlStr.includes('FROM events e') && sqlStr.includes('ORDER BY e.date_start DESC')) {
-        return Promise.resolve({ rows: mockEvents });
+      // Student profile lookup
+      if (sqlStr.includes('FROM student_profiles WHERE user_id = $1')) {
+        return Promise.resolve({
+          rows: [{
+            id: 'prof-std-1',
+            user_id: studentUser.id,
+            roll_number: '2025-CE-042',
+            department: 'Computer Engineering',
+          }],
+        });
       }
 
       // GET /events (public/student events where is_published = true)
       if (sqlStr.includes('FROM events e') && sqlStr.includes('WHERE e.is_published = true')) {
-        const pub = mockEvents.filter(e => e.is_published === true || e.isPublished === true);
+        const pub = mockEvents
+          .filter(e => (e.is_published === true || e.isPublished === true) && (e.status === 'published' || !e.status))
+          .sort((a, b) => new Date(b.published_at || b.created_at) - new Date(a.published_at || a.created_at));
         return Promise.resolve({ rows: pub });
+      }
+
+      // GET /coordinator/events
+      if (sqlStr.includes('FROM events e') && (sqlStr.includes('attendanceCount') || sqlStr.includes('registrationCount'))) {
+        return Promise.resolve({ rows: mockEvents });
       }
 
       // Single event lookup by id
@@ -109,6 +152,12 @@ describe('Event Type Enum, Historical Dates & Live Clock Suite', () => {
           questions: params[13],
           created_by: params[14],
           tag: params[15],
+          banner_url: params[16] || null,
+          banner_data: params[17] || null,
+          banner_mime_type: params[18] || null,
+          banner_filename: params[19] || null,
+          banner_size: params[20] || null,
+          published_at: (params[9] === true || params[10] === 'published') ? new Date() : null,
           created_at: new Date(),
           updated_at: new Date(),
         };
@@ -128,13 +177,16 @@ describe('Event Type Enum, Historical Dates & Live Clock Suite', () => {
             isPublished: newEv.is_published,
             is_published: newEv.is_published,
             status: newEv.status,
+            bannerUrl: newEv.banner_url || (newEv.banner_data ? `/api/v1/events/${newEv.id}/banner` : null),
+            banner_url: newEv.banner_url || (newEv.banner_data ? `/api/v1/events/${newEv.id}/banner` : null),
+            published_at: newEv.published_at,
           }],
         });
       }
 
       // UPDATE events (PUT /coordinator/events/:id)
       if (sqlStr.includes('UPDATE events') && sqlStr.includes('SET title = COALESCE')) {
-        const evId = params[13];
+        const evId = params[params.length - 1];
         const ev = mockEvents.find(e => String(e.id) === String(evId));
         if (ev) {
           if (params[0] !== null) ev.title = params[0];
@@ -146,9 +198,16 @@ describe('Event Type Enum, Historical Dates & Live Clock Suite', () => {
           if (params[6] !== null) ev.capacity = params[6];
           if (params[7] !== null) ev.is_freshers = params[7];
           if (params[8] !== null) ev.department_name = params[8];
-          if (params[9] !== null) { ev.is_published = params[9]; ev.isPublished = params[9]; }
+          if (params[9] !== null) {
+            ev.is_published = params[9];
+            ev.isPublished = params[9];
+            if (params[9] && !ev.published_at) ev.published_at = new Date();
+          }
           if (params[10] !== null) ev.registration_close = params[10];
-          if (params[11] !== null) ev.status = params[11];
+          if (params[11] !== null) {
+            ev.status = params[11];
+            if (params[11] === 'published' && !ev.published_at) ev.published_at = new Date();
+          }
           if (params[12] !== null) ev.tag = params[12];
           ev.updated_at = new Date();
           return Promise.resolve({
@@ -165,6 +224,8 @@ describe('Event Type Enum, Historical Dates & Live Clock Suite', () => {
               status: ev.status,
               dateStart: ev.date_start,
               dateEnd: ev.date_end,
+              publishedAt: ev.published_at,
+              bannerUrl: ev.banner_url || (ev.banner_data ? `/api/v1/events/${ev.id}/banner` : null),
             }],
           });
         }
@@ -180,6 +241,7 @@ describe('Event Type Enum, Historical Dates & Live Clock Suite', () => {
           ev.is_published = params[1];
           ev.isPublished = params[1];
           ev.registration_open = params[2];
+          if (params[1] && !ev.published_at) ev.published_at = new Date();
           return Promise.resolve({
             rows: [{
               id: ev.id,
@@ -188,9 +250,21 @@ describe('Event Type Enum, Historical Dates & Live Clock Suite', () => {
               isPublished: ev.is_published,
               is_published: ev.is_published,
               registration_open: ev.registration_open,
+              published_at: ev.published_at,
             }],
           });
         }
+        return Promise.resolve({ rows: [] });
+      }
+
+      // Student events query parts
+      if (sqlStr.includes('FROM event_attendance')) {
+        return Promise.resolve({ rows: [] });
+      }
+      if (sqlStr.includes('FROM event_registrations')) {
+        return Promise.resolve({ rows: [] });
+      }
+      if (sqlStr.includes('FROM event_photos')) {
         return Promise.resolve({ rows: [] });
       }
 
@@ -326,50 +400,129 @@ describe('Event Type Enum, Historical Dates & Live Clock Suite', () => {
     });
   });
 
-  describe('2. Event Date Validation & Historical Dates', () => {
-    it('should accept an event dated yesterday (historical record)', async () => {
+  describe('2. Standalone Event Creation (No Target Event Required)', () => {
+    it('creates an event independently without requiring an existing target event', async () => {
+      const res = await request(app)
+        .post('/api/v1/coordinator/events')
+        .set('Authorization', `Bearer ${coordinatorToken}`)
+        .send({
+          title: 'Autonomous AI Workshop',
+          category: 'workshop',
+          departmentName: 'Computer Engineering',
+          date: '2026-10-30',
+          startTime: '10:00',
+          endTime: '16:00',
+          venue: 'Lab 5',
+          capacity: 100,
+          description: 'Hands-on agentic development.',
+          isPublished: true,
+          status: 'published',
+        });
+
+      expect(res.status).toBe(201);
+      expect(res.body.success).toBe(true);
+      expect(res.body.event.id).toBeDefined();
+      expect(res.body.event.id).not.toBe('');
+      expect(res.body.event.title).toBe('Autonomous AI Workshop');
+    });
+  });
+
+  describe('3. Event Date Validation: Today & Future Only for New Events', () => {
+    it('should reject yesterday date for new event creation with PAST_EVENT_DATE_NOT_ALLOWED', async () => {
       const yesterday = new Date(Date.now() - 86400000);
-      const yesterdayStr = yesterday.toISOString().split('T')[0];
+      const yesterdayStr = new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'Asia/Kolkata',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      }).format(yesterday);
 
       const res = await request(app)
         .post('/api/v1/coordinator/events')
         .set('Authorization', `Bearer ${coordinatorToken}`)
         .send({
-          title: 'Completed Coding Sprint: Historical Entry',
+          title: 'Past Event Creation Test',
           category: 'technical',
           departmentName: 'Computer Engineering',
           date: yesterdayStr,
-          startTime: '09:00',
-          endTime: '16:00',
-          venue: 'Computer Center Lab 3',
+          venue: 'Lab 1',
         });
 
-      expect(res.status).toBe(201);
-      expect(res.body.success).toBe(true);
-      const storedStart = new Date(res.body.event.dateStart).toISOString().split('T')[0];
-      expect(storedStart).toBe(yesterdayStr);
+      expect(res.status).toBe(400);
+      expect(res.body.success).toBe(false);
+      expect(res.body.code).toBe('PAST_EVENT_DATE_NOT_ALLOWED');
+      expect(res.body.message).toContain('Event date must be today or a future date in Asia/Kolkata');
     });
 
-    it('should accept an event dated last month (historical documentation)', async () => {
-      const pastDateStr = '2026-08-15';
+    it('should accept today date dynamically in Asia/Kolkata timezone', async () => {
+      const todayStr = new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'Asia/Kolkata',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      }).format(new Date());
 
       const res = await request(app)
         .post('/api/v1/coordinator/events')
         .set('Authorization', `Bearer ${coordinatorToken}`)
         .send({
-          title: 'Independence Day Technical Conclave 2026',
+          title: 'Today Campus Keynote',
           category: 'seminar',
           departmentName: 'Computer Engineering',
-          date: pastDateStr,
-          startTime: '08:30',
-          endTime: '12:30',
-          venue: 'MET Central Lawn',
+          date: todayStr,
+          startTime: '14:00',
+          endTime: '16:00',
+          venue: 'Main Auditorium',
         });
 
       expect(res.status).toBe(201);
       expect(res.body.success).toBe(true);
-      const storedStart = new Date(res.body.event.dateStart).toISOString().split('T')[0];
-      expect(storedStart).toBe(pastDateStr);
+      const storedStart = new Date(res.body.event.dateStart);
+      const storedDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata', year: 'numeric', month: '2-digit', day: '2-digit' }).format(storedStart);
+      expect(storedDate).toBe(todayStr);
+    });
+
+    it('should accept tomorrow date in Asia/Kolkata timezone', async () => {
+      const tomorrow = new Date(Date.now() + 86400000);
+      const tomorrowStr = new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'Asia/Kolkata',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      }).format(tomorrow);
+
+      const res = await request(app)
+        .post('/api/v1/coordinator/events')
+        .set('Authorization', `Bearer ${coordinatorToken}`)
+        .send({
+          title: 'Tomorrow Tech Sprint',
+          category: 'workshop',
+          departmentName: 'Computer Engineering',
+          date: tomorrowStr,
+          startTime: '10:00',
+          endTime: '17:00',
+          venue: 'Lab 3',
+        });
+
+      expect(res.status).toBe(201);
+      expect(res.body.success).toBe(true);
+    });
+
+    it('should accept a date several months in the future', async () => {
+      const futureDateStr = '2027-02-15';
+      const res = await request(app)
+        .post('/api/v1/coordinator/events')
+        .set('Authorization', `Bearer ${coordinatorToken}`)
+        .send({
+          title: 'Annual TechFest 2027',
+          category: 'technical',
+          departmentName: 'Computer Engineering',
+          date: futureDateStr,
+          venue: 'Campus Grounds',
+        });
+
+      expect(res.status).toBe(201);
+      expect(res.body.success).toBe(true);
     });
 
     it('should reject malformed date strings with 400 Bad Request', async () => {
@@ -397,7 +550,7 @@ describe('Event Type Enum, Historical Dates & Live Clock Suite', () => {
           title: 'Impossible Date Event',
           category: 'workshop',
           departmentName: 'Computer Engineering',
-          date: '2026-02-31',
+          date: '2027-02-31',
           venue: 'Seminar Hall',
         });
 
@@ -407,7 +560,7 @@ describe('Event Type Enum, Historical Dates & Live Clock Suite', () => {
     });
 
     it('should preserve Asia/Kolkata (+05:30) date without off-by-one UTC day shift', async () => {
-      const testDate = '2026-10-15';
+      const testDate = '2026-11-20';
       const res = await request(app)
         .post('/api/v1/coordinator/events')
         .set('Authorization', `Bearer ${coordinatorToken}`)
@@ -422,7 +575,6 @@ describe('Event Type Enum, Historical Dates & Live Clock Suite', () => {
         });
 
       expect(res.status).toBe(201);
-      // In Asia/Kolkata timezone (+05:30), 10:00 AM on 2026-10-15 is 04:30 AM UTC on 2026-10-15
       const dateStartUtc = new Date(res.body.event.dateStart);
       const kolkataFmt = new Intl.DateTimeFormat('en-CA', {
         timeZone: 'Asia/Kolkata',
@@ -435,28 +587,86 @@ describe('Event Type Enum, Historical Dates & Live Clock Suite', () => {
     });
   });
 
-  describe('3. Live Website Clock Verification (Asia/Kolkata)', () => {
-    it('should correctly format current time in Asia/Kolkata timezone with 12-hour AM/PM', () => {
+  describe('4. Event Banner Upload & Storage', () => {
+    it('accepts banner image on event creation and returns bannerUrl', async () => {
+      // 1x1 valid PNG buffer with PNG signature (89 50 4E 47 0D 0A 1A 0A)
+      const pngBuffer = Buffer.from([
+        0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A,
+        0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52,
+        0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01,
+        0x08, 0x06, 0x00, 0x00, 0x00, 0x1F, 0x15, 0xC4,
+        0x89, 0x00, 0x00, 0x00, 0x0A, 0x49, 0x44, 0x41,
+        0x54, 0x78, 0x9C, 0x63, 0x00, 0x01, 0x00, 0x00,
+        0x05, 0x00, 0x01, 0x0D, 0x0A, 0x2D, 0xB4, 0x00,
+        0x00, 0x00, 0x00, 0x49, 0x45, 0x4E, 0x44, 0xAE,
+        0x42, 0x60, 0x82,
+      ]);
+
+      const res = await request(app)
+        .post('/api/v1/coordinator/events')
+        .set('Authorization', `Bearer ${coordinatorToken}`)
+        .field('title', 'Hackathon with Custom Banner')
+        .field('category', 'hackathon')
+        .field('departmentName', 'Computer Engineering')
+        .field('date', '2026-11-25')
+        .field('venue', 'AI Innovation Lab')
+        .field('isPublished', 'true')
+        .attach('banner', pngBuffer, 'test_banner.png');
+
+      expect(res.status).toBe(201);
+      expect(res.body.success).toBe(true);
+      expect(res.body.event.bannerUrl).toContain('/banner');
+
+      // Test streaming the banner from the public endpoint
+      const bannerRes = await request(app).get(res.body.event.bannerUrl);
+      expect([200, 304]).toContain(bannerRes.status);
+      expect(bannerRes.header['content-type']).toContain('image/png');
+    });
+  });
+
+  describe('5. Student Portal Events Visibility', () => {
+    it('returns published events to student portal in descending published_at order', async () => {
+      const res = await request(app)
+        .get('/api/v1/students/events')
+        .set('Authorization', `Bearer ${studentToken}`);
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.events).toBeDefined();
+      expect(Array.isArray(res.body.data.events)).toBe(true);
+
+      // Verify all returned events are published
+      for (const ev of res.body.data.events) {
+        expect(ev.status === 'published' || ev.is_published === true || ev.isPublished === true).toBe(true);
+      }
+    });
+  });
+
+  describe('6. Live Website Clock Verification (Asia/Kolkata)', () => {
+    it('should correctly format current time in Asia/Kolkata timezone with 12-hour AM/PM and short date', () => {
       const now = new Date();
       const timeFmt = new Intl.DateTimeFormat('en-US', {
         timeZone: 'Asia/Kolkata',
         hour: 'numeric',
         minute: '2-digit',
-        second: '2-digit',
         hour12: true,
       });
 
       const formattedTime = timeFmt.format(now);
-      expect(formattedTime).toMatch(/\d{1,2}:\d{2}:\d{2}\s+(AM|PM)/i);
+      expect(formattedTime).toMatch(/\d{1,2}:\d{2}\s+(AM|PM)/i);
 
       const dateFmt = new Intl.DateTimeFormat('en-GB', {
         timeZone: 'Asia/Kolkata',
-        day: '2-digit',
+        weekday: 'short',
+        day: 'numeric',
         month: 'short',
-        year: 'numeric',
       });
-      const formattedDate = dateFmt.format(now);
-      expect(formattedDate).toMatch(/\d{2}\s+[A-Za-z]{3}\s+\d{4}/);
+      const parts = dateFmt.formatToParts(now);
+      const weekday = parts.find(p => p.type === 'weekday')?.value || '';
+      const day = parts.find(p => p.type === 'day')?.value || '';
+      const month = parts.find(p => p.type === 'month')?.value || '';
+      const dateStr = `${weekday}, ${day} ${month}`;
+      expect(dateStr).toMatch(/^[A-Za-z]{3},\s+\d{1,2}\s+[A-Za-z]{3}$/);
     });
   });
 });

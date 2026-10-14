@@ -4,11 +4,83 @@
  * Department Freshers governance, Attendance review & manual sign-offs.
  */
 const express = require('express');
+const multer = require('multer');
 const { query } = require('../db/pool');
 const { authenticate, authorize } = require('../middleware/auth');
 const { getCoordinatorProfile, canCoordinatorManageEvent, departmentsMatch } = require('../utils/coordinatorAccess');
 
 const router = express.Router();
+
+const bannerUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  fileFilter: (req, file, cb) => {
+    const allowed = ['.jpg', '.jpeg', '.png', '.webp'];
+    const ext = (file.originalname ? file.originalname.substring(file.originalname.lastIndexOf('.')) : '').toLowerCase();
+    const mimes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!allowed.includes(ext) || !mimes.includes(file.mimetype)) {
+      const err = new Error('Invalid image file format. Supported formats are JPEG, PNG, and WebP.');
+      err.code = 'INVALID_FILE_TYPE';
+      return cb(err, false);
+    }
+    cb(null, true);
+  },
+});
+
+function handleBannerUpload(req, res, next) {
+  bannerUpload.single('banner')(req, res, (err) => {
+    if (err) {
+      if (err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(400).json({ success: false, message: 'Event banner exceeds 5MB size limit.', code: 'FILE_TOO_LARGE' });
+      }
+      return res.status(400).json({ success: false, message: err.message || 'Invalid banner upload.', code: err.code || 'INVALID_FILE' });
+    }
+    next();
+  });
+}
+
+/**
+ * Validates actual binary signature (magic bytes) of uploaded images.
+ */
+function validateImageMagicBytes(buffer) {
+  if (!buffer || buffer.length < 12) return false;
+  // JPEG / JPG: 0xFF 0xD8 0xFF
+  if (buffer[0] === 0xFF && buffer[1] === 0xD8 && buffer[2] === 0xFF) {
+    return 'image/jpeg';
+  }
+  // PNG: 0x89 0x50 0x4E 0x47
+  if (buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4E && buffer[3] === 0x47) {
+    return 'image/png';
+  }
+  // WebP: RIFF (bytes 0-3) and WEBP (bytes 8-11)
+  if (
+    buffer[0] === 0x52 && buffer[1] === 0x49 && buffer[2] === 0x46 && buffer[3] === 0x46 &&
+    buffer[8] === 0x57 && buffer[9] === 0x45 && buffer[10] === 0x42 && buffer[11] === 0x50
+  ) {
+    return 'image/webp';
+  }
+  return false;
+}
+
+function getCampusTodayInKolkata() {
+  const fmt = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Kolkata',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+  return fmt.format(new Date()); // 'YYYY-MM-DD'
+}
+
+function getCampusDateInKolkata(dateObj) {
+  const fmt = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Kolkata',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+  return fmt.format(dateObj); // 'YYYY-MM-DD'
+}
 
 /**
  * GET /api/v1/coordinator/hackathons/teams
@@ -111,6 +183,9 @@ router.get('/events', authenticate, authorize('coordinator', 'admin'), async (re
               e.venue, COALESCE(e.capacity, e.max_participants, 500) AS "capacity",
               e.department_id AS "departmentId", e.department_name AS "departmentName",
               e.is_published AS "isPublished", e.is_freshers AS "isFreshers",
+              COALESCE(e.banner_url, CASE WHEN e.banner_data IS NOT NULL THEN '/api/v1/events/' || e.id || '/banner' ELSE NULL END) AS "bannerUrl",
+              (e.banner_data IS NOT NULL) AS "hasBanner",
+              COALESCE(e.published_at, e.created_at) AS "publishedAt",
               COALESCE(e.status, CASE WHEN e.is_published = true THEN 'published' ELSE 'draft' END) AS "status",
               e.registration_open AS "registrationOpen", e.registration_close AS "registrationClose",
               e.created_by AS "createdBy", e.created_at AS "createdAt",
@@ -121,7 +196,7 @@ router.get('/events', authenticate, authorize('coordinator', 'admin'), async (re
        LEFT JOIN event_attendance ea ON ea.event_id = e.id
        ${whereClause}
        GROUP BY e.id
-       ORDER BY e.date_start DESC`,
+       ORDER BY e.published_at DESC NULLS LAST, e.date_start DESC`,
       params
     ).catch(() => ({ rows: [] }));
 
@@ -201,9 +276,9 @@ function isValidCalendarDate(str) {
 
 /**
  * Parses and validates event dates in Asia/Kolkata campus timezone.
- * Supports past/historical dates cleanly while rejecting malformed or impossible dates.
+ * Enforces Section 4: For new event creation, only today or future dates in Asia/Kolkata are permitted.
  */
-function parseEventDates(body) {
+function parseEventDates(body, isNewEvent = false) {
   let { dateStart, dateEnd, date, startTime, endTime } = body;
 
   // Check impossible calendar dates
@@ -259,14 +334,32 @@ function parseEventDates(body) {
     return { error: 'Event end time cannot be before event start time.', code: 'INVALID_DATE_RANGE' };
   }
 
+  // SECTION 4 REQUIREMENT: For new event creation, accept today and future dates in Asia/Kolkata. Reject past dates.
+  if (isNewEvent) {
+    const todayKolkata = getCampusTodayInKolkata();
+    const eventDateKolkata = (date && typeof date === 'string' && /^\d{4}-\d{2}-\d{2}/.test(date))
+      ? date.substring(0, 10)
+      : getCampusDateInKolkata(parsedStart);
+
+    if (eventDateKolkata < todayKolkata) {
+      return {
+        error: 'Event date must be today or a future date in Asia/Kolkata.',
+        code: 'PAST_EVENT_DATE_NOT_ALLOWED',
+      };
+    }
+  }
+
   return { dateStart: parsedStart, dateEnd: parsedEnd };
 }
 
 /**
  * POST /api/v1/coordinator/events
  * Launch an authorized event (Campus Festival, Hackathon, or Department Freshers)
+ * Supports persistent event banner upload during creation (Section 5).
+ * Never requires selecting a target event (Section 3).
+ * Restricts new events to today and future dates in Asia/Kolkata (Section 4).
  */
-router.post('/events', authenticate, authorize('coordinator', 'admin'), async (req, res, next) => {
+router.post('/events', authenticate, authorize('coordinator', 'admin'), handleBannerUpload, async (req, res, next) => {
   try {
     let {
       title,
@@ -278,6 +371,9 @@ router.post('/events', authenticate, authorize('coordinator', 'admin'), async (r
       departmentName,
       registrationClose,
       questions,
+      bannerUrl,
+      bannerData,
+      bannerFilename,
     } = req.body;
 
     if (!title || typeof title !== 'string' || title.trim().length < 3) {
@@ -297,7 +393,8 @@ router.post('/events', authenticate, authorize('coordinator', 'admin'), async (r
       });
     }
 
-    const dateResult = parseEventDates(req.body);
+    // SECTION 4: Validate dates with isNewEvent = true (Today or future only)
+    const dateResult = parseEventDates(req.body, true);
     if (dateResult.error) {
       return res.status(400).json({
         success: false,
@@ -311,6 +408,46 @@ router.post('/events', authenticate, authorize('coordinator', 'admin'), async (r
     const finalTag = catResult.tag;
     const finalDateStart = dateResult.dateStart;
     const finalDateEnd = dateResult.dateEnd;
+
+    // SECTION 5: Banner validation and extraction
+    let bannerBuffer = null;
+    let bannerMime = null;
+    let finalBannerFilename = null;
+    let finalBannerUrl = bannerUrl || null;
+
+    if (req.file) {
+      bannerBuffer = req.file.buffer;
+      finalBannerFilename = req.file.originalname;
+      bannerMime = validateImageMagicBytes(bannerBuffer);
+      if (!bannerMime) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid banner image signature. Only valid JPEG, PNG, and WebP images are allowed.',
+          code: 'INVALID_IMAGE_SIGNATURE',
+        });
+      }
+    } else if (bannerData) {
+      try {
+        const rawData = String(bannerData);
+        const base64Match = rawData.match(/^data:([^;]+);base64,(.+)$/);
+        const base64Content = base64Match ? base64Match[2] : rawData;
+        bannerBuffer = Buffer.from(base64Content, 'base64');
+        if (bannerBuffer.length > 5 * 1024 * 1024) {
+          return res.status(400).json({ success: false, message: 'Event banner exceeds 5MB size limit.', code: 'FILE_TOO_LARGE' });
+        }
+        bannerMime = validateImageMagicBytes(bannerBuffer);
+        if (!bannerMime) {
+          return res.status(400).json({
+            success: false,
+            message: 'Invalid banner image signature. Only valid JPEG, PNG, and WebP images are allowed.',
+            code: 'INVALID_IMAGE_SIGNATURE',
+          });
+        }
+        finalBannerFilename = bannerFilename || 'event_banner.jpg';
+      } catch (b64Err) {
+        return res.status(400).json({ success: false, message: 'Malformed banner data provided.', code: 'INVALID_BANNER_DATA' });
+      }
+    }
 
     // Department scope enforcement for coordinators
     if (req.user.role === 'coordinator') {
@@ -342,6 +479,7 @@ router.post('/events', authenticate, authorize('coordinator', 'admin'), async (r
 
     const isPub = req.body.isPublished !== undefined ? Boolean(req.body.isPublished) : true;
     const eventStatus = req.body.status || (isPub ? 'published' : 'draft');
+    const publishedAt = (isPub || eventStatus === 'published') ? new Date() : null;
 
     let regOpen = req.body.registrationOpen !== undefined ? Boolean(req.body.registrationOpen) : isPub;
     let regClose = registrationClose ? new Date(registrationClose) : null;
@@ -364,11 +502,14 @@ router.post('/events', authenticate, authorize('coordinator', 'admin'), async (r
       `INSERT INTO events (
          title, description, category, venue, date_start, date_end, capacity,
          max_participants, is_freshers, department_name, is_published, status,
-         registration_open, registration_close, questions, created_by, tag, created_at, updated_at
-       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, NOW(), NOW())
+         registration_open, registration_close, questions, created_by, tag,
+         banner_url, banner_data, banner_mime_type, banner_filename, banner_size,
+         published_at, created_at, updated_at
+       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, NOW(), NOW())
        RETURNING id, title, category, tag, venue, date_start AS "dateStart", date_end AS "dateEnd",
                  capacity, is_freshers AS "isFreshers", department_name AS "departmentName",
-                 is_published AS "isPublished", is_published, status`,
+                 is_published AS "isPublished", is_published, status, banner_url AS "bannerUrl",
+                 published_at AS "publishedAt"`,
       [
         title.trim(),
         description ? description.trim() : null,
@@ -386,16 +527,29 @@ router.post('/events', authenticate, authorize('coordinator', 'admin'), async (r
         JSON.stringify(questions || []),
         req.user.id,
         finalTag,
+        finalBannerUrl,
+        bannerBuffer,
+        bannerMime,
+        finalBannerFilename,
+        bannerBuffer ? bannerBuffer.length : null,
+        publishedAt,
       ]
     );
+
+    const createdEvent = eventRes.rows[0];
+    if (bannerBuffer && !finalBannerUrl) {
+      finalBannerUrl = `/api/v1/events/${createdEvent.id}/banner`;
+      await query('UPDATE events SET banner_url = $1 WHERE id = $2', [finalBannerUrl, createdEvent.id]).catch(() => {});
+    }
 
     return res.status(201).json({
       success: true,
       message: isPub ? `Event "${title.trim()}" published successfully!` : `Event "${title.trim()}" saved as draft!`,
       event: {
-        ...eventRes.rows[0],
-        is_published: eventRes.rows[0].is_published !== undefined ? eventRes.rows[0].is_published : eventRes.rows[0].isPublished,
-        category: eventRes.rows[0].tag || eventRes.rows[0].category,
+        ...createdEvent,
+        bannerUrl: finalBannerUrl || createdEvent.bannerUrl,
+        is_published: createdEvent.is_published !== undefined ? createdEvent.is_published : createdEvent.isPublished,
+        category: createdEvent.tag || createdEvent.category,
       },
     });
   } catch (err) {
@@ -407,7 +561,7 @@ router.post('/events', authenticate, authorize('coordinator', 'admin'), async (r
  * PUT /api/v1/coordinator/events/:id
  * Edit an existing event (Authorized coordinators only)
  */
-router.put('/events/:id', authenticate, authorize('coordinator', 'admin'), async (req, res, next) => {
+router.put('/events/:id', authenticate, authorize('coordinator', 'admin'), handleBannerUpload, async (req, res, next) => {
   try {
     const eventId = req.params.id;
     const {
@@ -423,10 +577,13 @@ router.put('/events/:id', authenticate, authorize('coordinator', 'admin'), async
       isPublished,
       registrationClose,
       status,
+      bannerUrl,
+      bannerData,
+      bannerFilename,
     } = req.body;
 
     // Check authorization: must be creator, match coordinator's department, or admin
-    const evCheck = await query('SELECT id, created_by, title, department_name, category, is_freshers, tag FROM events WHERE id::text = $1', [eventId]);
+    const evCheck = await query('SELECT id, created_by, title, department_name, category, is_freshers, tag, date_start, banner_url FROM events WHERE id::text = $1', [eventId]);
     if (evCheck.rows.length === 0) {
       return res.status(404).json({ success: false, message: 'Event not found.' });
     }
@@ -460,10 +617,22 @@ router.put('/events/:id', authenticate, authorize('coordinator', 'admin'), async
     let finalDateStart = null;
     let finalDateEnd = null;
     if (dateStart || req.body.date || dateEnd) {
-      const dateResult = parseEventDates(req.body);
+      const dateResult = parseEventDates(req.body, false);
       if (dateResult.error) {
         return res.status(400).json({ success: false, message: dateResult.error, code: dateResult.code });
       }
+
+      // Check if event date is being changed to an illegal past date
+      const newDateCampus = getCampusDateInKolkata(dateResult.dateStart);
+      const existingDateCampus = evCheck.rows[0].date_start ? getCampusDateInKolkata(new Date(evCheck.rows[0].date_start)) : null;
+      if (newDateCampus !== existingDateCampus && newDateCampus < getCampusTodayInKolkata()) {
+        return res.status(400).json({
+          success: false,
+          message: 'Event date must be today or a future date in Asia/Kolkata.',
+          code: 'PAST_EVENT_DATE_NOT_ALLOWED',
+        });
+      }
+
       finalDateStart = dateResult.dateStart;
       finalDateEnd = dateResult.dateEnd;
     }
@@ -486,6 +655,48 @@ router.put('/events/:id', authenticate, authorize('coordinator', 'admin'), async
       }
     }
 
+    // Banner update processing
+    let bannerBuffer = null;
+    let bannerMime = null;
+    let finalBannerFilename = null;
+    let updatedBannerUrl = bannerUrl !== undefined ? bannerUrl : null;
+
+    if (req.file) {
+      bannerBuffer = req.file.buffer;
+      finalBannerFilename = req.file.originalname;
+      bannerMime = validateImageMagicBytes(bannerBuffer);
+      if (!bannerMime) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid banner image signature. Only valid JPEG, PNG, and WebP images are allowed.',
+          code: 'INVALID_IMAGE_SIGNATURE',
+        });
+      }
+      updatedBannerUrl = `/api/v1/events/${evCheck.rows[0].id}/banner`;
+    } else if (bannerData) {
+      try {
+        const rawData = String(bannerData);
+        const base64Match = rawData.match(/^data:([^;]+);base64,(.+)$/);
+        const base64Content = base64Match ? base64Match[2] : rawData;
+        bannerBuffer = Buffer.from(base64Content, 'base64');
+        if (bannerBuffer.length > 5 * 1024 * 1024) {
+          return res.status(400).json({ success: false, message: 'Event banner exceeds 5MB size limit.', code: 'FILE_TOO_LARGE' });
+        }
+        bannerMime = validateImageMagicBytes(bannerBuffer);
+        if (!bannerMime) {
+          return res.status(400).json({
+            success: false,
+            message: 'Invalid banner image signature. Only valid JPEG, PNG, and WebP images are allowed.',
+            code: 'INVALID_IMAGE_SIGNATURE',
+          });
+        }
+        finalBannerFilename = bannerFilename || 'event_banner.jpg';
+        updatedBannerUrl = `/api/v1/events/${evCheck.rows[0].id}/banner`;
+      } catch (b64Err) {
+        return res.status(400).json({ success: false, message: 'Malformed banner data provided.', code: 'INVALID_BANNER_DATA' });
+      }
+    }
+
     const updateRes = await query(
       `UPDATE events
        SET title = COALESCE($1, title),
@@ -502,10 +713,16 @@ router.put('/events/:id', authenticate, authorize('coordinator', 'admin'), async
            registration_close = COALESCE($11, registration_close),
            status = COALESCE($12, status),
            tag = COALESCE($13, tag),
+           banner_url = COALESCE($14, banner_url),
+           banner_data = COALESCE($15, banner_data),
+           banner_mime_type = COALESCE($16, banner_mime_type),
+           banner_filename = COALESCE($17, banner_filename),
+           banner_size = COALESCE($18, banner_size),
+           published_at = CASE WHEN ($10 = true OR $12 = 'published') AND published_at IS NULL THEN NOW() ELSE published_at END,
            updated_at = NOW()
-       WHERE id = $14
+       WHERE id = $19
        RETURNING id, title, category, tag, venue, capacity, is_published AS "isPublished", is_published,
-                 department_name AS "departmentName", status,
+                 department_name AS "departmentName", status, banner_url AS "bannerUrl", published_at AS "publishedAt",
                  date_start AS "dateStart", date_end AS "dateEnd"`,
       [
         title ? title.trim() : null,
@@ -521,6 +738,11 @@ router.put('/events/:id', authenticate, authorize('coordinator', 'admin'), async
         parsedRegClose !== undefined ? parsedRegClose : null,
         targetStatus || null,
         finalTag !== undefined ? finalTag : null,
+        updatedBannerUrl,
+        bannerBuffer,
+        bannerMime,
+        finalBannerFilename,
+        bannerBuffer ? bannerBuffer.length : null,
         evCheck.rows[0].id,
       ]
     );
@@ -530,6 +752,7 @@ router.put('/events/:id', authenticate, authorize('coordinator', 'admin'), async
       message: `Event "${updateRes.rows[0].title}" updated successfully!`,
       event: {
         ...updateRes.rows[0],
+        bannerUrl: updateRes.rows[0].bannerUrl || (updateRes.rows[0].banner_data ? `/api/v1/events/${updateRes.rows[0].id}/banner` : null),
         is_published: updateRes.rows[0].is_published !== undefined ? updateRes.rows[0].is_published : updateRes.rows[0].isPublished,
         category: updateRes.rows[0].tag || updateRes.rows[0].category,
       },
@@ -548,7 +771,7 @@ router.patch('/events/:id/status', authenticate, authorize('coordinator', 'admin
     const eventId = req.params.id;
     const { status, isPublished } = req.body || {};
 
-    const evCheck = await query('SELECT id, created_by, title, department_name, is_published, status FROM events WHERE id::text = $1', [eventId]);
+    const evCheck = await query('SELECT id, created_by, title, department_name, is_published, status, published_at FROM events WHERE id::text = $1', [eventId]);
     if (evCheck.rows.length === 0) {
       return res.status(404).json({ success: false, message: 'Event not found.' });
     }
@@ -573,9 +796,11 @@ router.patch('/events/:id/status', authenticate, authorize('coordinator', 'admin
 
     const updateRes = await query(
       `UPDATE events
-       SET status = $1, is_published = $2, registration_open = $3, updated_at = NOW()
+       SET status = $1, is_published = $2, registration_open = $3,
+           published_at = CASE WHEN $2 = true AND published_at IS NULL THEN NOW() ELSE published_at END,
+           updated_at = NOW()
        WHERE id = $4
-       RETURNING id, title, status, is_published AS "isPublished", is_published, registration_open AS "registration_open"`,
+       RETURNING id, title, status, is_published AS "isPublished", is_published, registration_open AS "registration_open", published_at AS "publishedAt"`,
       [targetStatus, targetPub, regOpen, evCheck.rows[0].id]
     );
 

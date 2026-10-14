@@ -119,8 +119,64 @@ function departmentsMatch(deptA, deptB) {
 }
 
 /**
+ * GET /api/v1/events/:id/banner
+ * Streams persistent event banner binary directly from PostgreSQL
+ */
+router.get('/:id/banner', async (req, res, next) => {
+  try {
+    const eventId = req.params.id;
+    const bannerRes = await query(
+      `SELECT id, title, banner_url, banner_data, banner_mime_type, banner_filename
+       FROM events
+       WHERE id::text = $1`,
+      [eventId]
+    ).catch(() => ({ rows: [] }));
+
+    if (bannerRes.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Event not found.' });
+    }
+
+    const event = bannerRes.rows[0];
+
+    if (event.banner_data) {
+      res.setHeader('Content-Type', event.banner_mime_type || 'image/jpeg');
+      res.setHeader('Cache-Control', 'public, max-age=86400');
+      if (event.banner_filename) {
+        res.setHeader('Content-Disposition', `inline; filename="${event.banner_filename}"`);
+      }
+      return res.send(event.banner_data);
+    }
+
+    if (event.banner_url && event.banner_url.startsWith('http')) {
+      return res.redirect(event.banner_url);
+    }
+
+    // Default SVG placeholder
+    res.setHeader('Content-Type', 'image/svg+xml');
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    return res.send(`
+      <svg xmlns="http://www.w3.org/2000/svg" width="800" height="400" viewBox="0 0 800 400">
+        <defs>
+          <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#5300b7"/>
+            <stop offset="100%" stop-color="#250059"/>
+          </linearGradient>
+        </defs>
+        <rect width="800" height="400" fill="url(#g)"/>
+        <text x="50%" y="45%" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-size="28" font-weight="bold">${(event.title || 'Campus Event').replace(/[<>&"]/g, '')}</text>
+        <text x="50%" y="58%" text-anchor="middle" fill="#d3bbff" font-family="sans-serif" font-size="16">MET Bhujbal Knowledge City, Nashik</text>
+      </svg>
+    `);
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
  * GET /api/v1/events
- * Returns campus events with real registration counts and user registration status
+ * Returns campus events with real registration counts and user registration status.
+ * Section 6: Orders newest published event first (published_at DESC NULLS LAST, created_at DESC)
+ * and includes persistent bannerUrl.
  */
 router.get('/', optionalAuth, async (req, res, next) => {
   try {
@@ -135,14 +191,17 @@ router.get('/', optionalAuth, async (req, res, next) => {
                e.venue, COALESCE(e.capacity, e.max_participants, 500) AS "capacity",
                e.department_id AS "departmentId", e.department_name AS "departmentName",
                e.is_published AS "isPublished", e.is_freshers AS "isFreshers",
+               COALESCE(e.banner_url, CASE WHEN e.banner_data IS NOT NULL THEN '/api/v1/events/' || e.id || '/banner' ELSE NULL END) AS "bannerUrl",
+               (e.banner_data IS NOT NULL) AS "hasBanner",
+               COALESCE(e.published_at, e.created_at) AS "publishedAt",
                e.registration_open AS "registrationOpen", e.registration_close AS "registrationClose",
                e.created_at AS "createdAt",
                COUNT(DISTINCT er.id) AS "registeredCount"
         FROM events e
         LEFT JOIN event_registrations er ON er.event_id = e.id AND er.status = 'registered'
-        WHERE e.is_published = true
+        WHERE e.is_published = true AND (e.status IS NULL OR e.status = 'published')
         GROUP BY e.id
-        ORDER BY e.date_start ASC
+        ORDER BY e.published_at DESC NULLS LAST, e.created_at DESC
       `;
       const eventsRes = await query(sql);
       events = eventsRes.rows.map(row => ({

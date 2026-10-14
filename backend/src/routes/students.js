@@ -6,6 +6,7 @@ const config = require('../config');
 const { query } = require('../db/pool');
 const { authenticate, authorize } = require('../middleware/auth');
 const { validatePhone } = require('../middleware/validate');
+const { departmentsMatch } = require('../utils/coordinatorAccess');
 
 const router = express.Router();
 
@@ -678,10 +679,57 @@ router.get('/events', authenticate, authorize('student'), async (req, res, next)
        ORDER BY ep.created_at DESC LIMIT 30`
     ).catch(() => ({ rows: [] }));
 
-    return res.status(200).json({
+    // 6. Section 6: Fetch published campus events matching student scope, ordered newest published first
+    const pubEventsRes = await query(
+      `SELECT e.id, e.title, e.description,
+              COALESCE(e.tag, e.category::text, e.event_type, 'other') AS "category",
+              e.tag, e.date_start AS "dateStart", e.date_end AS "dateEnd",
+              e.venue, COALESCE(e.capacity, e.max_participants, 500) AS "capacity",
+              e.department_id AS "departmentId", e.department_name AS "departmentName",
+              e.is_published AS "isPublished", e.is_freshers AS "isFreshers",
+              COALESCE(e.banner_url, CASE WHEN e.banner_data IS NOT NULL THEN '/api/v1/events/' || e.id || '/banner' ELSE NULL END) AS "bannerUrl",
+              (e.banner_data IS NOT NULL) AS "hasBanner",
+              COALESCE(e.published_at, e.created_at) AS "publishedAt",
+              e.registration_open AS "registrationOpen", e.registration_close AS "registrationClose",
+              e.created_at AS "createdAt",
+              COUNT(DISTINCT er.id) AS "registeredCount"
+       FROM events e
+       LEFT JOIN event_registrations er ON er.event_id = e.id AND er.status = 'registered'
+       WHERE e.is_published = true AND (e.status IS NULL OR e.status = 'published')
+       GROUP BY e.id
+       ORDER BY e.published_at DESC NULLS LAST, e.created_at DESC`
+    ).catch(() => ({ rows: [] }));
+
+    const regEventIds = new Set(regsRes.rows.map(r => r.eventId));
+
+    const visibleEvents = pubEventsRes.rows.filter(ev => {
+      // If no department restriction or is college-wide, visible to all
+      if (!ev.departmentName || ev.departmentName === 'All' || ev.departmentName.trim() === '') {
+        return true;
+      }
+      // If student has department, check match
+      if (studentDept && departmentsMatch(studentDept, ev.departmentName)) {
+        return true;
+      }
+      // Freshers events strictly matching student dept
+      if (ev.isFreshers) {
+        return studentDept && departmentsMatch(studentDept, ev.departmentName);
+      }
+      return false;
+    }).map(ev => ({
+      ...ev,
+      registeredCount: parseInt(ev.registeredCount || 0, 10),
+      capacity: parseInt(ev.capacity || 500, 10),
+      isRegistered: regEventIds.has(ev.id),
+      bannerUrl: ev.bannerUrl || (ev.hasBanner ? `/api/v1/events/${ev.id}/banner` : null),
+    }));
+
+    const responsePayload = {
       success: true,
       studentDepartment: studentDept,
       studentRollNumber: studentProfile.roll_number || null,
+      events: visibleEvents,
+      freshersEvent,
       registrations: regsRes.rows,
       registeredEvents: regsRes.rows,
       attendance: attRes.rows,
@@ -692,6 +740,11 @@ router.get('/events', authenticate, authorize('student'), async (req, res, next)
         fileUrl: p.fileUrl || `/api/v1/events/photos/${p.id}/file`,
         downloadUrl: `/api/v1/events/photos/${p.id}/download`,
       })),
+    };
+
+    return res.status(200).json({
+      ...responsePayload,
+      data: responsePayload,
     });
   } catch (err) {
     next(err);

@@ -1888,31 +1888,36 @@ const LiveClock = (() => {
     const header = document.querySelector('header');
     if (!header) return;
 
-    // Target the right-side actions cluster in header
+    // Locate theme toggle and search container within header
+    const themeBtn = header.querySelector('button[aria-label*="Theme" i], button[aria-label*="light" i], button[aria-label*="dark" i]');
+    const searchContainer = header.querySelector('.sm\\:flex:has(input), div:has(> input[placeholder*="Search" i]), div:has(> input[type="text"])');
+
+    // Right-side action cluster fallback
     const rightCluster = header.querySelector('.flex.items-center.gap-space-sm.shrink-0') ||
                          header.querySelector('.flex.items-center.gap-space-sm') ||
                          header.querySelector('.ci-portal-header > div:last-child') ||
                          header.lastElementChild;
-    if (!rightCluster) return;
 
     const clockEl = document.createElement('div');
     clockEl.id = 'ci-live-clock';
-    clockEl.className = 'ci-live-clock flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-container/60 border border-outline-variant/30 text-on-surface text-xs font-medium shrink-0 select-none transition-colors';
+    clockEl.className = 'ci-live-clock flex items-center gap-1 sm:gap-1.5 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg bg-surface-container/60 border border-outline-variant/30 text-on-surface text-xs font-medium shrink-0 select-none shadow-[0_1px_2px_rgba(0,0,0,0.03)] backdrop-blur-sm transition-colors';
     clockEl.setAttribute('role', 'status');
     clockEl.setAttribute('aria-live', 'polite');
-    clockEl.setAttribute('title', 'MET Campus Time (Asia/Kolkata, Nashik)');
+    clockEl.setAttribute('title', 'Campus Time (Asia/Kolkata)');
 
     clockEl.innerHTML = `
-      <span class="material-symbols-outlined text-[15px] text-primary shrink-0 select-none">schedule</span>
+      <span class="material-symbols-outlined text-[15px] sm:text-[16px] text-primary shrink-0 select-none">schedule</span>
       <time id="ci-live-clock-time" class="font-mono font-bold tracking-tight text-on-surface text-[11px] sm:text-xs">--:-- --</time>
-      <span id="ci-live-clock-date" class="ci-live-clock-date hidden lg:inline text-[11px] text-secondary border-l border-outline-variant/40 pl-1.5 font-sans whitespace-nowrap">-- --- ----</span>
+      <span class="ci-clock-divider text-outline-variant/60 font-light select-none hidden sm:inline">•</span>
+      <span id="ci-live-clock-date" class="ci-live-clock-date hidden sm:inline text-[11px] text-secondary font-sans font-medium whitespace-nowrap">-- ---</span>
     `;
 
-    // Place before theme toggle or at beginning of actions
-    const themeBtn = rightCluster.querySelector('[aria-label*="Theme"], [aria-label*="theme"], button:has(.material-symbols-outlined)');
-    if (themeBtn && themeBtn.parentNode === rightCluster) {
-      rightCluster.insertBefore(clockEl, themeBtn);
-    } else {
+    // Position clock: exactly between search bar and theme toggle
+    if (themeBtn && themeBtn.parentNode) {
+      themeBtn.parentNode.insertBefore(clockEl, themeBtn);
+    } else if (searchContainer && searchContainer.parentNode) {
+      searchContainer.parentNode.insertBefore(clockEl, searchContainer.nextSibling);
+    } else if (rightCluster) {
       rightCluster.prepend(clockEl);
     }
 
@@ -1936,7 +1941,6 @@ const LiveClock = (() => {
         timeZone: 'Asia/Kolkata',
         hour: 'numeric',
         minute: '2-digit',
-        second: '2-digit',
         hour12: true
       });
       const timeStr = timeFmt.format(now);
@@ -1947,14 +1951,18 @@ const LiveClock = (() => {
       if (dateEl) {
         const dateFmt = new Intl.DateTimeFormat('en-GB', {
           timeZone: 'Asia/Kolkata',
-          day: '2-digit',
-          month: 'short',
-          year: 'numeric'
+          weekday: 'short',
+          day: 'numeric',
+          month: 'short'
         });
-        dateStr = dateFmt.format(now);
+        const parts = dateFmt.formatToParts(now);
+        const weekday = parts.find(p => p.type === 'weekday')?.value || '';
+        const day = parts.find(p => p.type === 'day')?.value || '';
+        const month = parts.find(p => p.type === 'month')?.value || '';
+        dateStr = weekday && day && month ? `${weekday}, ${day} ${month}` : dateFmt.format(now);
         dateEl.textContent = dateStr;
       }
-      timeEl.setAttribute('aria-label', `MET Campus Time: ${timeStr}${dateStr ? ' ' + dateStr : ''} (Asia/Kolkata)`);
+      timeEl.setAttribute('aria-label', `Campus Time: ${timeStr}${dateStr ? ' ' + dateStr : ''} (Asia/Kolkata)`);
     } catch (err) {
       timeEl.textContent = now.toLocaleTimeString();
     }

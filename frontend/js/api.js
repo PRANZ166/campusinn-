@@ -63,6 +63,10 @@ const API = (() => {
       ...(options.headers || {})
     };
 
+    if (options.body && typeof FormData !== 'undefined' && options.body instanceof FormData) {
+      delete headers['Content-Type'];
+    }
+
     // Attach Bearer token if session exists
     const token = localStorage.getItem('ci_token');
     if (token) {
@@ -791,17 +795,19 @@ const API = (() => {
     },
 
     async createEvent(payload) {
+      const isForm = (typeof FormData !== 'undefined') && (payload instanceof FormData);
       const res = await request('/coordinator/events', {
         method: 'POST',
-        body: JSON.stringify(payload)
+        body: isForm ? payload : JSON.stringify(payload)
       });
       return res;
     },
 
     async updateEvent(eventId, payload) {
+      const isForm = (typeof FormData !== 'undefined') && (payload instanceof FormData);
       const res = await request(`/coordinator/events/${encodeURIComponent(eventId)}`, {
         method: 'PUT',
-        body: JSON.stringify(payload)
+        body: isForm ? payload : JSON.stringify(payload)
       });
       return res;
     },
