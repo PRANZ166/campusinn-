@@ -130,7 +130,7 @@ router.get('/', optionalAuth, async (req, res, next) => {
     try {
       const sql = `
         SELECT e.id, e.title, e.description, 
-               COALESCE(e.category::text, e.event_type, 'other') AS "category",
+               COALESCE(e.tag, e.category::text, e.event_type, 'other') AS "category",
                e.tag, e.date_start AS "dateStart", e.date_end AS "dateEnd",
                e.venue, COALESCE(e.capacity, e.max_participants, 500) AS "capacity",
                e.department_id AS "departmentId", e.department_name AS "departmentName",

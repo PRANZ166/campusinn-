@@ -1877,6 +1877,100 @@ const GlobalSearch = (() => {
 })();
 
 /* ═══════════════════════════════════════════
+   10B. LIVE CAMPUS CLOCK (Asia/Kolkata)
+   ═══════════════════════════════════════════ */
+const LiveClock = (() => {
+  let timer = null;
+
+  function init() {
+    if (document.getElementById('ci-live-clock')) return;
+
+    const header = document.querySelector('header');
+    if (!header) return;
+
+    // Target the right-side actions cluster in header
+    const rightCluster = header.querySelector('.flex.items-center.gap-space-sm.shrink-0') ||
+                         header.querySelector('.flex.items-center.gap-space-sm') ||
+                         header.querySelector('.ci-portal-header > div:last-child') ||
+                         header.lastElementChild;
+    if (!rightCluster) return;
+
+    const clockEl = document.createElement('div');
+    clockEl.id = 'ci-live-clock';
+    clockEl.className = 'ci-live-clock flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-container/60 border border-outline-variant/30 text-on-surface text-xs font-medium shrink-0 select-none transition-colors';
+    clockEl.setAttribute('role', 'status');
+    clockEl.setAttribute('aria-live', 'polite');
+    clockEl.setAttribute('title', 'MET Campus Time (Asia/Kolkata, Nashik)');
+
+    clockEl.innerHTML = `
+      <span class="material-symbols-outlined text-[15px] text-primary shrink-0 select-none">schedule</span>
+      <time id="ci-live-clock-time" class="font-mono font-bold tracking-tight text-on-surface text-[11px] sm:text-xs">--:-- --</time>
+      <span id="ci-live-clock-date" class="ci-live-clock-date hidden lg:inline text-[11px] text-secondary border-l border-outline-variant/40 pl-1.5 font-sans whitespace-nowrap">-- --- ----</span>
+    `;
+
+    // Place before theme toggle or at beginning of actions
+    const themeBtn = rightCluster.querySelector('[aria-label*="Theme"], [aria-label*="theme"], button:has(.material-symbols-outlined)');
+    if (themeBtn && themeBtn.parentNode === rightCluster) {
+      rightCluster.insertBefore(clockEl, themeBtn);
+    } else {
+      rightCluster.prepend(clockEl);
+    }
+
+    update();
+    if (timer) clearInterval(timer);
+    timer = setInterval(update, 1000);
+    window.__campusInnClockTimer = timer;
+
+    window.addEventListener('beforeunload', destroy);
+  }
+
+  function update() {
+    const timeEl = document.getElementById('ci-live-clock-time');
+    const dateEl = document.getElementById('ci-live-clock-date');
+    if (!timeEl) return;
+
+    const now = new Date();
+
+    try {
+      const timeFmt = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'Asia/Kolkata',
+        hour: 'numeric',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+      });
+      const timeStr = timeFmt.format(now);
+      timeEl.textContent = timeStr;
+      timeEl.setAttribute('datetime', now.toISOString());
+
+      let dateStr = '';
+      if (dateEl) {
+        const dateFmt = new Intl.DateTimeFormat('en-GB', {
+          timeZone: 'Asia/Kolkata',
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric'
+        });
+        dateStr = dateFmt.format(now);
+        dateEl.textContent = dateStr;
+      }
+      timeEl.setAttribute('aria-label', `MET Campus Time: ${timeStr}${dateStr ? ' ' + dateStr : ''} (Asia/Kolkata)`);
+    } catch (err) {
+      timeEl.textContent = now.toLocaleTimeString();
+    }
+  }
+
+  function destroy() {
+    if (timer) {
+      clearInterval(timer);
+      timer = null;
+    }
+  }
+
+  return { init, update, destroy };
+})();
+
+/* ═══════════════════════════════════════════
    11. PAGE INITIALIZATION
    ═══════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', () => {
@@ -1892,6 +1986,8 @@ document.addEventListener('DOMContentLoaded', () => {
   MobileMenu.addHamburger();
   // Wire portal sidebar manager
   SidebarManager.init();
+  // Mount live campus clock in header
+  LiveClock.init();
   // Add skip-to-content link
   if (!document.querySelector('.ci-skip-link')) {
     const skip = document.createElement('a');
@@ -1931,7 +2027,8 @@ Object.assign(window.CampusInn, {
   MobileMenu,
   SidebarManager,
   FormUtils,
-  PhoneUtils
+  PhoneUtils,
+  LiveClock
 });
 
 if (!Object.getOwnPropertyDescriptor(window.CampusInn, 'Admin')) {

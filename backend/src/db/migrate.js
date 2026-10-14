@@ -772,6 +772,25 @@ CREATE TABLE IF NOT EXISTS mentorship_feedback (
 
 CREATE INDEX IF NOT EXISTS idx_mentorship_feedback_fac ON mentorship_feedback (faculty_id);
 CREATE INDEX IF NOT EXISTS idx_mentorship_feedback_stu ON mentorship_feedback (student_id);
+const MIGRATION_010_SQL = `
+  ALTER TABLE events ADD COLUMN IF NOT EXISTS tag VARCHAR(100);
+  DO $$
+  BEGIN
+    IF NOT EXISTS (
+      SELECT 1 FROM pg_type typ
+      JOIN pg_enum en ON typ.oid = en.enumtypid
+      WHERE typ.typname = 'event_type' AND en.enumlabel = 'department_freshers'
+    ) THEN
+      BEGIN
+        ALTER TYPE event_type ADD VALUE 'department_freshers';
+      EXCEPTION WHEN OTHERS THEN
+        NULL;
+      END;
+    END IF;
+  END $$;
+  ALTER TABLE events ADD COLUMN IF NOT EXISTS event_type VARCHAR(50) DEFAULT 'other';
+  CREATE INDEX IF NOT EXISTS idx_events_tag ON events(tag);
+  CREATE INDEX IF NOT EXISTS idx_events_date_start ON events(date_start DESC);
 `;
 
 const MIGRATIONS = [
@@ -819,6 +838,11 @@ const MIGRATIONS = [
     name: '009_photo_binary_persistence_and_faculty_feedback',
     sqlFile: '009_photo_binary_persistence_and_faculty_feedback.sql',
     fallbackSql: MIGRATION_009_SQL,
+  },
+  {
+    name: '010_event_type_enum_and_dates',
+    sqlFile: '010_event_type_enum_and_dates.sql',
+    fallbackSql: MIGRATION_010_SQL,
   },
 ];
 

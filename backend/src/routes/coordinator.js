@@ -106,7 +106,7 @@ router.get('/events', authenticate, authorize('coordinator', 'admin'), async (re
 
     const eventsRes = await query(
       `SELECT e.id, e.title, e.description, 
-              COALESCE(e.category::text, e.event_type, 'other') AS "category",
+              COALESCE(e.tag, e.category::text, e.event_type, 'other') AS "category",
               e.tag, e.date_start AS "dateStart", e.date_end AS "dateEnd",
               e.venue, COALESCE(e.capacity, e.max_participants, 500) AS "capacity",
               e.department_id AS "departmentId", e.department_name AS "departmentName",
@@ -140,6 +140,129 @@ router.get('/events', authenticate, authorize('coordinator', 'admin'), async (re
 });
 
 /**
+ * Normalizes event category to match PostgreSQL event_type enum canonical values
+ * while mapping "Department Freshers" -> category 'cultural', isFreshers = true, tag = 'Department Freshers'.
+ */
+function normalizeEventCategory(inputCategory, isFreshers) {
+  let cat = inputCategory !== undefined && inputCategory !== null ? String(inputCategory).trim().toLowerCase() : '';
+  let isFresh = Boolean(isFreshers);
+  let tag = null;
+
+  if (cat === 'department freshers' || cat === 'department_freshers' || cat === 'freshers') {
+    cat = 'cultural';
+    isFresh = true;
+    tag = 'Department Freshers';
+  } else if (cat === 'technical' || cat === 'technical & dev') {
+    cat = 'technical';
+  } else if (cat === 'cultural' || cat === 'cultural & festival') {
+    cat = 'cultural';
+  } else if (cat === 'hackathon' || cat === 'hackathon & sprint') {
+    cat = 'hackathon';
+  } else if (cat === 'workshop' || cat === 'hands-on workshop') {
+    cat = 'workshop';
+  } else if (cat === 'sports' || cat === 'sports tournament') {
+    cat = 'sports';
+  } else if (cat === 'seminar' || cat === 'seminar & keynote') {
+    cat = 'seminar';
+  } else if (cat === 'other' || cat === 'general' || cat === 'general / other') {
+    cat = 'other';
+  } else if (!cat) {
+    cat = isFresh ? 'cultural' : 'other';
+  } else {
+    const canonical = ['hackathon', 'cultural', 'technical', 'workshop', 'seminar', 'sports', 'other', 'department_freshers'];
+    if (!canonical.includes(cat)) {
+      return {
+        error: `Invalid event category "${inputCategory}". Supported categories are: Technical, Cultural, Department Freshers, Hackathon, Workshop, Sports, Seminar, Other.`,
+        code: 'INVALID_CATEGORY',
+      };
+    }
+  }
+
+  if (isFresh && !tag) {
+    tag = 'Department Freshers';
+  }
+
+  return { category: cat, isFreshers: isFresh, tag };
+}
+
+function isValidCalendarDate(str) {
+  if (!str || typeof str !== 'string') return true;
+  const match = str.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (match) {
+    const y = parseInt(match[1], 10);
+    const m = parseInt(match[2], 10);
+    const d = parseInt(match[3], 10);
+    if (m < 1 || m > 12) return false;
+    const daysInMonth = new Date(y, m, 0).getDate();
+    if (d < 1 || d > daysInMonth) return false;
+  }
+  return true;
+}
+
+/**
+ * Parses and validates event dates in Asia/Kolkata campus timezone.
+ * Supports past/historical dates cleanly while rejecting malformed or impossible dates.
+ */
+function parseEventDates(body) {
+  let { dateStart, dateEnd, date, startTime, endTime } = body;
+
+  // Check impossible calendar dates
+  if (date && !isValidCalendarDate(date)) {
+    return { error: 'Impossible calendar date provided. Please verify day and month.', code: 'IMPOSSIBLE_CALENDAR_DATE' };
+  }
+  if (dateStart && !isValidCalendarDate(dateStart)) {
+    return { error: 'Impossible calendar date provided for start date.', code: 'IMPOSSIBLE_CALENDAR_DATE' };
+  }
+  if (dateEnd && !isValidCalendarDate(dateEnd)) {
+    return { error: 'Impossible calendar date provided for end date.', code: 'IMPOSSIBLE_CALENDAR_DATE' };
+  }
+
+  // Synthesize dateStart if date + startTime provided
+  if (!dateStart && date) {
+    const timeStart = (startTime && typeof startTime === 'string' && startTime.trim().length > 0)
+      ? startTime.trim()
+      : '09:30';
+    dateStart = `${date}T${timeStart}:00+05:30`;
+  }
+
+  // Synthesize dateEnd if date + endTime provided
+  if (!dateEnd && date) {
+    const timeEnd = (endTime && typeof endTime === 'string' && endTime.trim().length > 0)
+      ? endTime.trim()
+      : '17:30';
+    dateEnd = `${date}T${timeEnd}:00+05:30`;
+  }
+
+  // Validate start date
+  let parsedStart = null;
+  if (dateStart) {
+    parsedStart = new Date(dateStart);
+    if (isNaN(parsedStart.getTime())) {
+      return { error: 'Invalid event start date format. Please provide a valid calendar date.', code: 'INVALID_DATE' };
+    }
+  } else {
+    parsedStart = new Date(Date.now() + 86400000);
+  }
+
+  // Validate end date
+  let parsedEnd = null;
+  if (dateEnd) {
+    parsedEnd = new Date(dateEnd);
+    if (isNaN(parsedEnd.getTime())) {
+      return { error: 'Invalid event end date format. Please provide a valid calendar date.', code: 'INVALID_DATE' };
+    }
+  } else {
+    parsedEnd = new Date(parsedStart.getTime() + 8 * 3600000);
+  }
+
+  if (parsedEnd < parsedStart) {
+    return { error: 'Event end time cannot be before event start time.', code: 'INVALID_DATE_RANGE' };
+  }
+
+  return { dateStart: parsedStart, dateEnd: parsedEnd };
+}
+
+/**
  * POST /api/v1/coordinator/events
  * Launch an authorized event (Campus Festival, Hackathon, or Department Freshers)
  */
@@ -150,12 +273,9 @@ router.post('/events', authenticate, authorize('coordinator', 'admin'), async (r
       description,
       category,
       venue,
-      dateStart,
-      dateEnd,
       capacity,
       isFreshers,
       departmentName,
-      registrationOpen,
       registrationClose,
       questions,
     } = req.body;
@@ -167,6 +287,30 @@ router.post('/events', authenticate, authorize('coordinator', 'admin'), async (r
         code: 'MISSING_TITLE',
       });
     }
+
+    const catResult = normalizeEventCategory(category, isFreshers);
+    if (catResult.error) {
+      return res.status(400).json({
+        success: false,
+        message: catResult.error,
+        code: catResult.code,
+      });
+    }
+
+    const dateResult = parseEventDates(req.body);
+    if (dateResult.error) {
+      return res.status(400).json({
+        success: false,
+        message: dateResult.error,
+        code: dateResult.code,
+      });
+    }
+
+    const finalCategory = catResult.category;
+    const finalIsFreshers = catResult.isFreshers;
+    const finalTag = catResult.tag;
+    const finalDateStart = dateResult.dateStart;
+    const finalDateEnd = dateResult.dateEnd;
 
     // Department scope enforcement for coordinators
     if (req.user.role === 'coordinator') {
@@ -186,7 +330,7 @@ router.post('/events', authenticate, authorize('coordinator', 'admin'), async (r
     }
 
     // Freshers rule: Must specify exactly ONE department
-    if (isFreshers) {
+    if (finalIsFreshers) {
       if (!departmentName || typeof departmentName !== 'string' || departmentName.trim().length < 2) {
         return res.status(400).json({
           success: false,
@@ -197,40 +341,62 @@ router.post('/events', authenticate, authorize('coordinator', 'admin'), async (r
     }
 
     const isPub = req.body.isPublished !== undefined ? Boolean(req.body.isPublished) : true;
-    const eventStatus = isPub ? 'published' : 'draft';
+    const eventStatus = req.body.status || (isPub ? 'published' : 'draft');
+
+    let regOpen = req.body.registrationOpen !== undefined ? Boolean(req.body.registrationOpen) : isPub;
+    let regClose = registrationClose ? new Date(registrationClose) : null;
+    if (!regClose) {
+      if (finalDateEnd < new Date()) {
+        regClose = finalDateEnd;
+        regOpen = false;
+      } else {
+        regClose = new Date(Date.now() + 86400000 * 30);
+      }
+    } else if (isNaN(regClose.getTime())) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid registration close date format.',
+        code: 'INVALID_DATE',
+      });
+    }
 
     const eventRes = await query(
       `INSERT INTO events (
          title, description, category, venue, date_start, date_end, capacity,
          max_participants, is_freshers, department_name, is_published, status,
-         registration_open, registration_close, questions, created_by, created_at, updated_at
-       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $7, $8, $9, $10, $11, $12, $13, $14, $15, NOW(), NOW())
-       RETURNING id, title, category, venue, date_start AS "dateStart", date_end AS "dateEnd",
+         registration_open, registration_close, questions, created_by, tag, created_at, updated_at
+       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, NOW(), NOW())
+       RETURNING id, title, category, tag, venue, date_start AS "dateStart", date_end AS "dateEnd",
                  capacity, is_freshers AS "isFreshers", department_name AS "departmentName",
-                 is_published AS "isPublished", status`,
+                 is_published AS "isPublished", is_published, status`,
       [
         title.trim(),
         description ? description.trim() : null,
-        category || (isFreshers ? 'cultural' : 'other'),
+        finalCategory,
         venue || 'MET BKC Campus Quadrangle',
-        dateStart ? new Date(dateStart) : new Date(Date.now() + 86400000),
-        dateEnd ? new Date(dateEnd) : new Date(Date.now() + 86400000 * 2),
+        finalDateStart,
+        finalDateEnd,
         parseInt(capacity, 10) || 500,
-        Boolean(isFreshers),
+        Boolean(finalIsFreshers),
         departmentName ? departmentName.trim() : null,
         isPub,
         eventStatus,
-        registrationOpen ? new Date(registrationOpen) : new Date(),
-        registrationClose ? new Date(registrationClose) : new Date(Date.now() + 86400000 * 30),
+        regOpen,
+        regClose,
         JSON.stringify(questions || []),
         req.user.id,
+        finalTag,
       ]
     );
 
     return res.status(201).json({
       success: true,
       message: isPub ? `Event "${title.trim()}" published successfully!` : `Event "${title.trim()}" saved as draft!`,
-      event: eventRes.rows[0],
+      event: {
+        ...eventRes.rows[0],
+        is_published: eventRes.rows[0].is_published !== undefined ? eventRes.rows[0].is_published : eventRes.rows[0].isPublished,
+        category: eventRes.rows[0].tag || eventRes.rows[0].category,
+      },
     });
   } catch (err) {
     next(err);
@@ -260,7 +426,7 @@ router.put('/events/:id', authenticate, authorize('coordinator', 'admin'), async
     } = req.body;
 
     // Check authorization: must be creator, match coordinator's department, or admin
-    const evCheck = await query('SELECT id, created_by, title, department_name FROM events WHERE id::text = $1', [eventId]);
+    const evCheck = await query('SELECT id, created_by, title, department_name, category, is_freshers, tag FROM events WHERE id::text = $1', [eventId]);
     if (evCheck.rows.length === 0) {
       return res.status(404).json({ success: false, message: 'Event not found.' });
     }
@@ -274,9 +440,50 @@ router.put('/events/:id', authenticate, authorize('coordinator', 'admin'), async
       });
     }
 
+    let finalCategory = undefined;
+    let finalIsFreshers = undefined;
+    let finalTag = undefined;
+
+    if (category !== undefined || isFreshers !== undefined) {
+      const catResult = normalizeEventCategory(
+        category !== undefined ? category : evCheck.rows[0].category,
+        isFreshers !== undefined ? isFreshers : evCheck.rows[0].is_freshers
+      );
+      if (catResult.error) {
+        return res.status(400).json({ success: false, message: catResult.error, code: catResult.code });
+      }
+      finalCategory = catResult.category;
+      finalIsFreshers = catResult.isFreshers;
+      finalTag = catResult.tag;
+    }
+
+    let finalDateStart = null;
+    let finalDateEnd = null;
+    if (dateStart || req.body.date || dateEnd) {
+      const dateResult = parseEventDates(req.body);
+      if (dateResult.error) {
+        return res.status(400).json({ success: false, message: dateResult.error, code: dateResult.code });
+      }
+      finalDateStart = dateResult.dateStart;
+      finalDateEnd = dateResult.dateEnd;
+    }
+
     let targetStatus = status;
     if (!targetStatus && isPublished !== undefined) {
       targetStatus = isPublished ? 'published' : 'draft';
+    }
+
+    let parsedRegClose = undefined;
+    if (registrationClose !== undefined) {
+      if (registrationClose === null) {
+        parsedRegClose = null;
+      } else {
+        const rc = new Date(registrationClose);
+        if (isNaN(rc.getTime())) {
+          return res.status(400).json({ success: false, message: 'Invalid registration close date format.', code: 'INVALID_DATE' });
+        }
+        parsedRegClose = rc;
+      }
     }
 
     const updateRes = await query(
@@ -294,23 +501,26 @@ router.put('/events/:id', authenticate, authorize('coordinator', 'admin'), async
            is_published = COALESCE($10, is_published),
            registration_close = COALESCE($11, registration_close),
            status = COALESCE($12, status),
+           tag = COALESCE($13, tag),
            updated_at = NOW()
-       WHERE id = $13
-       RETURNING id, title, category, venue, capacity, is_published AS "isPublished",
-                 department_name AS "departmentName", status`,
+       WHERE id = $14
+       RETURNING id, title, category, tag, venue, capacity, is_published AS "isPublished", is_published,
+                 department_name AS "departmentName", status,
+                 date_start AS "dateStart", date_end AS "dateEnd"`,
       [
         title ? title.trim() : null,
         description !== undefined ? description : null,
-        category || null,
+        finalCategory !== undefined ? finalCategory : null,
         venue || null,
-        dateStart ? new Date(dateStart) : null,
-        dateEnd ? new Date(dateEnd) : null,
+        finalDateStart,
+        finalDateEnd,
         capacity ? parseInt(capacity, 10) : null,
-        isFreshers !== undefined ? Boolean(isFreshers) : null,
+        finalIsFreshers !== undefined ? Boolean(finalIsFreshers) : null,
         departmentName ? departmentName.trim() : null,
         isPublished !== undefined ? Boolean(isPublished) : null,
-        registrationClose ? new Date(registrationClose) : null,
+        parsedRegClose !== undefined ? parsedRegClose : null,
         targetStatus || null,
+        finalTag !== undefined ? finalTag : null,
         evCheck.rows[0].id,
       ]
     );
@@ -318,7 +528,11 @@ router.put('/events/:id', authenticate, authorize('coordinator', 'admin'), async
     return res.status(200).json({
       success: true,
       message: `Event "${updateRes.rows[0].title}" updated successfully!`,
-      event: updateRes.rows[0],
+      event: {
+        ...updateRes.rows[0],
+        is_published: updateRes.rows[0].is_published !== undefined ? updateRes.rows[0].is_published : updateRes.rows[0].isPublished,
+        category: updateRes.rows[0].tag || updateRes.rows[0].category,
+      },
     });
   } catch (err) {
     next(err);
@@ -361,14 +575,17 @@ router.patch('/events/:id/status', authenticate, authorize('coordinator', 'admin
       `UPDATE events
        SET status = $1, is_published = $2, registration_open = $3, updated_at = NOW()
        WHERE id = $4
-       RETURNING id, title, status, is_published AS "isPublished", registration_open AS "registration_open"`,
+       RETURNING id, title, status, is_published AS "isPublished", is_published, registration_open AS "registration_open"`,
       [targetStatus, targetPub, regOpen, evCheck.rows[0].id]
     );
 
     return res.status(200).json({
       success: true,
       message: `Event "${evCheck.rows[0].title}" status updated to ${targetStatus}.`,
-      event: updateRes.rows[0],
+      event: {
+        ...updateRes.rows[0],
+        is_published: updateRes.rows[0].is_published !== undefined ? updateRes.rows[0].is_published : updateRes.rows[0].isPublished,
+      },
     });
   } catch (err) {
     next(err);

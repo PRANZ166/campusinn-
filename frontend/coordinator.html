@@ -249,7 +249,7 @@
           <span class="material-symbols-outlined text-2xl">add_circle</span>
         </span>
         <div>
-          <h2 class="font-headline-sm text-base font-bold text-on-surface">Create New Campus Event</h2>
+          <h2 id="modalEventHeading" class="font-headline-sm text-base font-bold text-on-surface">Create New Campus Event</h2>
           <p class="text-xs text-secondary">Official MET Bhujbal Knowledge City Calendar</p>
         </div>
       </div>
@@ -268,12 +268,14 @@
         <div>
           <label class="block text-xs font-semibold text-on-surface mb-1">Category *</label>
           <select id="evCategory" class="w-full px-3 py-2 bg-surface-container-low rounded-lg text-xs text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/20">
-            <option value="Technical" selected>Technical &amp; Dev</option>
-            <option value="Cultural">Cultural &amp; Festival</option>
+            <option value="technical" selected>Technical &amp; Dev</option>
+            <option value="cultural">Cultural &amp; Festival</option>
             <option value="Department Freshers">Department Freshers</option>
-            <option value="Hackathon">Hackathon &amp; Sprint</option>
-            <option value="Workshop">Hands-on Workshop</option>
-            <option value="Sports">Sports Tournament</option>
+            <option value="hackathon">Hackathon &amp; Sprint</option>
+            <option value="workshop">Hands-on Workshop</option>
+            <option value="sports">Sports Tournament</option>
+            <option value="seminar">Seminar &amp; Keynote</option>
+            <option value="other">General / Other</option>
           </select>
         </div>
         <div>
@@ -366,8 +368,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     btn.addEventListener('click', () => { const t = btn.getAttribute('data-target'); if (t) closeModal(t); });
   });
 
+  let editingEventId = null;
+
   const btnOpenCreate = document.getElementById('btnOpenCreateEventModal');
-  if (btnOpenCreate) btnOpenCreate.addEventListener('click', () => openModal('modalCreateEvent'));
+  if (btnOpenCreate) {
+    btnOpenCreate.addEventListener('click', () => {
+      editingEventId = null;
+      const form = document.getElementById('formCreateNewEvent');
+      if (form) form.reset();
+      const heading = document.getElementById('modalEventHeading');
+      if (heading) heading.textContent = 'Create New Campus Event';
+      const subBtn = document.getElementById('btnSubmitCreateEvent');
+      if (subBtn) subBtn.innerHTML = '<span class="material-symbols-outlined text-sm">publish</span> Publish Event';
+      const draftBtn = document.getElementById('btnSaveDraftEvent');
+      if (draftBtn) { draftBtn.style.display = ''; draftBtn.innerHTML = '<span class="material-symbols-outlined text-sm">draft</span> Save Draft'; }
+      openModal('modalCreateEvent');
+    });
+  }
 
   // State
   let managedEvents = [];
@@ -458,6 +475,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         </td>
         <td class="py-3 px-2 text-right space-x-1">
           ${isDraft ? `<button class="btn-pub-status px-2 py-1 rounded bg-tertiary-fixed hover:bg-tertiary hover:text-on-tertiary text-tertiary font-bold text-[11px] cursor-pointer" data-id="${e.id}" data-action="publish" title="Publish to Student Portal">Publish</button>` : (!isCancelled ? `<button class="btn-pub-status px-2 py-1 rounded bg-surface-container hover:bg-surface-container-high text-secondary font-bold text-[11px] cursor-pointer" data-id="${e.id}" data-action="draft" title="Move back to draft">Unpublish</button>` : '')}
+          <button class="btn-edit-event px-2 py-1 rounded bg-surface-container hover:bg-surface-container-high text-primary font-bold text-[11px] cursor-pointer" data-id="${e.id}" title="Edit event details">Edit</button>
           ${!isCancelled ? `<button class="btn-cancel-event px-2 py-1 rounded bg-error-container/30 hover:bg-error-container text-error font-bold text-[11px] cursor-pointer" data-id="${e.id}" title="Cancel event">Cancel</button>` : ''}
           <button class="btn-select-att px-2 py-1 rounded bg-surface-container hover:bg-surface-container-high text-primary font-bold text-[11px] cursor-pointer" data-id="${e.id}">Attendance</button>
           <button class="btn-toggle-reg px-2 py-1 rounded bg-surface-container hover:bg-surface-container-high text-secondary font-bold text-[11px] cursor-pointer" data-id="${e.id}" data-open="${e.registration_open}">
@@ -466,6 +484,52 @@ document.addEventListener('DOMContentLoaded', async () => {
         </td>
       </tr>
     `}).join('');
+
+    tbody.querySelectorAll('.btn-edit-event').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-id');
+        const ev = managedEvents.find(x => String(x.id) === String(id));
+        if (!ev) return;
+        editingEventId = id;
+        document.getElementById('evTitle').value = ev.title || '';
+        const catSelect = document.getElementById('evCategory');
+        if (catSelect) {
+          if (ev.tag === 'Department Freshers' || ev.is_freshers || (ev.category && ev.category.toLowerCase().includes('freshers'))) {
+            catSelect.value = 'Department Freshers';
+          } else {
+            catSelect.value = (ev.category || 'technical').toLowerCase();
+            if (!catSelect.value) catSelect.value = 'technical';
+          }
+        }
+        const deptSelect = document.getElementById('evDepartment');
+        if (deptSelect) deptSelect.value = ev.department_name || ev.department || '';
+        const freshersCheck = document.getElementById('evIsFreshers');
+        if (freshersCheck) freshersCheck.checked = !!ev.is_freshers;
+
+        let evDateVal = '';
+        if (ev.date_start) {
+          try {
+            evDateVal = new Date(ev.date_start).toISOString().split('T')[0];
+          } catch (_) {}
+        }
+        if (!evDateVal && ev.date && /^\d{4}-\d{2}-\d{2}/.test(ev.date)) {
+          evDateVal = ev.date.substring(0, 10);
+        }
+        document.getElementById('evDate').value = evDateVal;
+        document.getElementById('evVenue').value = ev.venue || '';
+        document.getElementById('evCapacity').value = ev.capacity || ev.max_participants || 200;
+        document.getElementById('evDescription').value = ev.description || '';
+
+        const heading = document.getElementById('modalEventHeading');
+        if (heading) heading.textContent = 'Edit Campus Event';
+        const subBtn = document.getElementById('btnSubmitCreateEvent');
+        if (subBtn) subBtn.innerHTML = '<span class="material-symbols-outlined text-sm">save</span> Save Changes';
+        const draftBtn = document.getElementById('btnSaveDraftEvent');
+        if (draftBtn) draftBtn.innerHTML = '<span class="material-symbols-outlined text-sm">draft</span> Save as Draft';
+
+        openModal('modalCreateEvent');
+      });
+    });
 
     tbody.querySelectorAll('.btn-pub-status').forEach(btn => {
       btn.addEventListener('click', async () => {
@@ -828,15 +892,32 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // 7. Event Creation (Draft vs Publish)
+  // Auto-tick isFreshers when Department Freshers category selected
+  const evCatEl = document.getElementById('evCategory');
+  if (evCatEl) {
+    evCatEl.addEventListener('change', () => {
+      const isFreshers = evCatEl.value === 'Department Freshers';
+      const chk = document.getElementById('evIsFreshers');
+      if (chk) chk.checked = isFreshers;
+      if (isFreshers) {
+        const dept = document.getElementById('evDepartment');
+        if (dept && !dept.value) {
+          CampusInn.Toast.info('Please select the Target Department for Department Freshers.');
+          dept.focus();
+        }
+      }
+    });
+  }
+
+  // 7. Event Creation & Editing (Draft vs Publish)
   async function submitEventForm(isPublished) {
     const title = document.getElementById('evTitle').value.trim();
     const category = document.getElementById('evCategory').value;
     const department = document.getElementById('evDepartment').value || null;
     const isFreshers = document.getElementById('evIsFreshers').checked;
     const date = document.getElementById('evDate').value;
-    const startTime = document.getElementById('evStartTime').value;
-    const endTime = document.getElementById('evEndTime').value;
+    const startTime = document.getElementById('evStartTime').value || '09:30';
+    const endTime = document.getElementById('evEndTime').value || '17:30';
     const venue = document.getElementById('evVenue').value.trim();
     const capacity = parseInt(document.getElementById('evCapacity').value, 10) || 200;
     const description = document.getElementById('evDescription').value.trim();
@@ -857,6 +938,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (draftBtn) draftBtn.disabled = true;
 
     try {
+      const dateStart = `${date}T${startTime}:00+05:30`;
+      const dateEnd = `${date}T${endTime}:00+05:30`;
+
       const payload = {
         title,
         category,
@@ -865,6 +949,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         date,
         startTime,
         endTime,
+        dateStart,
+        dateEnd,
         venue,
         capacity,
         description,
@@ -873,20 +959,27 @@ document.addEventListener('DOMContentLoaded', async () => {
         status: isPublished ? 'published' : 'draft'
       };
 
-      const res = await window.CampusInnAPI.coordinator.createEvent(payload);
-      if (res.error) throw new Error(res.error);
-
-      if (isPublished) {
-        CampusInn.Toast.success(`Event "${title}" published successfully to campus calendar!`);
+      if (editingEventId) {
+        const res = await window.CampusInnAPI.coordinator.updateEvent(editingEventId, payload);
+        if (res.error) throw new Error(res.error);
+        CampusInn.Toast.success(`Event "${title}" updated successfully!`);
+        editingEventId = null;
       } else {
-        CampusInn.Toast.success(`Event "${title}" saved as draft. Visible only in coordinator hub until published.`);
+        const res = await window.CampusInnAPI.coordinator.createEvent(payload);
+        if (res.error) throw new Error(res.error);
+
+        if (isPublished) {
+          CampusInn.Toast.success(`Event "${title}" published successfully to campus calendar!`);
+        } else {
+          CampusInn.Toast.success(`Event "${title}" saved as draft. Visible only in coordinator hub until published.`);
+        }
       }
 
       formCreate.reset();
       closeModal('modalCreateEvent');
       await loadCoordinatorEvents();
     } catch (err) {
-      CampusInn.Toast.error(err.message || 'Failed to create event.');
+      CampusInn.Toast.error(err.message || 'Failed to save event.');
     } finally {
       if (submitBtn) submitBtn.disabled = false;
       if (draftBtn) draftBtn.disabled = false;
